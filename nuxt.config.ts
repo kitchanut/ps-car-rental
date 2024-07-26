@@ -2,6 +2,7 @@
 export default defineNuxtConfig({
   compatibilityDate: '2024-04-03',
   devtools: { enabled: true },
+  ssr: false,
   app: {
     // baseURL: '/npms',
     head: {
@@ -32,6 +33,10 @@ export default defineNuxtConfig({
       script: [
       ],
       meta: [
+        {
+          name: 'description',
+          content: 'รถเช่า'
+        },
         {
           name: 'viewport',
           content: 'width=device-width, initial-scale=1, maximum-scale=5'
