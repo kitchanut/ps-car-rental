@@ -3,6 +3,7 @@ export default defineNuxtConfig({
   compatibilityDate: '2024-04-03',
   devtools: { enabled: true },
   ssr: false,
+  modules: ["@nuxtjs/robots"],
   app: {
     // baseURL: '/npms',
     head: {
@@ -49,4 +50,6 @@ export default defineNuxtConfig({
 
     }
   },
+
+
 })
