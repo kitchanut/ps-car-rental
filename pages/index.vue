@@ -1,3 +1,3 @@
 <template>
-  <div>Index</div>
+  <div>สวัสดี</div>
 </template>

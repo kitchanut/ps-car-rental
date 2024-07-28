@@ -10,8 +10,17 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@mdi/font": "^7.4.47",
+    "@nuxthub/core": "^0.7.1",
     "@nuxtjs/robots": "^4.0.2",
     "nuxt": "^3.12.4",
+    "sass": "^1.77.8",
     "vue": "latest"
+  },
+  "devDependencies": {
+    "dayjs-nuxt": "^2.1.9",
+    "vite-plugin-vuetify": "^2.0.3",
+    "vuetify": "^3.6.13",
+    "wrangler": "^3.67.1"
   }
 }

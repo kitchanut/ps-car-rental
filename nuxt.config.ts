@@ -1,9 +1,33 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+
 export default defineNuxtConfig({
   compatibilityDate: '2024-04-03',
-  devtools: { enabled: true },
+  devtools: { enabled: false },
   ssr: false,
-  modules: ["@nuxtjs/robots"],
+  hub: {
+    database: true
+  },
+  css: ["@/assets/scss/style.scss", "@/assets/css/style.css"],
+  modules: ["@nuxtjs/robots", 'dayjs-nuxt', "@nuxthub/core"],
+  dayjs: {
+    locales: ['th'],
+    plugins: ['timezone'],
+    defaultLocale: 'th',
+    defaultTimezone: 'Asia/Bangkok',
+  },
+  build: {
+    transpile: ["vuetify"],
+  },
+
+  vite: {
+    ssr: {
+      noExternal: ["vuetify"],
+    },
+    define: {
+      "process.env.DEBUG": false,
+    },
+  },
+
   app: {
     // baseURL: '/npms',
     head: {
@@ -21,10 +45,10 @@ export default defineNuxtConfig({
         //   rel: "stylesheet",
         //   href: "https://fonts.googleapis.com/icon?family=Material+Icons"
         // },
-        // {
-        //   rel: "stylesheet",
-        //   href: "https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@100;200;300;400;500;600;700&display=swap"
-        // },
+        {
+          rel: "stylesheet",
+          href: "https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@100;200;300;400;500;600;700&display=swap"
+        },
         // {
         //   rel: 'icon',
         //   type: 'image/x-icon',
