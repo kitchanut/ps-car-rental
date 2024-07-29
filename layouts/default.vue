@@ -3,7 +3,7 @@
     <v-layout>
       <v-app-bar color="primary" density="compact">
         <template v-slot:prepend>
-          <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
+          <v-app-bar-nav-icon @click.stop="drawer = !drawer" aria-label="nav-icon"></v-app-bar-nav-icon>
         </template>
         <v-app-bar-title>PS Car Rental</v-app-bar-title>
         <!-- <template v-slot:append>
