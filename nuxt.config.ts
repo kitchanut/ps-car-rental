@@ -2,13 +2,10 @@
 
 export default defineNuxtConfig({
   compatibilityDate: '2024-04-03',
-  devtools: { enabled: true },
+  devtools: { enabled: false },
   ssr: false,
   css: ["@/assets/scss/style.scss", "@/assets/css/style.css"],
-  modules: ["@nuxtjs/robots", 'dayjs-nuxt', "@nuxthub/core"],
-  hub: {
-    database: true
-  },
+  modules: ["@nuxtjs/robots", 'dayjs-nuxt'],
   dayjs: {
     locales: ['th'],
     plugins: ['timezone'],
@@ -49,18 +46,18 @@ export default defineNuxtConfig({
           rel: "stylesheet",
           href: "https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@100;200;300;400;500;600;700&display=swap"
         },
-        // {
-        //   rel: 'icon',
-        //   type: 'image/x-icon',
-        //   href: "/logo.png"
-        // }
+        {
+          rel: 'icon',
+          type: 'image/x-icon',
+          href: "/favicon.ico"
+        }
       ],
       script: [
       ],
       meta: [
         {
           name: 'description',
-          content: 'รถเช่า'
+          content: 'รถเช่า รถเช่านครพนม'
         },
         {
           name: 'viewport',
@@ -74,6 +71,12 @@ export default defineNuxtConfig({
 
     }
   },
-
+  runtimeConfig: {
+    public: {
+      serverUrl: process.env.NODE_ENV === "development"
+        ? "http://localhost/ps-car-rental-api"
+        : "https://ps-car-rental.ie-advisor.co.th/api",
+    }
+  }
 
 })

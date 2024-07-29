@@ -7,23 +7,22 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare",
-    "db:generate": "drizzle-kit generate"
+    "postinstall": "nuxt prepare"
   },
   "dependencies": {
     "@mdi/font": "^7.4.47",
-    "@nuxthub/core": "^0.7.1",
     "@nuxtjs/robots": "^4.0.2",
-    "drizzle-orm": "^0.32.1",
+    "axios": "^1.7.2",
     "nuxt": "^3.12.4",
     "sass": "^1.77.8",
-    "vue": "latest"
+    "v-viewer": "^3.0.13",
+    "viewerjs": "^1.11.6",
+    "vue": "latest",
+    "vue-toastification": "^2.0.0-rc.5"
   },
   "devDependencies": {
     "dayjs-nuxt": "^2.1.9",
-    "drizzle-kit": "^0.23.0",
     "vite-plugin-vuetify": "^2.0.3",
-    "vuetify": "^3.6.13",
-    "wrangler": "^3.67.1"
+    "vuetify": "^3.6.13"
   }
 }

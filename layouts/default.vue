@@ -30,7 +30,7 @@
         </v-list>
       </v-navigation-drawer>
 
-      <v-main>
+      <v-main style="max-width: 850px; margin-left: auto; margin-right: auto">
         <NuxtPage />
       </v-main>
     </v-layout>
