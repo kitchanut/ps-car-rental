@@ -70,8 +70,6 @@ td {
   padding: 0px !important;
 }
 .fix {
-  /* position: absolute;
-  vertical-align: center; */
   position: absolute;
   margin-left: -170px;
   width: 170px;

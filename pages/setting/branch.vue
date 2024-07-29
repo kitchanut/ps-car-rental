@@ -53,7 +53,7 @@ const { $toast } = useNuxtApp();
 const search = ref("");
 const loading = ref(true);
 const headers = ref([
-  { title: "ชื่อบริษัท", key: "branch_name" },
+  { title: "ชื่อสาขา", key: "branch_name" },
   // { title: "สถานะ", key: "branch_status", width: "10%" },
   // { title: "", key: "actions", width: "10%" },
 ]);
