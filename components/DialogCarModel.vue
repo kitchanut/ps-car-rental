@@ -3,14 +3,30 @@
     <template v-slot:activator="{ props: activatorProps }">
       <v-btn
         v-if="props.appearance == 'add'"
+        class="ml-2"
+        color="success"
+        dark
         v-bind="activatorProps"
+        icon="mdi-plus"
+        density="comfortable"
+        size="small"
+        variant="tonal"
+        style="height: 32px; min-width: 32px; border-radius: 4px"
+      >
+      </v-btn>
+      <v-btn
+        v-if="props.appearance == 'square_pecil'"
         color="primary"
         dark
+        v-bind="activatorProps"
+        icon="mdi-pencil"
+        density="comfortable"
+        size="small"
         variant="tonal"
-        style="height: 41px; min-width: 41px; padding: 0 10px"
+        style="height: 32px; min-width: 32px; padding: 0 10px; border-radius: 4px"
       >
-        <span style="font-size: 24px">+</span>
       </v-btn>
+
       <v-btn
         v-if="props.appearance == 'edit'"
         color="primary"
@@ -21,6 +37,18 @@
         size="small"
         variant="tonal"
       >
+      </v-btn>
+      <v-btn
+        v-if="props.appearance == 'button_label'"
+        :color="props.status == 'เปิดใช้งาน' ? 'primary' : 'grey'"
+        dark
+        v-bind="activatorProps"
+        density="comfortable"
+        variant="text"
+        style="min-width: 0px; padding: 0px; font-size: 1rem"
+      >
+        <span v-if="props.status == 'เปิดใช้งาน'">{{ props.label }}</span>
+        <s v-else>{{ props.label }}</s>
       </v-btn>
     </template>
     <v-card>
@@ -39,9 +67,9 @@
           <v-card variant="outlined" style="border: thin solid #ddd !important">
             <v-card-text>
               <v-text-field
-                label="ชื่อสาขา"
+                label="รุ่นรถ"
                 append-icon=""
-                v-model="formData.branch_name"
+                v-model="formData.car_model_name"
                 density="comfortable"
                 outlined
                 dense
@@ -53,7 +81,7 @@
               <v-select
                 class="mt-3"
                 :items="['เปิดใช้งาน', 'ระงับการใช้งาน']"
-                v-model="formData.branch_status"
+                v-model="formData.car_model_status"
                 density="comfortable"
                 label="สถานะ"
                 hide-details
@@ -63,7 +91,7 @@
           </v-card>
 
           <v-btn
-            v-if="props.actionType == 'edit' && formData.branch_status == 'ระงับการใช้งาน'"
+            v-if="props.actionType == 'edit' && formData.car_model_status == 'ระงับการใช้งาน'"
             class="mt-5"
             color="error"
             variant="tonal"
@@ -87,8 +115,11 @@
 <script setup>
 const props = defineProps({
   dialog: { type: Boolean, default: false },
+  car_brand_id: Number,
   actionType: String,
   appearance: String,
+  label: String,
+  status: String,
   id: Number,
 });
 const { $toast } = useNuxtApp();
@@ -103,7 +134,7 @@ const formTitle = ref("");
 // Get Data
 const getData = async () => {
   loading.value = true;
-  const response = await useApiBranches().show(props.id);
+  const response = await useApiCarModels().show(props.id);
   formData.value = response.data;
   loading.value = false;
 };
@@ -116,12 +147,12 @@ const onSubmit = async () => {
   if (validate.valid) {
     loading.value = true;
     if (props.actionType == "add") {
-      const response = await useApiBranches().store(formData.value);
+      const response = await useApiCarModels().store(formData.value);
       response.status == 201
         ? ($toast.success("ทำรายการสำเร็จ"), (dialog.value = false), emit("success"))
         : $toast.error("เกิดข้อผิดพลาด! กรุณาติดต่อผู้แลระบบ");
     } else {
-      const response = await useApiBranches().update(formData.value.id, formData.value);
+      const response = await useApiCarModels().update(formData.value.id, formData.value);
       response.status == 200
         ? ($toast.success("แก้ไขข้อมูลสำเร็จ"), (dialog.value = false), emit("success"))
         : $toast.error("เกิดข้อผิดพลาด! กรุณาติดต่อผู้แลระบบ");
@@ -135,7 +166,7 @@ const dialogDelete = ref(false);
 const deleteItem = async () => {
   loading.value = true;
   dialogDelete.value = false;
-  const response = await useApiBranches().destroy(id.value);
+  const response = await useApiCarModels().destroy(id.value);
   response.status == 200
     ? ($toast.success("ลบสำเร็จ"), (dialog.value = false), emit("success"))
     : $toast.error("เกิดข้อผิดพลาด! กรุณาติดต่อผู้แลระบบ");
@@ -153,14 +184,17 @@ watch(dialog, (value) => {
     nextTick(() => {
       formData.value = {};
       form.value.reset();
+      nextTick(() => {
+        if (props.actionType == "add") {
+          formTitle.value = "เพิ่มข้อมูล";
+          formData.value.car_brand_id = props.car_brand_id;
+          loading.value = false;
+        } else {
+          formTitle.value = "แก้ไขข้อมูล";
+          getData();
+        }
+      });
     });
-    if (props.actionType == "add") {
-      formTitle.value = "เพิ่มข้อมูล";
-      loading.value = false;
-    } else {
-      formTitle.value = "แก้ไขข้อมูล";
-      getData();
-    }
   } else {
     onClose();
   }

@@ -34,9 +34,12 @@
         <NuxtPage />
       </v-main>
     </v-layout>
+    <SpeedInsights />
   </div>
 </template>
 <script setup>
+import { SpeedInsights } from "@vercel/speed-insights/next";
+
 const drawer = ref(false);
 const router = useRouter();
 const route = useRoute();
@@ -88,9 +91,11 @@ const manu = ref([
     title: "ตั้งค่า",
     value: "setting",
     to: [
-      { to: "/setting/customers", title: "ลูกค้า" },
       { to: "/setting/cars", title: "รถ" },
+      { to: "/setting/car_types", title: "ประเภทรถ" },
+      { to: "/setting/car_brands", title: "ยี่ห้อรถ/รุ่นรถ" },
       { to: "/setting/branch", title: "สาขา" },
+      { to: "/setting/customers", title: "ลูกค้า" },
       { to: "/setting/users", title: "ผู้ใช้งาน" },
     ],
   },

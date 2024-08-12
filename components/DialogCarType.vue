@@ -39,9 +39,9 @@
           <v-card variant="outlined" style="border: thin solid #ddd !important">
             <v-card-text>
               <v-text-field
-                label="ชื่อสาขา"
+                label="ประเภทรถ"
                 append-icon=""
-                v-model="formData.branch_name"
+                v-model="formData.car_type_name"
                 density="comfortable"
                 outlined
                 dense
@@ -53,7 +53,7 @@
               <v-select
                 class="mt-3"
                 :items="['เปิดใช้งาน', 'ระงับการใช้งาน']"
-                v-model="formData.branch_status"
+                v-model="formData.car_type_status"
                 density="comfortable"
                 label="สถานะ"
                 hide-details
@@ -63,7 +63,7 @@
           </v-card>
 
           <v-btn
-            v-if="props.actionType == 'edit' && formData.branch_status == 'ระงับการใช้งาน'"
+            v-if="props.actionType == 'edit' && formData.car_type_status == 'ระงับการใช้งาน'"
             class="mt-5"
             color="error"
             variant="tonal"
@@ -103,7 +103,7 @@ const formTitle = ref("");
 // Get Data
 const getData = async () => {
   loading.value = true;
-  const response = await useApiBranches().show(props.id);
+  const response = await useApiCarTypes().show(props.id);
   formData.value = response.data;
   loading.value = false;
 };
@@ -116,12 +116,12 @@ const onSubmit = async () => {
   if (validate.valid) {
     loading.value = true;
     if (props.actionType == "add") {
-      const response = await useApiBranches().store(formData.value);
+      const response = await useApiCarTypes().store(formData.value);
       response.status == 201
         ? ($toast.success("ทำรายการสำเร็จ"), (dialog.value = false), emit("success"))
         : $toast.error("เกิดข้อผิดพลาด! กรุณาติดต่อผู้แลระบบ");
     } else {
-      const response = await useApiBranches().update(formData.value.id, formData.value);
+      const response = await useApiCarTypes().update(formData.value.id, formData.value);
       response.status == 200
         ? ($toast.success("แก้ไขข้อมูลสำเร็จ"), (dialog.value = false), emit("success"))
         : $toast.error("เกิดข้อผิดพลาด! กรุณาติดต่อผู้แลระบบ");
@@ -135,7 +135,7 @@ const dialogDelete = ref(false);
 const deleteItem = async () => {
   loading.value = true;
   dialogDelete.value = false;
-  const response = await useApiBranches().destroy(id.value);
+  const response = await useApiCarTypes().destroy(id.value);
   response.status == 200
     ? ($toast.success("ลบสำเร็จ"), (dialog.value = false), emit("success"))
     : $toast.error("เกิดข้อผิดพลาด! กรุณาติดต่อผู้แลระบบ");

@@ -6,7 +6,7 @@
       <v-divider></v-divider>
       <v-card-text class="mt-5 text-center" style="font-size: 18px; margin-bottom: 40px">
         <p>ลบแล้วไม่สามารถกู้ข้อมูลได้ !</p>
-        <p>กรุณากรอกคำว่า <b>"delete" </b> เพื่อยืนยัน</p>
+        <p>กรุณากรอกคำว่า <b>"Delete" </b> เพื่อยืนยัน</p>
         <br />
         <v-row class="d-flex justify-center">
           <v-col cols="8"
@@ -23,7 +23,7 @@
         <v-btn
           color="green darken-1"
           variant="text"
-          :disabled="confirmText == 'delete' ? false : true"
+          :disabled="confirmText == 'Delete' ? false : true"
           @click="deleteItem()"
         >
           <v-icon left>mdi-check</v-icon>ยืนยัน
