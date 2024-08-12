@@ -38,7 +38,7 @@
   </div>
 </template>
 <script setup>
-import { SpeedInsights } from "@vercel/speed-insights/next";
+import { SpeedInsights } from "@vercel/speed-insights/nuxt";
 
 const drawer = ref(false);
 const router = useRouter();
