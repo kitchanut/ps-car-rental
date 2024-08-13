@@ -75,7 +75,8 @@ export default defineNuxtConfig({
     public: {
       serverUrl: process.env.NODE_ENV === "development"
         ? "http://localhost/ps-car-rental-api"
-        : "https://ps-car-rental.ie-advisor.co.th/api",
+        : "https://ps-car-rental-api.ie-advisor.co.th",
+      // : "https://ps-car-rental.ie-advisor.co.th/api",
     }
   }
 
