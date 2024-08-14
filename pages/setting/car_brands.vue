@@ -45,7 +45,7 @@
             />
           </div>
           <div>
-            <DialogCarSubModel :car_model_id="item.id" appearance="add" actionType="add" @success="getData()" />
+            <DialogCarSubModel :car_model_id="model.id" appearance="add" actionType="add" @success="getData()" />
           </div>
         </div>
         <div v-if="model.car_sub_models.length > 0" class="px-4 pb-2">

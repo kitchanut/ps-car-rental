@@ -64,6 +64,10 @@ export default defineNuxtConfig({
           content: 'width=device-width, initial-scale=1, maximum-scale=5'
         },
         {
+          name: 'theme-color',
+          content: '#1966C0'
+        },
+        {
           name: 'author',
           content: "Kitchanut Ruamboon and IE Advisor"
         }
