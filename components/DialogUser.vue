@@ -23,7 +23,7 @@
       >
       </v-btn>
     </template>
-    <v-card :loading="loading">
+    <v-card>
       <v-form ref="form" lazy-validation @submit.prevent="onSubmit()">
         <v-toolbar dark color="primary" density="comfortable">
           <v-container class="d-flex justify-space-between align-center">
@@ -36,7 +36,7 @@
           </v-container>
         </v-toolbar>
         <v-container>
-          <v-card variant="outlined" style="border: thin solid #ddd !important">
+          <v-card :loading="loading" :disabled="loading" variant="outlined" style="border: thin solid #ddd !important">
             <v-card-text>
               <v-text-field
                 label="ชื่อ-สกุล"

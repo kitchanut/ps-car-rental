@@ -1,16 +1,39 @@
 <template>
   <div class="login-container">
-    <h1 style="margin-top: 20vh">Login</h1>
+    <h1 style="margin-top: 20vh">PS Car Rental</h1>
     <form @submit.prevent="handleSubmit">
-      <div class="form-group">
-        <label for="email">Email</label>
-        <input v-model="email" placeholder="Enter your email" required />
-      </div>
-      <div class="form-group">
-        <label for="password">Password</label>
-        <input v-model="password" type="password" id="password" placeholder="Enter your password" required />
-      </div>
-      <button type="submit">Login</button>
+      <v-text-field
+        prepend-inner-icon="mdi-account"
+        single-line
+        type="text"
+        placeholder="ชื่อผู้ใช้งาน/อีเมล์"
+        v-model="email"
+        dense
+        outlined
+      ></v-text-field>
+      <v-text-field
+        prepend-inner-icon="mdi-key-variant"
+        single-line
+        type="password"
+        placeholder="รหัสผ่าน"
+        v-model="password"
+        dense
+        outlined
+      ></v-text-field>
+      <v-btn
+        block
+        type="submit"
+        class="pt-5 pb-5"
+        :loading="loading"
+        :disabled="loading"
+        variant="tonal"
+        size="x-large"
+      >
+        เข้าสู่ระบบ
+        <template v-slot:loader>
+          <Icon name="svg-spinners:3-dots-move" size="2em" />
+        </template>
+      </v-btn>
     </form>
   </div>
 </template>
@@ -31,8 +54,10 @@ const handleSubmit = async () => {
   };
   const response = await useApiUsers().login(data);
   if (response.status) {
-    localStorage.setItem("token", response.data.token);
-    useState("isAuthenticated", () => true);
+    useCookie("user").value = response.data.user;
+    useCookie("token").value = response.data.token;
+    useCookie("isLogin").value = true;
+
     router.push({ path: "/" });
   } else {
     alert.value = true;

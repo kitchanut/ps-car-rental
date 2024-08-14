@@ -23,6 +23,7 @@
       >
       </v-btn>
     </template>
+
     <v-card>
       <v-form ref="form" lazy-validation @submit.prevent="onSubmit()">
         <v-toolbar dark color="primary" density="comfortable">
@@ -36,7 +37,7 @@
           </v-container>
         </v-toolbar>
         <v-container>
-          <v-card variant="outlined" style="border: thin solid #ddd !important">
+          <v-card :loading="loading" :disabled="loading" variant="outlined" style="border: thin solid #ddd !important">
             <v-card-text>
               <v-text-field
                 label="ชื่อสาขา"
@@ -79,7 +80,7 @@
       </v-form>
     </v-card>
 
-    <DialogLoader :loading="loading" />
+    <!-- <DialogLoader :loading="loading" /> -->
     <DialogDelete :dialogDelete="dialogDelete" @cancleItem="dialogDelete = false" @deleteItem="deleteItem" />
   </v-dialog>
 </template>

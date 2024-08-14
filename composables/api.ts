@@ -3,7 +3,8 @@ const config = useRuntimeConfig();
 export const HOSTNAME = config.public.serverUrl
 
 export async function request(method: string, url: string, data: {}, auth = false,) {
-    const token = localStorage.getItem('token')
+    // const token = localStorage.getItem('token')
+    const token = useCookie("token").value;
     const headers: any = {}
     if (token) {
         headers['authorization'] = token
@@ -19,8 +20,9 @@ export async function request(method: string, url: string, data: {}, auth = fals
     } catch (error) {
         console.log('api-error', error)
         if (error.response.status === 401) {
-            useState("isAuthenticated", () => false);
-            localStorage.removeItem('token')
+            useCookie("user").value = null;
+            useCookie("token").value = null;
+            useCookie("isLogin").value = false;
             window.location.href = '/login'
         }
         return error

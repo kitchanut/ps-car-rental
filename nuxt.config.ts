@@ -5,7 +5,7 @@ export default defineNuxtConfig({
   devtools: { enabled: false },
   ssr: false,
   css: ["@/assets/scss/style.scss", "@/assets/css/style.css"],
-  modules: ["@nuxtjs/robots", 'dayjs-nuxt'],
+  modules: ["@nuxtjs/robots", 'dayjs-nuxt', "@nuxt/icon"],
   dayjs: {
     locales: ['th'],
     plugins: ['timezone'],

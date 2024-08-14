@@ -64,7 +64,7 @@
           </v-container>
         </v-toolbar>
         <v-container>
-          <v-card variant="outlined" style="border: thin solid #ddd !important">
+          <v-card :loading="loading" :disabled="loading" variant="outlined" style="border: thin solid #ddd !important">
             <v-card-text>
               <v-text-field
                 label="รุ่นรถ"
@@ -107,7 +107,6 @@
       </v-form>
     </v-card>
 
-    <DialogLoader :loading="loading" />
     <DialogDelete :dialogDelete="dialogDelete" @cancleItem="dialogDelete = false" @deleteItem="deleteItem" />
   </v-dialog>
 </template>

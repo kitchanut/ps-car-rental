@@ -109,8 +109,9 @@ const cruds = ref([
 ]);
 
 const logout = () => {
-  localStorage.removeItem("token");
-  useState("isAuthenticated", () => false);
+  useCookie("user").value = null;
+  useCookie("token").value = null;
+  useCookie("isLogin").value = false;
   router.push({ path: "/login" });
 };
 </script>

@@ -33,7 +33,7 @@ export const useApiUsers = () => {
     }
 
     function login(params: {}) {
-        const url = HOSTNAME + '/api/login'
+        const url = HOSTNAME + '/api/auth/login'
         return request('post', url, params, true)
     }
 

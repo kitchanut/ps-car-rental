@@ -29,19 +29,6 @@
           <v-badge :color="item.car_type_status == 'เปิดใช้งาน' ? 'success' : 'warning'" inline dot></v-badge>
           {{ item.car_type_name }}
         </template>
-        <!-- <template v-slot:item.car_type_status="{ item }">
-            <v-chip
-              :color="item.car_type_status == 'เปิดใช้งาน' ? 'success' : 'warning'"
-              size="small"
-              label
-              text-color="white"
-            >
-              {{ item.car_type_status }}
-            </v-chip>
-          </template> -->
-        <!-- <template v-slot:item.actions="{ item }">
-            <DialogCarType appearance="edit" actionType="edit" :id="item.id" @success="getData()" />
-          </template> -->
       </v-data-table>
     </v-card>
 
@@ -52,11 +39,7 @@
 const { $toast } = useNuxtApp();
 const search = ref("");
 const loading = ref(true);
-const headers = ref([
-  { title: "ชื่อสาขา", key: "car_type_name" },
-  // { title: "สถานะ", key: "car_type_status", width: "10%" },
-  // { title: "", key: "actions", width: "10%" },
-]);
+const headers = ref([{ title: "ประเภทรถ", key: "car_type_name" }]);
 
 const data = ref([]);
 
