@@ -18,10 +18,11 @@ export async function request(method: string, url: string, data: {}, auth = fals
         return response
     } catch (error) {
         console.log('api-error', error)
-        // if (error.response.status === 401) {
-        //     localStorage.removeItem('token')
-        //     window.location.href = '/login'
-        // }
+        if (error.response.status === 401) {
+            useState("isAuthenticated", () => false);
+            localStorage.removeItem('token')
+            window.location.href = '/login'
+        }
         return error
     }
 }
