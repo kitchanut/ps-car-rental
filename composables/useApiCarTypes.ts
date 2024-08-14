@@ -1,6 +1,6 @@
 import { request, HOSTNAME } from "./api"
 export const useApiCarTypes = () => {
-    const path = '/api/car_type'
+    const path = '/api/car_types'
 
     function index() {
         const url = HOSTNAME + path

@@ -6,7 +6,7 @@ export async function request(method: string, url: string, data: {}, auth = fals
     const token = localStorage.getItem('token')
     const headers: any = {}
     if (token) {
-        headers['Authorization'] = 'Bearer ' + token
+        headers['authorization'] = token
     }
     try {
         const response = await axios({
@@ -17,6 +17,11 @@ export async function request(method: string, url: string, data: {}, auth = fals
         })
         return response
     } catch (error) {
+        // console.log('api-error', error)
+        if (error.response.status === 401) {
+            localStorage.removeItem('token')
+            window.location.href = '/login'
+        }
         return error
     }
 }

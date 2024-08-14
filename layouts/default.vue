@@ -6,9 +6,9 @@
           <v-app-bar-nav-icon @click.stop="drawer = !drawer" aria-label="nav-icon"></v-app-bar-nav-icon>
         </template>
         <v-app-bar-title>PS Car Rental</v-app-bar-title>
-        <!-- <template v-slot:append>
-          <v-btn icon="mdi-dots-vertical"></v-btn>
-        </template> -->
+        <template v-slot:append>
+          <v-btn icon="mdi-power-standby" @click="logout()"></v-btn>
+        </template>
       </v-app-bar>
 
       <v-navigation-drawer v-model="drawer" temporary>
@@ -34,12 +34,9 @@
         <NuxtPage />
       </v-main>
     </v-layout>
-    <SpeedInsights />
   </div>
 </template>
 <script setup>
-import { SpeedInsights } from "@vercel/speed-insights/nuxt";
-
 const drawer = ref(false);
 const router = useRouter();
 const route = useRoute();
@@ -110,4 +107,10 @@ const cruds = ref([
   ["Update", "mdi-update"],
   ["Delete", "mdi-delete"],
 ]);
+
+const logout = () => {
+  localStorage.removeItem("token");
+  useState("isAuthenticated", () => false);
+  router.push({ path: "/login" });
+};
 </script>

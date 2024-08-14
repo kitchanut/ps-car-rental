@@ -23,7 +23,7 @@
       >
       </v-btn>
     </template>
-    <v-card>
+    <v-card :loading="loading">
       <v-form ref="form" lazy-validation @submit.prevent="onSubmit()">
         <v-toolbar dark color="primary" density="comfortable">
           <v-container class="d-flex justify-space-between align-center">
@@ -107,11 +107,27 @@
               ></v-select>
             </v-card-text>
           </v-card>
+
+          <v-btn
+            v-if="props.actionType == 'edit' && formData.status == 'ระงับการใช้งาน'"
+            class="mt-5"
+            color="error"
+            variant="tonal"
+            size="large"
+            block
+            @click="
+              dialogDelete = true;
+              id = formData.id;
+            "
+          >
+            ลบข้อมูล
+          </v-btn>
         </v-container>
       </v-form>
     </v-card>
 
-    <DialogLoader :loading="loading" />
+    <!-- <DialogLoader :loading="loading" /> -->
+    <DialogDelete :dialogDelete="dialogDelete" @cancleItem="dialogDelete = false" @deleteItem="deleteItem" />
   </v-dialog>
 </template>
 
@@ -164,9 +180,19 @@ const onSubmit = async () => {
     // formData.value.permissions = permissions.value;
     if (props.actionType == "add") {
       const response = await useApiUsers().store(formData.value);
-      response.status == 201
-        ? ($toast.success("ทำรายการสำเร็จ"), (dialog.value = false), emit("success"))
-        : $toast.error("เกิดข้อผิดพลาด! กรุณาติดต่อผู้แลระบบ");
+      console.log(response);
+      if (response.status == 201) {
+        $toast.success("ทำรายการสำเร็จ");
+        dialog.value = false;
+        emit("success");
+      } else if (response.response.status == 422) {
+        $toast.warning("Email นี้มีอยู่ในระบบแล้ว");
+      } else {
+        $toast.error("เกิดข้อผิดพลาด! กรุณาติดต่อผู้แลระบบ");
+      }
+      // response.status == 201
+      //   ? ($toast.success("ทำรายการสำเร็จ"), (dialog.value = false), emit("success"))
+      //   : $toast.error("เกิดข้อผิดพลาด! กรุณาติดต่อผู้แลระบบ");
     } else {
       const response = await useApiUsers().update(formData.value.id, formData.value);
       response.status == 200
@@ -182,7 +208,7 @@ const dialogDelete = ref(false);
 const deleteItem = async () => {
   loading.value = true;
   dialogDelete.value = false;
-  const response = await useApiBranches().destroy(id.value);
+  const response = await useApiUsers().destroy(id.value);
   response.status == 200
     ? ($toast.success("ลบสำเร็จ"), (dialog.value = false), emit("success"))
     : $toast.error("เกิดข้อผิดพลาด! กรุณาติดต่อผู้แลระบบ");

@@ -1,0 +1,9 @@
+@media only screen and (max-width: 600px){
+    .Vue-Toastification__container .Vue-Toastification__toast {
+        margin-top: 16px;
+        margin-bottom: 16px;
+        border-radius: 8px;
+        width: 93% !important;
+        margin-inline: auto;
+    }
+    }
