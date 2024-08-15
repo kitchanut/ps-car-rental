@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialog" fullscreen :scrim="false" transition="dialog-bottom-transition">
+  <v-dialog v-model="dialog" fullscreen>
     <template v-slot:activator="{ props: activatorProps }">
       <v-btn
         v-if="props.appearance == 'add'"
@@ -36,37 +36,170 @@
           </v-container>
         </v-toolbar>
         <v-container>
-          <v-card variant="outlined" style="border: thin solid #ddd !important">
-            <v-card-text>
-              <v-text-field
-                label="ชื่อสาขา"
-                append-icon=""
-                v-model="formData.car_name"
-                density="comfortable"
-                outlined
-                dense
-                hide-details
-                :rules="[(value) => !!value || 'Required.']"
-              >
-              </v-text-field>
+          <!-- <v-card :loading="loading" :disabled="loading" variant="outlined" style="border: thin solid #ddd !important">
+            <v-card-text> -->
 
-              <v-select
-                class="mt-3"
-                :items="['เปิดใช้งาน', 'ระงับการใช้งาน']"
-                v-model="formData.car_status"
-                density="comfortable"
-                label="สถานะ"
-                hide-details
-                :rules="[(value) => !!value || 'Required.']"
-              ></v-select>
-            </v-card-text>
-          </v-card>
+          <v-sheet border rounded>
+            <v-select
+              :items="branches"
+              item-title="branch_name"
+              item-value="id"
+              v-model="formData.branch_id"
+              density="comfortable"
+              label="สาขา"
+              hide-details
+              :rules="[(value) => !!value || 'Required.']"
+            ></v-select>
+          </v-sheet>
+
+          <v-sheet class="mt-3" border rounded>
+            <v-select
+              :items="car_types"
+              item-title="car_type_name"
+              item-value="id"
+              v-model="formData.car_type_id"
+              density="comfortable"
+              label="ประเภทรถ"
+              hide-details
+              :rules="[(value) => !!value || 'Required.']"
+            ></v-select>
+
+            <v-select
+              :items="car_brands"
+              item-title="car_brand_name"
+              item-value="id"
+              v-model="formData.car_brand_id"
+              density="comfortable"
+              label="ยี่ห้อรถ"
+              hide-details
+              :rules="[(value) => !!value || 'Required.']"
+            ></v-select>
+
+            <v-select
+              :items="car_model_filters"
+              item-title="car_model_name"
+              item-value="id"
+              v-model="formData.car_model_id"
+              density="comfortable"
+              label="รุ่นรถ"
+              hide-details
+              :rules="[(value) => !!value || 'Required.']"
+            ></v-select>
+
+            <v-select
+              :items="car_sub_model_filters"
+              item-title="car_sub_model_name"
+              item-value="id"
+              v-model="formData.car_sub_model_id"
+              density="comfortable"
+              label="รุ่นย่อย"
+              hide-details
+            ></v-select>
+
+            <v-select
+              :items="years"
+              v-model="formData.year"
+              density="comfortable"
+              label="ปี"
+              hide-details
+              :rules="[(value) => !!value || 'Required.']"
+            ></v-select>
+
+            <v-text-field
+              label="สี"
+              append-icon=""
+              v-model="formData.color"
+              density="comfortable"
+              outlined
+              dense
+              hide-details
+              :rules="[(value) => !!value || 'Required.']"
+            >
+            </v-text-field>
+          </v-sheet>
+
+          <v-sheet class="mt-3" border rounded>
+            <v-text-field
+              label="ทะเบียนรถ"
+              append-icon=""
+              v-model="formData.license_plate"
+              density="comfortable"
+              outlined
+              dense
+              hide-details
+              :rules="[(value) => !!value || 'Required.']"
+            >
+            </v-text-field>
+
+            <v-text-field
+              label="จังหวัด"
+              append-icon=""
+              v-model="formData.license_plate_province"
+              density="comfortable"
+              outlined
+              dense
+              hide-details
+              :rules="[(value) => !!value || 'Required.']"
+            >
+            </v-text-field>
+          </v-sheet>
+
+          <v-sheet class="mt-3" border rounded>
+            <v-text-field
+              label="ค่าเช่าต่อวัน"
+              type="number"
+              append-inner-icon="mdi-currency-thb"
+              v-model.number="formData.rental_per_day"
+              density="comfortable"
+              outlined
+              dense
+              hide-details
+              :rules="[(value) => !isNaN(value) || 'Input must be a number']"
+            >
+            </v-text-field>
+            <v-text-field
+              label="ค่าคนขับต่อวัน"
+              type="number"
+              append-inner-icon="mdi-currency-thb"
+              v-model.number="formData.driver_per_day"
+              density="comfortable"
+              outlined
+              dense
+              hide-details
+              :rules="[(value) => !isNaN(value) || 'Input must be a number']"
+            >
+            </v-text-field>
+            <v-text-field
+              label="ค่ามัดจำ"
+              type="number"
+              append-inner-icon="mdi-currency-thb"
+              v-model.number="formData.deposit"
+              density="comfortable"
+              outlined
+              dense
+              hide-details
+              :rules="[(value) => !isNaN(value) || 'Input must be a number']"
+            >
+            </v-text-field>
+          </v-sheet>
+
+          <v-sheet class="mt-3" border rounded>
+            <v-select
+              :items="['เปิดใช้งาน', 'ระงับการใช้งาน']"
+              v-model="formData.car_status"
+              density="comfortable"
+              label="สถานะ"
+              hide-details
+              :rules="[(value) => !!value || 'Required.']"
+            ></v-select>
+          </v-sheet>
 
           <v-btn
             v-if="props.actionType == 'edit' && formData.car_status == 'ระงับการใช้งาน'"
             class="mt-5"
             color="error"
             variant="tonal"
+            size="large"
             block
             @click="
               dialogDelete = true;
@@ -79,7 +212,7 @@
       </v-form>
     </v-card>
 
-    <DialogLoader :loading="loading" />
+    <!-- <DialogLoader :loading="loading" /> -->
     <DialogDelete :dialogDelete="dialogDelete" @cancleItem="dialogDelete = false" @deleteItem="deleteItem" />
   </v-dialog>
 </template>
@@ -108,6 +241,56 @@ const getData = async () => {
   loading.value = false;
 };
 
+onMounted(() => {
+  getBranches();
+  getCarTypes();
+  getCarBrands();
+  getCarModels();
+  getCarSubModels();
+});
+
+const branches = ref([]);
+const getBranches = async () => {
+  const response = await useApiBranches().index();
+  branches.value = response.data.filter((item) => item.branch_status == "เปิดใช้งาน");
+};
+
+const car_types = ref([]);
+const getCarTypes = async () => {
+  const response = await useApiCarTypes().index();
+  car_types.value = response.data.filter((item) => item.car_type_status == "เปิดใช้งาน");
+};
+
+const car_brands = ref([]);
+const getCarBrands = async () => {
+  const response = await useApiCarBrands().index();
+  car_brands.value = response.data.filter((item) => item.car_brand_status == "เปิดใช้งาน");
+};
+
+const car_models = ref([]);
+const car_model_filters = computed(() => {
+  return car_models.value.filter((item) => item.car_brand_id == formData.value.car_brand_id);
+});
+const getCarModels = async () => {
+  const response = await useApiCarModels().index();
+  car_models.value = response.data.filter((item) => item.car_model_status == "เปิดใช้งาน");
+};
+
+const car_sub_models = ref([]);
+const car_sub_model_filters = computed(() => {
+  return car_sub_models.value.filter((item) => item.car_model_id == formData.value.car_model_id);
+});
+const getCarSubModels = async () => {
+  const response = await useApiCarSubModels().index();
+  car_sub_models.value = response.data.filter((item) => item.car_sub_model_status == "เปิดใช้งาน");
+};
+
+// Set years from current year to 20 years ago
+const years = ref([]);
+const currentYear = new Date().getFullYear();
+for (let i = currentYear; i >= currentYear - 20; i--) {
+  years.value.push(i);
+}
 // Submit Data
 const form = ref(null);
 const onSubmit = async () => {
@@ -153,14 +336,16 @@ watch(dialog, (value) => {
     nextTick(() => {
       formData.value = {};
       form.value.reset();
+      nextTick(() => {
+        if (props.actionType == "add") {
+          formTitle.value = "เพิ่มข้อมูล";
+          loading.value = false;
+        } else {
+          formTitle.value = "แก้ไขข้อมูล";
+          getData();
+        }
+      });
     });
-    if (props.actionType == "add") {
-      formTitle.value = "เพิ่มข้อมูล";
-      loading.value = false;
-    } else {
-      formTitle.value = "แก้ไขข้อมูล";
-      getData();
-    }
   } else {
     onClose();
   }

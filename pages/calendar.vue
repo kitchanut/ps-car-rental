@@ -92,12 +92,4 @@ th + th {
 .border-right {
   border-right: 1px solid #ccc;
 }
-.vertical-text {
-  writing-mode: vertical-rl;
-  text-orientation: mixed;
-  margin-top: -5px;
-  text-align: center;
-  vertical-align: middle;
-  font-size: 0.75rem;
-}
 </style>

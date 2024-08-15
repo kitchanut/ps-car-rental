@@ -107,10 +107,8 @@ const headers = ref([
 ]);
 
 const data = ref([]);
-
 const getData = async () => {
   loading.value = true;
-
   const response = await useApiCarBrands().index();
   console.log(response.data);
   data.value = response.data;

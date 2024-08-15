@@ -93,7 +93,6 @@
                 density="comfortable"
                 label="ประจำสาขา"
                 hide-details
-                :rules="[(value) => !isNaN(parseFloat(value)) || 'กรุณากรอกข้อมูล']"
               ></v-select>
 
               <v-select
@@ -164,7 +163,7 @@ const getBranch = async () => {
     return item.branch_status == "เปิดใช้งาน";
   });
   branches.value.unshift({
-    id: 0,
+    id: null,
     branch_name: "ส่วนกลาง",
   });
 };

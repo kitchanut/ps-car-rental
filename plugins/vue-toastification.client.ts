@@ -4,8 +4,9 @@ import "vue-toastification/dist/index.css";
 
 export default defineNuxtPlugin((nuxtApp) => {
     nuxtApp.vueApp.use(vt.default, {
-        // position: "bottom-center",
-        position: "top-center",
+        transition: "Vue-Toastification__fade",
+        position: "bottom-center",
+        // position: "top-center",
         hideProgressBar: true,
         closeButton: false,
         timeout: 2000,

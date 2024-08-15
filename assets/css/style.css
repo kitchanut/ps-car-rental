@@ -1,3 +1,22 @@
+.vertical-text {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    margin-top: -5px;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 0.75rem;
+}
+
+.wrapper{
+    max-height: 120px;
+    display: flex;
+    overflow-x: auto;
+}
+
+.wrapper .item{
+    min-width: 25%;
+}
+  
 @media only screen and (max-width: 600px){
     .Vue-Toastification__container .Vue-Toastification__toast {
         margin-top: 16px;
