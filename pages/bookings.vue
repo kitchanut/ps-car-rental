@@ -25,9 +25,8 @@
         :items-per-page="-1"
         @click:row="handleClick"
       >
-        <template v-slot:item.customer_name="{ item }">
-          <v-badge :color="item.customer_status == 'เปิดใช้งาน' ? 'success' : 'warning'" inline dot></v-badge>
-          {{ item.customer_name }}
+        <template v-slot:item.booking_number="{ item }">
+          <v-chip color="warning" density="comfortable">{{ item.booking_number }}</v-chip>
         </template>
       </v-data-table>
     </v-card>
@@ -40,9 +39,14 @@ const { $toast } = useNuxtApp();
 const search = ref("");
 const loading = ref(true);
 const headers = ref([
-  { title: "ชื่อลูกค้า", key: "customer_name" },
-  // { title: "เบอร์โทร", key: "customer_tel", width: "10%" },
-  // { title: "", key: "actions", width: "10%" },
+  { title: "Booking No", key: "booking_number", width: "29%", sortable: false },
+  {
+    title: "รับรถ",
+    key: "pickup_date",
+    value: (item) => `${useGlobalFunction().toDateLocal(item.pickup_date)}`,
+    width: "30%",
+  },
+  { title: "ลูกค้า", key: "customer.customer_name" },
 ]);
 
 const data = ref([]);

@@ -7,7 +7,19 @@
     font-size: 0.75rem;
 }
 
+.mobile > .v-stepper-header > .v-stepper-item {
+    flex-basis: 90px !important;
+    padding: 1rem !important;
+  }
 
+.mobile > .v-stepper-header > .v-divider {
+    margin: 30px -25px 0 !important;
+}
+
+.mobile > .v-window {
+    overflow-y: auto !important;
+    height: 80vh !important;
+}
 
 .wrapper{
     max-height: 120px;
