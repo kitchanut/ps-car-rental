@@ -5,9 +5,13 @@ export const HOSTNAME = config.public.serverUrl
 export async function request(method: string, url: string, data: {}, auth = false,) {
     // const token = localStorage.getItem('token')
     const token = useCookie("token").value;
+    const user = useCookie("user").value;
     const headers: any = {}
     if (token) {
         headers['authorization'] = token
+    }
+    if (user) {
+        headers['branch_id'] = user.branch_id
     }
     try {
         const response = await axios({

@@ -12,6 +12,7 @@
         v-model="files"
         :id="`file_${props.id}`"
         :accept="props.accept"
+        multiple
         prepend-icon=""
         hide-details
         @change="handleFileSelection($event)"

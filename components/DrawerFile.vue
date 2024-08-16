@@ -5,15 +5,16 @@
 
     <v-card-text style="flex-grow: 1; overflow: auto">
       <h1>รูปภาพ ({{ images.length }})</h1>
-      <v-row no-gutters>
-        <v-col cols="3 px-1" v-for="image in images" :key="image.id" v-viewer>
-          <v-img
-            style="border-radius: 6px"
-            height="100%"
-            cover
-            :src="$getImage(image.file_path)"
-            :lazy-src="$getImage(image.file_path)"
-          >
+      <v-row no-gutters v-viewer>
+        <v-col cols="4 px-1 mb-2" v-for="image in images" :key="image.id">
+          <v-card style="height: 70px" variant="text">
+            <v-img
+              style="border-radius: 6px"
+              height="100%"
+              cover
+              :src="$getImage(image.file_path)"
+              :lazy-src="$getImage(image.file_path)"
+            />
             <v-btn
               style="top: 0px; right: 0px; position: absolute; z-index: 9999"
               color="red"
@@ -28,10 +29,10 @@
               "
             >
             </v-btn>
-          </v-img>
+          </v-card>
         </v-col>
-        <v-col cols="3 px-1">
-          <v-card variant="outlined" style="border: 1px solid #ddd">
+        <v-col cols="4 px-1">
+          <v-card variant="outlined" height="70" style="border: 1px solid #ddd">
             <ImageUpload
               :id="myProps.id"
               :type="myProps.type"

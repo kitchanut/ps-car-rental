@@ -105,17 +105,50 @@
               :rules="[(value) => !!value || 'Required.']"
             ></v-select>
 
-            <v-text-field
-              label="สี"
-              append-icon=""
-              v-model="formData.color"
-              density="comfortable"
-              outlined
-              dense
-              hide-details
-              :rules="[(value) => !!value || 'Required.']"
-            >
-            </v-text-field>
+            <v-row no-gutters>
+              <v-col>
+                <v-text-field
+                  label="สี"
+                  append-icon=""
+                  v-model="formData.color"
+                  density="comfortable"
+                  outlined
+                  dense
+                  hide-details
+                  :rules="[(value) => !!value || 'Required.']"
+                >
+                </v-text-field>
+              </v-col>
+              <v-col cols="4">
+                <v-menu width="100%">
+                  <template v-slot:activator="{ props }">
+                    <v-btn :color="formData.color_code" v-bind="props" block style="height: 100%">
+                      <span v-if="formData.color_code">{{ formData.color_code }}</span>
+                      <span v-else>คลิกเพื่อเลือกสี</span>
+                    </v-btn>
+                  </template>
+                  <v-card>
+                    <v-toolbar color="white" density="comfortable">
+                      <v-container class="d-flex justify-space-between align-center">
+                        <v-btn icon dark>
+                          <v-icon>mdi-close</v-icon>
+                        </v-btn>
+                        <v-toolbar-title>ปิด</v-toolbar-title>
+                        <v-spacer></v-spacer>
+                      </v-container>
+                    </v-toolbar>
+                    <v-color-picker
+                      width="100%"
+                      hide-inputs
+                      hide-sliders
+                      swatches-max-height
+                      v-model="formData.color_code"
+                      show-swatches
+                    ></v-color-picker>
+                  </v-card>
+                </v-menu>
+              </v-col>
+            </v-row>
           </v-sheet>
 
           <v-sheet class="mt-3" border rounded>

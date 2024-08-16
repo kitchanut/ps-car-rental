@@ -12,32 +12,33 @@
         density="compact"
       ></v-text-field>
     </div>
+
     <v-data-iterator class="mt-3" :items="data" :items-per-page="10" :search="search">
-      <template v-slot:default="{ items, isExpanded, toggleExpand }">
+      <template v-slot:default="{ items }">
         <v-card v-for="item in items" class="mb-3" border flat>
           <v-row no-gutters>
-            <v-col cols="3">
-              <v-card variant="text" height="100%" style="border-radius: 0px !important">
+            <v-col cols="3" v-viewer>
+              <v-card variant="text" height="100%" style="border-radius: 0px">
                 <v-img
                   v-if="item.raw.uploads.length"
-                  height="77px"
-                  cover
+                  height="77"
                   :src="$getImage(item.raw.uploads[0].file_path)"
-                  v-viewer
+                  :lazy-src="$getImage(item.raw.uploads[0].file_path)"
+                  cover
+                />
+                <v-btn
+                  v-if="item.raw.uploads.length"
+                  style="position: absolute; top: 2px; left: 2px"
+                  size="small"
+                  density="compact"
+                  dark
+                  :icon="drawer ? 'mdi-chevron-left' : 'mdi-chevron-right'"
+                  @click="
+                    drawer = !drawer;
+                    id = item.raw.id;
+                  "
                 >
-                  <v-btn
-                    style="position: absolute; top: 2px; left: 2px"
-                    size="small"
-                    density="compact"
-                    dark
-                    :icon="drawer ? 'mdi-chevron-left' : 'mdi-chevron-right'"
-                    @click="
-                      drawer = !drawer;
-                      id = item.raw.id;
-                    "
-                  >
-                  </v-btn>
-                </v-img>
+                </v-btn>
                 <ImageUpload
                   v-else
                   :id="item.raw.id"
@@ -48,13 +49,14 @@
                 />
               </v-card>
             </v-col>
-            <v-col>
+            <v-col
+              @click="
+                dialog = true;
+                id = item.raw.id;
+              "
+            >
               <div class="d-flex">
                 <div
-                  @click="
-                    dialog = true;
-                    id = item.raw.id;
-                  "
                   style="
                     border-left: 1px solid #ccc;
                     border-right: 1px solid #ccc;
@@ -69,7 +71,7 @@
                   <div style="font-size: 0.7rem">{{ item.raw.license_plate_province }}</div>
 
                   <div>
-                    <v-chip color="primary" label density="compact" size="small">
+                    <v-chip :color="item.raw.branch.branch_color" label density="compact" size="small">
                       {{ item.raw.branch.branch_name }}
                     </v-chip>
                   </div>
@@ -93,49 +95,13 @@
                   >
                     {{ item.raw.car_sub_model.car_sub_model_name }}
                   </v-chip>
-                  <v-chip label density="compact" size="small">
+                  <v-chip :color="item.raw.color_code" label variant="flat" density="compact" size="small">
                     {{ item.raw.color }}
                   </v-chip>
                 </div>
               </div>
             </v-col>
           </v-row>
-
-          <v-divider v-if="isExpanded(item)"></v-divider>
-          <v-expand-transition>
-            <div v-if="isExpanded(item)" class="wrapper pa-1">
-              <div class="item" v-for="image in item.raw.uploads" :key="image.id">
-                <v-img
-                  class="mr-1"
-                  height="77"
-                  style="border-radius: 6px"
-                  cover
-                  :src="$getImage(image.file_path)"
-                  :lazy-src="$getImage(image.file_path)"
-                >
-                  <v-btn
-                    style="position: absolute; top: 2px; right: 2px"
-                    color="red"
-                    size="small"
-                    density="compact"
-                    dark
-                    icon="mdi-delete"
-                    @click="
-                      dialogDelete = true;
-                      deleteType = 'image';
-                      imageId = image.id;
-                    "
-                  >
-                  </v-btn>
-                </v-img>
-              </div>
-              <div class="item">
-                <v-card border flat height="100%">
-                  <ImageUpload :id="item.raw.id" type="car" location="cars" @success="getData()" />
-                </v-card>
-              </div>
-            </div>
-          </v-expand-transition>
         </v-card>
       </template>
     </v-data-iterator>
@@ -144,6 +110,7 @@
   </div>
 </template>
 <script setup>
+const images = ref(["https://picsum.photos/200/200", "https://picsum.photos/300/200", "https://picsum.photos/250/200"]);
 const search = ref("");
 const loading = ref(true);
 const data = ref([]);
@@ -152,6 +119,9 @@ const getData = async () => {
   const response = await useApiCars().index();
   // console.log(response.data);
   data.value = response.data;
+  data.value.map((item) => {
+    item.car_model_name = item.car_model.car_model_name;
+  });
   loading.value = false;
 };
 getData();

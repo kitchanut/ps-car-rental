@@ -62,12 +62,17 @@ const manu = ref([
   {
     icon: "mdi-notebook",
     title: "การจอง",
-    to: ["/booking"],
+    to: ["/bookings"],
   },
   {
     icon: "mdi-car-clock",
     title: "รับรถ/คืนรถ",
     to: ["/messengers"],
+  },
+  {
+    icon: "mdi-account",
+    title: "ลูกค้า",
+    to: ["/customers"],
   },
   {
     icon: "mdi-account-cancel",
@@ -92,7 +97,6 @@ const manu = ref([
       { to: "/setting/car_types", title: "ประเภทรถ" },
       { to: "/setting/car_brands", title: "ยี่ห้อรถ/รุ่นรถ" },
       { to: "/setting/branches", title: "สาขา" },
-      { to: "/setting/customers", title: "ลูกค้า" },
       { to: "/setting/users", title: "ผู้ใช้งาน" },
     ],
   },

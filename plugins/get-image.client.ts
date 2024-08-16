@@ -4,7 +4,7 @@ export default defineNuxtPlugin(() => {
     return {
         provide: {
             getImage: (path: string) => `${config.public.serverUrl}/${path}`,
-            imageBaseApp: () => '/logo.png'
+            imageBaseApp: () => '/logo.jpg'
         }
     }
 })

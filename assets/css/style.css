@@ -7,6 +7,8 @@
     font-size: 0.75rem;
 }
 
+
+
 .wrapper{
     max-height: 120px;
     display: flex;
@@ -14,7 +16,7 @@
 }
 
 .wrapper .item{
-    min-width: 25%;
+    min-width: 33%;
 }
   
 @media only screen and (max-width: 600px){
