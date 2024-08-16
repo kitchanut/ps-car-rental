@@ -53,7 +53,7 @@
           <v-divider></v-divider>
           <v-stepper-item title="คืนเงิน" value="5" editable></v-stepper-item>
         </v-stepper-header>
-        <v-stepper-window>
+        <v-stepper-window :style="`height: ${innerHeight - 170}px;`">
           <v-stepper-window-item value="1">
             <v-form ref="form" lazy-validation @submit.prevent="onSubmit()">
               <v-row no-gutters>
@@ -369,6 +369,7 @@ const { $toast } = useNuxtApp();
 const emit = defineEmits(["success", "close"]);
 
 //Set common variable
+const innerHeight = ref(window.innerHeight);
 const step = ref("1");
 const dialog = ref(false);
 const loading = ref(true);
