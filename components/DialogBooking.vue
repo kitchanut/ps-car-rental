@@ -258,11 +258,18 @@
               <v-row class="mt-3" no-gutters>
                 <v-col cols="4" class="d-flex align-center">ระยะเวลา</v-col>
                 <v-col>
-                  <v-text-field class="pl-3 pr-1" v-model="period_day" suffix=" วัน" density="compact" hide-details>
+                  <v-text-field
+                    class="pl-3 pr-1"
+                    v-model="period_day"
+                    suffix=" วัน"
+                    density="compact"
+                    hide-details
+                    readonly
+                  >
                   </v-text-field>
                 </v-col>
                 <v-col>
-                  <v-text-field v-model="period_remain_hours" suffix=" ชั่วโมง" density="compact" hide-details>
+                  <v-text-field v-model="period_remain_hours" suffix=" ชั่วโมง" density="compact" hide-details readonly>
                   </v-text-field>
                 </v-col>
               </v-row>
@@ -622,18 +629,18 @@ watch(
   (value) => calPrice()
 );
 const calPrice = () => {
-  const { rental_per_day, discount, vat_percent, deposit } = formData.value;
+  const { discount, vat_percent, deposit } = formData.value;
   const { excess_houre_free, excess_houre_charge, excess_price } = car.value || {};
 
   const days = period_day.value || 0;
   const remainingHours = period_remain_hours.value || 0;
 
   // Calculate base rental cost
-  formData.value.rental = rental_per_day * (remainingHours >= excess_houre_charge ? days + 1 : days);
+  formData.value.rental = formData.value.rental_per_day * (remainingHours > excess_houre_charge ? days + 1 : days);
 
   // Calculate driver cost if applicable
   formData.value.driver_per_day = formData.value.required_driver
-    ? car.value.driver_per_day * (remainingHours >= excess_houre_charge ? days + 1 : days)
+    ? car.value.driver_per_day * (remainingHours > excess_houre_charge ? days + 1 : days)
     : 0;
 
   // Calculate extra charge if applicable

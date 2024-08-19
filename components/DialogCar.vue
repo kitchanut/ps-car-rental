@@ -185,6 +185,7 @@
               <v-text-field
                 class="right-input"
                 v-model.number="formData.rental_per_day"
+                type="number"
                 append-inner-icon="mdi-currency-thb"
                 density="compact"
                 hide-details
@@ -198,6 +199,7 @@
               <v-text-field
                 class="right-input"
                 v-model.number="formData.driver_per_day"
+                type="number"
                 append-inner-icon="mdi-currency-thb"
                 density="compact"
                 hide-details
@@ -211,6 +213,7 @@
               <v-text-field
                 class="right-input"
                 v-model.number="formData.deposit"
+                type="number"
                 append-inner-icon="mdi-currency-thb"
                 density="compact"
                 hide-details
@@ -223,6 +226,7 @@
             <v-col>
               <v-text-field
                 v-model.number="formData.excess_houre_free"
+                type="number"
                 suffix="ชั่วโมง"
                 density="compact"
                 hide-details
@@ -235,6 +239,7 @@
             <v-col>
               <v-text-field
                 v-model.number="formData.excess_houre_charge"
+                type="number"
                 suffix="ชั่วโมง"
                 density="compact"
                 hide-details
@@ -245,6 +250,7 @@
               <v-text-field
                 class="pl-1"
                 v-model.number="formData.excess_price"
+                type="number"
                 suffix="บาท"
                 density="compact"
                 hide-details
