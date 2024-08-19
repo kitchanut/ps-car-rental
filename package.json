@@ -10,6 +10,7 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@infectoone/vue-ganttastic": "^2.3.2",
     "@mdi/font": "^7.4.47",
     "@nuxt/icon": "^1.4.5",
     "@nuxtjs/robots": "^4.0.2",

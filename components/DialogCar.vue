@@ -36,10 +36,236 @@
           </v-container>
         </v-toolbar>
         <v-container>
-          <!-- <v-card :loading="loading" :disabled="loading" variant="outlined" style="border: thin solid #ddd !important">
-            <v-card-text> -->
+          <v-row class="mt-3" no-gutters>
+            <v-col cols="4" class="d-flex align-center">สาขา</v-col>
+            <v-col>
+              <v-select
+                :items="branches"
+                item-title="branch_name"
+                item-value="id"
+                v-model="formData.branch_id"
+                density="compact"
+                hide-details
+                :rules="[(value) => !!value || 'Required.']"
+              ></v-select>
+            </v-col>
+          </v-row>
+          <v-row class="mt-3" no-gutters>
+            <v-col cols="4" class="d-flex align-center">ประเภทรถ</v-col>
+            <v-col>
+              <v-select
+                :items="car_types"
+                item-title="car_type_name"
+                item-value="id"
+                v-model="formData.car_type_id"
+                density="compact"
+                hide-details
+                :rules="[(value) => !!value || 'Required.']"
+              ></v-select>
+            </v-col>
+          </v-row>
+          <v-row class="mt-1" no-gutters>
+            <v-col cols="4" class="d-flex align-center">ยี่ห้อรถ</v-col>
+            <v-col>
+              <v-select
+                :items="car_brands"
+                item-title="car_brand_name"
+                item-value="id"
+                v-model="formData.car_brand_id"
+                density="compact"
+                hide-details
+                :rules="[(value) => !!value || 'Required.']"
+              ></v-select>
+            </v-col>
+          </v-row>
+          <v-row class="mt-1" no-gutters>
+            <v-col cols="4" class="d-flex align-center">รุ่นรถ</v-col>
+            <v-col>
+              <v-select
+                :items="car_model_filters"
+                item-title="car_model_name"
+                item-value="id"
+                v-model="formData.car_model_id"
+                density="compact"
+                hide-details
+                :rules="[(value) => !!value || 'Required.']"
+              ></v-select>
+            </v-col>
+          </v-row>
+          <v-row class="mt-1" no-gutters>
+            <v-col cols="4" class="d-flex align-center">รุ่นย่อย</v-col>
+            <v-col>
+              <v-select
+                :items="car_sub_model_filters"
+                item-title="car_sub_model_name"
+                item-value="id"
+                v-model="formData.car_sub_model_id"
+                density="compact"
+                hide-details
+              ></v-select>
+            </v-col>
+          </v-row>
+          <v-row class="mt-1" no-gutters>
+            <v-col cols="4" class="d-flex align-center">ปี</v-col>
+            <v-col>
+              <v-select
+                :items="years"
+                v-model="formData.year"
+                density="compact"
+                hide-details
+                :rules="[(value) => !!value || 'Required.']"
+              ></v-select>
+            </v-col>
+          </v-row>
+          <v-row class="mt-1" no-gutters>
+            <v-col cols="4" class="d-flex align-center">สี</v-col>
+            <v-col>
+              <v-text-field
+                v-model="formData.color"
+                density="compact"
+                hide-details
+                :rules="[(value) => !!value || 'Required.']"
+              ></v-text-field>
+            </v-col>
+            <v-col cols="4">
+              <v-menu width="100%">
+                <template v-slot:activator="{ props }">
+                  <v-btn :color="formData.color_code" v-bind="props" block style="height: 100%">
+                    <span v-if="formData.color_code">{{ formData.color_code }}</span>
+                    <span v-else>คลิกเพื่อเลือกสี</span>
+                  </v-btn>
+                </template>
+                <v-card>
+                  <v-toolbar color="white" density="comfortable">
+                    <v-container class="d-flex justify-space-between align-center">
+                      <v-btn icon dark>
+                        <v-icon>mdi-close</v-icon>
+                      </v-btn>
+                      <v-toolbar-title>ปิด</v-toolbar-title>
+                      <v-spacer></v-spacer>
+                    </v-container>
+                  </v-toolbar>
+                  <v-color-picker
+                    width="100%"
+                    hide-inputs
+                    hide-sliders
+                    swatches-max-height
+                    v-model="formData.color_code"
+                    show-swatches
+                  ></v-color-picker>
+                </v-card>
+              </v-menu>
+            </v-col>
+          </v-row>
+          <v-row class="mt-3" no-gutters>
+            <v-col cols="4" class="d-flex align-center">ทะเบียนรถ</v-col>
+            <v-col>
+              <v-text-field
+                v-model="formData.license_plate"
+                density="compact"
+                hide-details
+                :rules="[(value) => !!value || 'Required.']"
+              ></v-text-field>
+            </v-col>
+          </v-row>
+          <v-row class="mt-1" no-gutters>
+            <v-col cols="4" class="d-flex align-center">จังหวัด</v-col>
+            <v-col>
+              <v-text-field
+                v-model="formData.license_plate_province"
+                density="compact"
+                hide-details
+                :rules="[(value) => !!value || 'Required.']"
+              ></v-text-field>
+            </v-col>
+          </v-row>
+          <v-row class="mt-3" no-gutters>
+            <v-col cols="4" class="d-flex align-center">ค่าเช่าต่อวัน</v-col>
+            <v-col>
+              <v-text-field
+                class="right-input"
+                v-model.number="formData.rental_per_day"
+                append-inner-icon="mdi-currency-thb"
+                density="compact"
+                hide-details
+                :rules="[(value) => !isNaN(parseFloat(value)) || 'Must be a number']"
+              ></v-text-field>
+            </v-col>
+          </v-row>
+          <v-row class="mt-1" no-gutters>
+            <v-col cols="4" class="d-flex align-center">ค่าคนขับต่อวัน</v-col>
+            <v-col>
+              <v-text-field
+                class="right-input"
+                v-model.number="formData.driver_per_day"
+                append-inner-icon="mdi-currency-thb"
+                density="compact"
+                hide-details
+                :rules="[(value) => !isNaN(parseFloat(value)) || 'Must be a number']"
+              ></v-text-field>
+            </v-col>
+          </v-row>
+          <v-row class="mt-1" no-gutters>
+            <v-col cols="4" class="d-flex align-center">ค่ามัดจำ</v-col>
+            <v-col>
+              <v-text-field
+                class="right-input"
+                v-model.number="formData.deposit"
+                append-inner-icon="mdi-currency-thb"
+                density="compact"
+                hide-details
+                :rules="[(value) => !isNaN(parseFloat(value)) || 'Must be a number']"
+              ></v-text-field>
+            </v-col>
+          </v-row>
+          <v-row class="mt-1" no-gutters>
+            <v-col cols="4" class="d-flex align-center">คืนรถเกินฟรี</v-col>
+            <v-col>
+              <v-text-field
+                v-model.number="formData.excess_houre_free"
+                suffix="ชั่วโมง"
+                density="compact"
+                hide-details
+                :rules="[(value) => !isNaN(parseFloat(value)) || 'Must be a number']"
+              ></v-text-field>
+            </v-col>
+          </v-row>
+          <v-row class="mt-1" no-gutters>
+            <v-col cols="4" class="d-flex align-center">คืนรถมีค่าปรับ</v-col>
+            <v-col>
+              <v-text-field
+                v-model.number="formData.excess_houre_charge"
+                suffix="ชั่วโมง"
+                density="compact"
+                hide-details
+                :rules="[(value) => !isNaN(parseFloat(value)) || 'Must be a number']"
+              ></v-text-field>
+            </v-col>
+            <v-col>
+              <v-text-field
+                class="pl-1"
+                v-model.number="formData.excess_price"
+                suffix="บาท"
+                density="compact"
+                hide-details
+                :rules="[(value) => !isNaN(parseFloat(value)) || 'Must be a number']"
+              ></v-text-field>
+            </v-col>
+          </v-row>
+          <v-row class="mt-3" no-gutters>
+            <v-col cols="4" class="d-flex align-center">สถานะ</v-col>
+            <v-col>
+              <v-select
+                :items="['เปิดใช้งาน', 'ระงับการใช้งาน']"
+                v-model="formData.car_status"
+                density="compact"
+                hide-details
+                :rules="[(value) => !!value || 'Required.']"
+              ></v-select>
+            </v-col>
+          </v-row>
 
-          <v-sheet border rounded>
+          <!-- <v-sheet border rounded>
             <v-select
               :items="branches"
               item-title="branch_name"
@@ -225,7 +451,7 @@
               hide-details
               :rules="[(value) => !!value || 'Required.']"
             ></v-select>
-          </v-sheet>
+          </v-sheet> -->
 
           <v-btn
             v-if="props.actionType == 'edit' && formData.car_status == 'ระงับการใช้งาน'"
@@ -392,4 +618,8 @@ watch(
 );
 </script>
 
-<style scoped></style>
+<style scoped>
+.right-input :deep() input {
+  text-align: right;
+}
+</style>

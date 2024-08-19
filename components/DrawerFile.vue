@@ -16,7 +16,7 @@
               :lazy-src="$getImage(image.file_path)"
             />
             <v-btn
-              style="top: 0px; right: 0px; position: absolute; z-index: 9999"
+              style="top: 0px; right: 0px; position: absolute; z-index: 2000"
               color="red"
               icon="mdi-delete"
               density="comfortable"
@@ -93,9 +93,9 @@ const getData = async () => {
   images.value = [];
   files.value = [];
   const response = await useApiUploads().index(myProps.id, myProps.type);
-  console.log(response.data);
   await response.data.map((item) => {
-    if (item.extension == ".jpeg" || item.extension == ".jpg" || item.extension == ".png") {
+    const extension = item.extension.split("/");
+    if (extension[0] == "image") {
       images.value.push(item);
     } else {
       files.value.push(item);

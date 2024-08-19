@@ -1,9 +1,10 @@
 import { request, HOSTNAME } from "./api"
-export const useApiBookings = () => {
-    const path = '/api/bookings'
+export const useApiAccountTransactions = () => {
+    const path = '/api/account_transactions'
 
-    function index() {
-        const url = HOSTNAME + path
+    function index(params: String) {
+        let query = params ?? ''
+        const url = HOSTNAME + path + query
         return request('get', url, {}, true)
     }
 
@@ -19,7 +20,7 @@ export const useApiBookings = () => {
 
     function update(id: number, params: {}) {
         const url = HOSTNAME + path + '/' + id
-        return request('put', url, params, true)
+        return request('post', url, params, true)
     }
 
     function destroy(id: number) {
@@ -27,10 +28,5 @@ export const useApiBookings = () => {
         return request('delete', url, {}, true)
     }
 
-    function deposit(params: {}) {
-        const url = HOSTNAME + path + '/deposit'
-        return request('post', url, params, true)
-    }
-
-    return { index, store, show, update, destroy, deposit }
+    return { index, store, show, update, destroy }
 }

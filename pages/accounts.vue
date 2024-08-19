@@ -2,7 +2,7 @@
   <div class="pa-3">
     <v-card variant="outlined" style="border: 1px solid #ddd">
       <div class="d-flex ma-3">
-        <DialogBooking appearance="add" actionType="add" @success="getData()" />
+        <DialogAccount appearance="add" actionType="add" @success="getData()" />
         <v-text-field
           class="pl-3"
           v-model="search"
@@ -25,13 +25,14 @@
         :items-per-page="-1"
         @click:row="handleClick"
       >
-        <template v-slot:item.booking_number="{ item }">
-          <v-chip color="warning" density="comfortable">{{ item.booking_number }}</v-chip>
+        <template v-slot:item.account_name="{ item }">
+          <v-badge :color="item.account_status == 'เปิดใช้งาน' ? 'success' : 'warning'" inline dot></v-badge>
+          {{ item.account_name }}
         </template>
       </v-data-table>
     </v-card>
 
-    <DialogBooking :dialog="dialog" :id="id" actionType="edit" @success="getData()" @close="dialog = false" />
+    <DialogAccount :dialog="dialog" :id="id" actionType="edit" @success="getData()" @close="dialog = false" />
   </div>
 </template>
 <script setup>
@@ -39,14 +40,10 @@ const { $toast } = useNuxtApp();
 const search = ref("");
 const loading = ref(true);
 const headers = ref([
-  { title: "No", key: "booking_number", width: "29%", sortable: false },
-  {
-    title: "รับรถ",
-    key: "pickup_date",
-    value: (item) => `${useGlobalFunction().toDateLocal(item.pickup_date)}`,
-    width: "30%",
-  },
-  { title: "ลูกค้า", key: "customer.customer_name" },
+  { title: "เลขที่บัญชี", key: "account_number" },
+  { title: "ชื่อบัญชี", key: "account_name" },
+  // { title: "สถานะ", key: "account_status", width: "10%" },
+  // { title: "", key: "actions", width: "10%" },
 ]);
 
 const data = ref([]);
@@ -54,7 +51,7 @@ const data = ref([]);
 const getData = async () => {
   loading.value = true;
 
-  const response = await useApiBookings().index();
+  const response = await useApiAccounts().index();
   // console.log(response.data);
   data.value = response.data;
   data.value.map((item, index) => {

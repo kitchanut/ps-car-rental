@@ -71,7 +71,6 @@ const getData = async () => {
   loading.value = true;
 
   const response = await useApiUsers().index();
-  console.log(response.data);
   data.value = response.data;
   // data.value.map((item, index) => {
   //   item.no = index + 1;

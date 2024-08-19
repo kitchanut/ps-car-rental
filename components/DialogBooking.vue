@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialog" fullscreen :scrim="false" transition="dialog-bottom-transition">
+  <v-dialog v-model="dialog" persistent fullscreen>
     <template v-slot:activator="{ props: activatorProps }">
       <v-btn
         v-if="props.appearance == 'add'"
@@ -10,6 +10,16 @@
         style="height: 41px; min-width: 41px; padding: 0 10px"
       >
         <span style="font-size: 24px">+</span>
+      </v-btn>
+      <v-btn
+        v-if="props.appearance == 'float'"
+        v-bind="activatorProps"
+        style="position: absolute; top: 35px; right: -10px"
+        size="small"
+        density="compact"
+        dark
+        icon="mdi-plus"
+      >
       </v-btn>
       <v-btn
         v-if="props.appearance == 'edit'"
@@ -41,22 +51,42 @@
             title="จอง"
             value="1"
             editable
-            :complete="props.actionType == 'edit' ? true : false"
-            :color="props.actionType == 'edit' ? 'success' : ''"
+            :complete="['จอง', 'มัดจำ', 'รับรถ', 'คืนรถ', 'คืนเงิน'].includes(formData.booking_status)"
+            :color="['จอง', 'มัดจำ', 'รับรถ', 'คืนรถ', 'คืนเงิน'].includes(formData.booking_status) ? 'success' : ''"
           ></v-stepper-item>
           <v-divider></v-divider>
-          <v-stepper-item title="มัดจำ" value="2" editable></v-stepper-item>
+          <v-stepper-item
+            title="มัดจำ"
+            value="2"
+            :editable="['จอง', 'มัดจำ', 'รับรถ', 'คืนรถ', 'คืนเงิน'].includes(formData.booking_status)"
+            :complete="['มัดจำ', 'รับรถ', 'คืนรถ', 'คืนเงิน'].includes(formData.booking_status)"
+            :color="['มัดจำ', 'รับรถ', 'คืนรถ', 'คืนเงิน'].includes(formData.booking_status) ? 'success' : ''"
+          ></v-stepper-item>
           <v-divider></v-divider>
-          <v-stepper-item title="รับรถ" value="3" editable></v-stepper-item>
+          <v-stepper-item
+            title="รับรถ"
+            value="3"
+            :complete="['รับรถ', 'คืนรถ', 'คืนเงิน'].includes(formData.booking_status)"
+            :editable="['มัดจำ', 'รับรถ'].includes(formData.booking_status)"
+          ></v-stepper-item>
           <v-divider></v-divider>
-          <v-stepper-item title="คืนรถ" value="4" editable></v-stepper-item>
+          <v-stepper-item
+            title="คืนรถ"
+            value="4"
+            :complete="['คืนรถ', 'คืนเงิน'].includes(formData.booking_status)"
+          ></v-stepper-item>
           <v-divider></v-divider>
-          <v-stepper-item title="คืนเงิน" value="5" editable></v-stepper-item>
+          <v-stepper-item
+            title="คืนเงิน"
+            value="5"
+            :complete="['คืนเงิน'].includes(formData.booking_status)"
+          ></v-stepper-item>
         </v-stepper-header>
         <v-stepper-window :style="`height: ${innerHeight - 170}px;`">
           <v-stepper-window-item value="1">
             <v-form ref="form" lazy-validation @submit.prevent="onSubmit()">
-              <v-row no-gutters>
+              <v-divider>ลูกค้า/รถยนต์</v-divider>
+              <v-row class="mt-3" no-gutters>
                 <v-col cols="4" class="d-flex align-center">ลูกค้า</v-col>
                 <v-col>
                   <v-autocomplete
@@ -82,8 +112,8 @@
                 </v-col>
               </v-row>
 
-              <v-row class="mt-3" no-gutters>
-                <v-col cols="4" class="d-flex align-center">รถ</v-col>
+              <v-row class="mt-1" no-gutters>
+                <v-col cols="4" class="d-flex align-center">รถเช่า</v-col>
                 <v-col>
                   <v-autocomplete
                     class="pl-3"
@@ -93,6 +123,7 @@
                     item-value="id"
                     density="compact"
                     hide-details
+                    @update:modelValue="changeCar()"
                     :rules="[(value) => !!value || 'Required.']"
                   >
                     <template v-slot:item="{ props, item }">
@@ -121,6 +152,9 @@
                 </v-col>
               </v-row>
 
+              <br />
+              <v-divider>การรับคืนรถ</v-divider>
+
               <v-row class="mt-3" no-gutters>
                 <v-col cols="4" class="d-flex align-center">วันรับรถ</v-col>
                 <v-col>
@@ -135,6 +169,39 @@
                     :rules="[(value) => !!value || 'Required.']"
                   >
                   </v-text-field>
+                </v-col>
+              </v-row>
+
+              <v-row no-gutters>
+                <v-col cols="4" class="d-flex align-center">สถานที่รับรถ</v-col>
+                <v-col>
+                  <v-combobox
+                    class="pl-3"
+                    v-model="formData.pickup_location"
+                    :items="['สถานบิน', 'บริษัท']"
+                    density="compact"
+                    outlined
+                    dense
+                    hide-details
+                    :rules="[(value) => !!value || 'Required.']"
+                  >
+                  </v-combobox>
+                </v-col>
+              </v-row>
+              <v-row no-gutters>
+                <v-col cols="4" class="d-flex align-center">สาขา</v-col>
+                <v-col>
+                  <v-select
+                    class="pl-3"
+                    v-model="formData.pickup_branch_id"
+                    :items="branches"
+                    item-title="branch_name"
+                    item-value="id"
+                    density="compact"
+                    hide-details
+                    :rules="[(value) => !!value || 'Required.']"
+                  >
+                  </v-select>
                 </v-col>
               </v-row>
 
@@ -155,8 +222,55 @@
                 </v-col>
               </v-row>
 
+              <v-row no-gutters>
+                <v-col cols="4" class="d-flex align-center">สถานที่คืนรถ</v-col>
+                <v-col>
+                  <v-combobox
+                    class="pl-3"
+                    v-model="formData.return_location"
+                    :items="['สถานบิน', 'บริษัท']"
+                    density="compact"
+                    outlined
+                    dense
+                    hide-details
+                    :rules="[(value) => !!value || 'Required.']"
+                  >
+                  </v-combobox>
+                </v-col>
+              </v-row>
+              <v-row no-gutters>
+                <v-col cols="4" class="d-flex align-center">สาขา</v-col>
+                <v-col>
+                  <v-select
+                    class="pl-3"
+                    v-model="formData.return_branch_id"
+                    :items="branches"
+                    item-title="branch_name"
+                    item-value="id"
+                    density="compact"
+                    hide-details
+                    :rules="[(value) => !!value || 'Required.']"
+                  >
+                  </v-select>
+                </v-col>
+              </v-row>
+
               <v-row class="mt-3" no-gutters>
-                <v-col cols="4" class="d-flex align-center">ค่าเช่า</v-col>
+                <v-col cols="4" class="d-flex align-center">ระยะเวลา</v-col>
+                <v-col>
+                  <v-text-field class="pl-3 pr-1" v-model="period_day" suffix=" วัน" density="compact" hide-details>
+                  </v-text-field>
+                </v-col>
+                <v-col>
+                  <v-text-field v-model="period_remain_hours" suffix=" ชั่วโมง" density="compact" hide-details>
+                  </v-text-field>
+                </v-col>
+              </v-row>
+
+              <br />
+              <v-divider>ข้อมูลราคา</v-divider>
+              <v-row class="mt-3" no-gutters>
+                <v-col cols="4" class="d-flex align-center">ค่าเช่าต่อวัน</v-col>
                 <v-col>
                   <v-text-field
                     class="pl-3 right-input"
@@ -167,31 +281,60 @@
                     outlined
                     dense
                     hide-details
-                    :rules="[(value) => !isNaN(value) || 'Input must be a number']"
+                    @keyup="calPrice()"
+                    :rules="[(value) => !isNaN(parseFloat(value)) || 'Must be a number']"
                   >
                   </v-text-field>
                 </v-col>
               </v-row>
 
-              <v-row class="mt-3" no-gutters>
-                <v-col cols="4" class="d-flex align-center">ค่าคนขับ</v-col>
+              <v-row class="mt-1" no-gutters>
+                <v-col cols="4" class="d-flex align-center">ค่าเช่าทั้งหมด</v-col>
                 <v-col>
                   <v-text-field
                     class="pl-3 right-input"
-                    v-model.number="formData.driver_per_day"
+                    v-model.number="formData.rental"
                     type="number"
                     append-inner-icon="mdi-currency-thb"
                     density="compact"
                     outlined
                     dense
                     hide-details
-                    :rules="[(value) => !isNaN(value) || 'Input must be a number']"
+                    readonly
+                    bg-color="white"
+                    :rules="[(value) => !isNaN(parseFloat(value)) || 'Must be a number']"
                   >
                   </v-text-field>
                 </v-col>
               </v-row>
 
-              <v-row class="mt-3" no-gutters>
+              <v-row class="mt-1" no-gutters>
+                <v-col cols="4" class="d-flex align-center"> คนขับ </v-col>
+                <v-col>
+                  <v-text-field
+                    class="pl-3 right-input"
+                    v-model.number="formData.driver_per_day"
+                    type="number"
+                    :prepend-inner-icon="
+                      formData.required_driver ? 'mdi-checkbox-marked' : 'mdi-checkbox-blank-outline'
+                    "
+                    append-inner-icon="mdi-currency-thb"
+                    density="compact"
+                    outlined
+                    dense
+                    hide-details
+                    @click:prepend-inner="
+                      formData.required_driver = !formData.required_driver;
+                      calPrice();
+                    "
+                    @keyup="calPrice()"
+                    :rules="[(value) => !isNaN(parseFloat(value)) || 'Must be a number']"
+                  >
+                  </v-text-field>
+                </v-col>
+              </v-row>
+
+              <v-row class="mt-1" no-gutters>
                 <v-col cols="4" class="d-flex align-center">ค่าเช่าเพิ่มเติม</v-col>
                 <v-col>
                   <v-text-field
@@ -203,13 +346,14 @@
                     outlined
                     dense
                     hide-details
-                    :rules="[(value) => !isNaN(value) || 'Input must be a number']"
+                    @keyup="calPrice()"
+                    :rules="[(value) => !isNaN(parseFloat(value)) || 'Must be a number']"
                   >
                   </v-text-field>
                 </v-col>
               </v-row>
 
-              <v-row class="mt-3" no-gutters>
+              <v-row class="mt-1" no-gutters>
                 <v-col cols="4" class="d-flex align-center">ส่วนลด</v-col>
                 <v-col>
                   <v-text-field
@@ -221,14 +365,15 @@
                     outlined
                     dense
                     hide-details
-                    :rules="[(value) => !isNaN(value) || 'Input must be a number']"
+                    @keyup="calPrice()"
+                    :rules="[(value) => !isNaN(parseFloat(value)) || 'Must be a number']"
                   >
                   </v-text-field>
                 </v-col>
               </v-row>
 
-              <v-row class="mt-3" no-gutters>
-                <v-col cols="4" class="d-flex align-center">รวมหลังหักส่วนลด</v-col>
+              <v-row class="mt-1" no-gutters>
+                <v-col cols="4" class="d-flex align-center">รวม</v-col>
                 <v-col>
                   <v-text-field
                     class="pl-3 right-input"
@@ -239,13 +384,15 @@
                     outlined
                     dense
                     hide-details
-                    :rules="[(value) => !isNaN(value) || 'Input must be a number']"
+                    readonly
+                    bg-color="white"
+                    :rules="[(value) => !isNaN(parseFloat(value)) || 'Must be a number']"
                   >
                   </v-text-field>
                 </v-col>
               </v-row>
 
-              <v-row class="mt-3" no-gutters>
+              <v-row class="mt-1" no-gutters>
                 <v-col cols="4" class="d-flex align-center">% Vat</v-col>
                 <v-col cols="3">
                   <v-select
@@ -257,12 +404,13 @@
                     menu-icon=""
                     :reverse="false"
                     hide-details
-                    :rules="[(value) => !isNaN(value) || 'Input must be a number']"
+                    @update:model-value="calPrice()"
+                    :rules="[(value) => !isNaN(parseFloat(value)) || 'Must be a number']"
                   ></v-select>
                 </v-col>
                 <v-col>
                   <v-text-field
-                    class="pl-3 right-input"
+                    class="pl-1 right-input"
                     v-model.number="formData.vat_amount"
                     type="number"
                     append-inner-icon="mdi-currency-thb"
@@ -270,14 +418,14 @@
                     outlined
                     dense
                     hide-details
-                    :rules="[(value) => !isNaN(value) || 'Input must be a number']"
+                    :rules="[(value) => !isNaN(parseFloat(value)) || 'Must be a number']"
                   >
                   </v-text-field>
                 </v-col>
               </v-row>
 
-              <v-row class="mt-3" no-gutters>
-                <v-col cols="4" class="d-flex align-center">รวม</v-col>
+              <v-row class="mt-1" no-gutters>
+                <v-col cols="4" class="d-flex align-center">รวมทั้งหมด</v-col>
                 <v-col>
                   <v-text-field
                     class="pl-3 right-input"
@@ -288,13 +436,15 @@
                     outlined
                     dense
                     hide-details
-                    :rules="[(value) => !isNaN(value) || 'Input must be a number']"
+                    readonly
+                    bg-color="white"
+                    :rules="[(value) => !isNaN(parseFloat(value)) || 'Must be a number']"
                   >
                   </v-text-field>
                 </v-col>
               </v-row>
 
-              <v-row class="mt-3" no-gutters>
+              <v-row class="mt-1" no-gutters>
                 <v-col cols="4" class="d-flex align-center">มัดจำ</v-col>
                 <v-col>
                   <v-text-field
@@ -306,13 +456,14 @@
                     outlined
                     dense
                     hide-details
-                    :rules="[(value) => !isNaN(value) || 'Input must be a number']"
+                    @keyup="calPrice()"
+                    :rules="[(value) => !isNaN(parseFloat(value)) || 'Must be a number']"
                   >
                   </v-text-field>
                 </v-col>
               </v-row>
 
-              <v-row class="mt-3" no-gutters>
+              <v-row class="mt-1" no-gutters>
                 <v-col cols="4" class="d-flex align-center">รวมสุทธิ</v-col>
                 <v-col>
                   <v-text-field
@@ -324,9 +475,27 @@
                     outlined
                     dense
                     hide-details
-                    :rules="[(value) => !isNaN(value) || 'Input must be a number']"
+                    readonly
+                    bg-color="white"
+                    :rules="[(value) => !isNaN(parseFloat(value)) || 'Must be a number']"
                   >
                   </v-text-field>
+                </v-col>
+              </v-row>
+
+              <v-row class="mt-1" no-gutters>
+                <v-col cols="4" class="d-flex align-center">หมายเหตุ</v-col>
+                <v-col>
+                  <v-textarea
+                    class="pl-3 right-input"
+                    rows="2"
+                    v-model="formData.booking_note"
+                    density="compact"
+                    outlined
+                    dense
+                    hide-details
+                  >
+                  </v-textarea>
                 </v-col>
               </v-row>
 
@@ -348,7 +517,13 @@
               <v-btn class="mt-5 mb-5" type="submit" color="primary" block size="large" variant="tonal"> บันทึก </v-btn>
             </v-form>
           </v-stepper-window-item>
-          <v-stepper-window-item value="2"> </v-stepper-window-item>
+          <v-stepper-window-item value="2">
+            <BookingComDeposit
+              :booking_id="formData.id"
+              :booking_status="formData.booking_status"
+              @success="success()"
+            />
+          </v-stepper-window-item>
         </v-stepper-window>
       </v-stepper>
     </v-card>
@@ -359,11 +534,14 @@
 </template>
 
 <script setup>
+const dayjs = useDayjs();
 const props = defineProps({
   dialog: { type: Boolean, default: false },
   actionType: String,
   appearance: String,
   id: Number,
+  car_id: Number,
+  branch_id: Number,
 });
 const { $toast } = useNuxtApp();
 const emit = defineEmits(["success", "close"]);
@@ -378,6 +556,7 @@ const formTitle = ref("");
 
 onMounted(() => {
   getCars();
+  getBranches();
   getCarTypes();
 });
 
@@ -387,10 +566,92 @@ const getCars = async () => {
   cars.value = response.data.filter((item) => item.car_status == "เปิดใช้งาน");
 };
 
+const branches = ref([]);
+const getBranches = async () => {
+  const response = await useApiBranches().index();
+  branches.value = response.data.filter((item) => item.branch_status == "เปิดใช้งาน");
+};
+
 const customers = ref([]);
 const getCarTypes = async () => {
   const response = await useApiCustomers().index();
   customers.value = response.data.filter((item) => item.customer_status == "เปิดใช้งาน");
+};
+
+const period_day = computed({
+  get() {
+    if (formData.value.pickup_date && formData.value.return_date) {
+      const date1 = dayjs(formData.value.pickup_date);
+      const date2 = dayjs(formData.value.return_date);
+      const diffInDays = date2.diff(date1, "day");
+      return Math.max(diffInDays, 0);
+    }
+    return 0;
+  },
+  set(newValue) {},
+});
+
+const period_remain_hours = computed({
+  get() {
+    if (formData.value.pickup_date && formData.value.return_date) {
+      const date1 = dayjs(formData.value.pickup_date);
+      const date2 = dayjs(formData.value.return_date);
+      const diffInDays = date2.diff(date1, "day");
+      const remainingHours = date2.diff(date1.add(diffInDays, "day"), "hour");
+      return Math.max(remainingHours, 0);
+    }
+    return 0;
+  },
+  set(newValue) {},
+});
+
+const car = computed(() => cars.value.find((item) => item.id == formData.value.car_id));
+const changeCar = () => {
+  formData.value.pickup_branch_id = car.value ? car.value.branch_id : null;
+  formData.value.return_branch_id = car.value ? car.value.branch_id : null;
+  getRentalPrice();
+  calPrice();
+};
+const getRentalPrice = () => {
+  formData.value.rental_per_day = car.value ? car.value.rental_per_day : 0;
+  formData.value.deposit = car.value ? car.value.deposit : 0;
+};
+
+watch(
+  () => period_day.value,
+  (value) => calPrice()
+);
+const calPrice = () => {
+  const { rental_per_day, discount, vat_percent, deposit } = formData.value;
+  const { excess_houre_free, excess_houre_charge, excess_price } = car.value || {};
+
+  const days = period_day.value || 0;
+  const remainingHours = period_remain_hours.value || 0;
+
+  // Calculate base rental cost
+  formData.value.rental = rental_per_day * (remainingHours >= excess_houre_charge ? days + 1 : days);
+
+  // Calculate driver cost if applicable
+  formData.value.driver_per_day = formData.value.required_driver
+    ? car.value.driver_per_day * (remainingHours >= excess_houre_charge ? days + 1 : days)
+    : 0;
+
+  // Calculate extra charge if applicable
+  formData.value.extra_charge = 0;
+  if (remainingHours > excess_houre_free && remainingHours < excess_houre_charge) {
+    formData.value.extra_charge = excess_price * remainingHours;
+  }
+
+  // Calculate subtotal
+  formData.value.sub_total =
+    formData.value.rental + formData.value.driver_per_day + formData.value.extra_charge - discount;
+
+  // Calculate VAT and total
+  formData.value.vat_amount = (formData.value.sub_total * vat_percent) / 100;
+  formData.value.total = formData.value.sub_total + formData.value.vat_amount;
+
+  // Calculate net total
+  formData.value.net_total = formData.value.total + deposit;
 };
 
 // Get Data
@@ -401,17 +662,6 @@ const getData = async () => {
   formData.value.pickup_date = useGlobalFunction().toDatetimeLocal(response.data.pickup_date);
   formData.value.return_date = useGlobalFunction().toDatetimeLocal(response.data.return_date);
   formTitle.value = "Booking No : " + response.data.booking_number;
-  if (formData.value.booking_status == "จอง") {
-    step.value = "2";
-  } else if (formData.value.booking_status == "มัดจำ") {
-    step.value = "3";
-  } else if (formData.value.booking_status == "รับรถ") {
-    step.value = "4";
-  } else if (formData.value.booking_status == "คืนรถ") {
-    step.value = "5";
-  } else if (formData.value.booking_status == "คืนเงิน") {
-    step.value = "5";
-  }
   loading.value = false;
 };
 
@@ -437,6 +687,11 @@ const onSubmit = async () => {
   }
 };
 
+const success = () => {
+  getData();
+  emit("success");
+};
+
 const id = ref(0);
 const dialogDelete = ref(false);
 const deleteItem = async () => {
@@ -458,16 +713,30 @@ const onClose = () => {
 watch(dialog, (value) => {
   if (value) {
     nextTick(() => {
+      step.value = "1";
       formData.value = {};
-      form.value.reset();
+      form.value ? form.value.reset() : "";
+      nextTick(() => {
+        if (props.actionType == "add") {
+          formTitle.value = "เพิ่มข้อมูล";
+          formData.value.pickup_location = "สถานบิน";
+          formData.value.return_location = "สถานบิน";
+
+          formData.value.extra_charge = 0;
+          formData.value.discount = 0;
+          props.car_id ? (formData.value.car_id = props.car_id) : null;
+          props.branch_id ? (formData.value.pickup_branch_id = props.branch_id) : null;
+          props.branch_id ? (formData.value.return_branch_id = props.branch_id) : null;
+          formData.value.vat_percent = 0;
+          getRentalPrice();
+          calPrice();
+          loading.value = false;
+        } else {
+          formTitle.value = "แก้ไขข้อมูล";
+          getData();
+        }
+      });
     });
-    if (props.actionType == "add") {
-      formTitle.value = "เพิ่มข้อมูล";
-      loading.value = false;
-    } else {
-      formTitle.value = "แก้ไขข้อมูล";
-      getData();
-    }
   } else {
     onClose();
   }

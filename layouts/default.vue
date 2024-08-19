@@ -5,7 +5,7 @@
         <template v-slot:prepend>
           <v-app-bar-nav-icon @click.stop="drawer = !drawer" aria-label="nav-icon"></v-app-bar-nav-icon>
         </template>
-        <v-app-bar-title>PS Car Rental</v-app-bar-title>
+        <v-app-bar-title>Car Rental</v-app-bar-title>
         <template v-slot:append>
           <v-btn icon="mdi-power-standby" @click="logout()"></v-btn>
         </template>
@@ -78,6 +78,11 @@ const manu = ref([
     icon: "mdi-account-cancel",
     title: "ข้อมูลแบล็กลิสต์",
     to: ["/blacklists"],
+  },
+  {
+    icon: "mdi-wallet",
+    title: "บัญชี",
+    to: ["/accounts"],
   },
   {
     icon: "mdi-file-document-multiple-outline",

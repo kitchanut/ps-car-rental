@@ -1,6 +1,6 @@
 import { request, HOSTNAME } from "./api"
-export const useApiBookings = () => {
-    const path = '/api/bookings'
+export const useApiAccounts = () => {
+    const path = '/api/accounts'
 
     function index() {
         const url = HOSTNAME + path
@@ -27,10 +27,5 @@ export const useApiBookings = () => {
         return request('delete', url, {}, true)
     }
 
-    function deposit(params: {}) {
-        const url = HOSTNAME + path + '/deposit'
-        return request('post', url, params, true)
-    }
-
-    return { index, store, show, update, destroy, deposit }
+    return { index, store, show, update, destroy }
 }

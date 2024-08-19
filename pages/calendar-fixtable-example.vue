@@ -97,33 +97,34 @@
         density="compact"
       ></v-text-field>
     </div>
-    <div class="text-right px-3">
-      <v-badge color="warning" inline dot></v-badge>จอง <v-badge color="secondary" inline dot></v-badge>มัดจำ
-      <v-badge color="error" inline dot></v-badge>รับรถ <v-badge color="primary" inline dot></v-badge>คืนรถ
-      <v-badge color="success" inline dot></v-badge>คืนเงิน
-    </div>
-    <div>
-      <v-sheet border style="position: relative">
-        <div style="overflow-x: scroll; overflow-y: visible" :style="`width: ${innerWidth - 2}px;`">
-          <g-gantt-chart
-            :chart-start="$dayjs().add(-6, 'day').format('YYYY-MM-DD 00:00')"
-            :chart-end="$dayjs().add(60, 'day').format('YYYY-MM-DD 00:00')"
-            precision="day"
-            label-column-width="300px"
-            grid
-            width="2600px"
-            row-height="65"
-            bar-start="begin"
-            bar-end="end"
-            @click-bar="onClickedBar"
-          >
-            <g-gantt-row v-for="item in filterData" :label="item.license_plate" :bars="item.bookings">
-              <template #label>
-                <div class="d-flex" style="position: fixed; background-color: white; border: 1px solid #eee">
+
+    <v-divider></v-divider>
+    <div class="outer" style="border-bottom: 1px solid #ccc">
+      <div class="inner" :style="`width: ${innerWidth - 170}px;`">
+        <v-table density="compact" style="line-height: 1.1">
+          <thead>
+            <tr>
+              <th class="text-center fix" style="font-size: 1.1rem">
+                <div style="padding-top: 10px">รายการรถ</div>
+              </th>
+              <th class="text-center header">
+                {{ $dayjs().add(-2, "day").format("MMM D") }}
+              </th>
+              <th class="text-center">{{ $dayjs().add(-1, "day").format("MMM D") }}</th>
+              <th class="text-center header" style="color: #1966c0; font-weight: 700">
+                {{ $dayjs().format("MMM D") }}
+              </th>
+              <th class="text-center header" v-for="n in 100">{{ $dayjs().add(n, "day").format("MMM D") }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="item in filterData" style="height: 53px">
+              <td class="fix" style="padding: 0px; height: 53px">
+                <div class="d-flex">
                   <div
-                    style="border-right: 1px solid #ccc; padding: 5px 5px; min-width: 70px; text-align: center"
+                    style="border-right: 1px solid #ccc; padding: 5px 5px; min-width: 75px; text-align: center"
                     @click="
-                      dialogCar = true;
+                      dialog = true;
                       id = item.id;
                     "
                   >
@@ -138,7 +139,7 @@
                     </div>
                   </div>
                   <div class="vertical-text px-1">{{ item.year }}</div>
-                  <div class="text-center" style="border-left: 1px solid #ccc; padding: 5px 16px">
+                  <div class="text-center" style="border-left: 1px solid #ccc; padding: 5px 5px; width: 100%">
                     <div>
                       <b>{{ item.car_model.car_model_name }}</b>
                     </div>
@@ -149,7 +150,7 @@
                       {{ item.color }}
                     </v-chip>
                     <v-btn
-                      style="position: absolute; top: 10px; right: -10px"
+                      style="position: absolute; top: 15px; right: -10px"
                       size="small"
                       density="compact"
                       dark
@@ -160,20 +161,26 @@
                       "
                     >
                     </v-btn>
-                    <DialogBooking
-                      :car_id="item.id"
-                      :branch_id="item.branch.id"
-                      appearance="float"
-                      actionType="add"
-                      @success="getData()"
-                    />
                   </div>
                 </div>
-              </template>
-            </g-gantt-row>
-          </g-gantt-chart>
-        </div>
-      </v-sheet>
+              </td>
+              <td align="center"></td>
+              <td align="center">
+                <v-btn
+                  color="warning"
+                  variant="tonal"
+                  density="compact"
+                  style="min-width: 40px; height: 100%; padding: 0px"
+                >
+                  จอง
+                </v-btn>
+              </td>
+              <td align="center"></td>
+              <td align="center" v-for="n in 100"></td>
+            </tr>
+          </tbody>
+        </v-table>
+      </div>
     </div>
     <DialogBooking
       :dialog="dialogBooking"
@@ -191,6 +198,34 @@ const dayjs = useDayjs();
 const innerWidth = ref(window.innerWidth);
 const user = ref(useCookie("user").value);
 
+const row1BarList = ref([
+  {
+    myBeginDate: "2024-08-17 09:00",
+    myEndDate: "2024-08-18 09:00",
+    ganttBarConfig: {
+      // each bar must have a nested ganttBarConfig object ...
+      id: "unique-id-1", // ... and a unique "id" property
+      label: "LD1234",
+    },
+  },
+]);
+const row2BarList = ref([
+  {
+    myBeginDate: "2024-08-19 10:00",
+    myEndDate: "2024-08-19 18:00",
+    ganttBarConfig: {
+      id: "another-unique-id-2",
+      // hasHandles: true,
+      // label: "MX3421",
+      // style: {
+      //   background: "#e09b69",
+      //   borderRadius: "20px",
+      //   color: "black",
+      // },
+    },
+  },
+]);
+
 // Get Car
 const loading = ref(true);
 const data = ref([]);
@@ -205,26 +240,20 @@ const getData = async () => {
       booking.end = dayjs(booking.return_date).format("YYYY-MM-DD HH:mm");
       booking.ganttBarConfig = {
         id: booking.id,
+        label: booking.booking_status,
         style: {
           fontSize: "0.8rem",
-          background: colorBar(booking.booking_status),
+          background: "#FB8C00",
           borderRadius: "4px",
           color: "white",
         },
       };
     });
   });
+  console.log(data.value);
   loading.value = false;
 };
 getData();
-
-const colorBar = (status) => {
-  if (status == "จอง") return "#FB8C00";
-  if (status == "มัดจำ") return "#48A9A6";
-  if (status == "รับรถ") return "#B00020";
-  if (status == "คืนรถ") return "#1966C0";
-  if (status == "คืนเงิน") return "#4CAF4F";
-};
 
 const filterData = computed(() => {
   return data.value.filter((item) => {
@@ -248,6 +277,7 @@ const drawer = ref(false);
 
 // Click Bar
 const onClickedBar = (item) => {
+  console.log(item.bar);
   dialogBooking.value = true;
   id.value = item.bar.id;
 };
@@ -294,4 +324,40 @@ const car_model_filters = computed(() => {
   return car_models.value.filter((item) => item.car_brand_id == car_brand_id.value);
 });
 </script>
-<style scoped></style>
+<style scoped>
+.header {
+  width: 200px !important;
+}
+
+th {
+  padding: 0px 5px !important;
+  min-width: 40px !important;
+}
+
+td {
+  padding: 0px !important;
+}
+.fix {
+  position: absolute;
+  margin-left: -170px;
+  width: 170px;
+  border-right: 1px solid #ccc;
+}
+.outer {
+  position: relative;
+}
+.inner {
+  overflow-x: scroll;
+  overflow-y: visible;
+  margin-left: 170px;
+}
+td + td {
+  border-right: 1px solid #ccc;
+}
+th + th {
+  border-right: 1px solid #ccc;
+}
+.border-right {
+  border-right: 1px solid #ccc;
+}
+</style>

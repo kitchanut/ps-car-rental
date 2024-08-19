@@ -24,7 +24,11 @@ import "@mdi/font/css/materialdesignicons.css";
 
 export default defineNuxtPlugin(nuxtApp => {
     const vuetify = createVuetify({
-        ssr: true,
+        defaults: {
+            VSelect: {
+                menuIcon: 'mdi-chevron-down',
+            },
+        },
         components: {
             ...components,
             ...labs,
