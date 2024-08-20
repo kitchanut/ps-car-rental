@@ -123,8 +123,8 @@
                 dense
                 hide-details="auto"
                 :rules="[
-                  (value) => !!value || 'File is required.',
-                  (value) => !!value || value.size < 10000000 || 'File size < 10 MB.',
+                  (value) => value.length || 'กรุณาอัพโหลดรูปภาพ!',
+                  (value) => !value.length || value[0].size < 10000000 || 'รูปภาพต้องน้อยกว่า 10 MB!',
                 ]"
               >
               </v-file-input>

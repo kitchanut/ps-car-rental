@@ -1,6 +1,6 @@
 import { request, HOSTNAME } from "./api"
-export const useApiAccountTransactions = () => {
-    const path = '/api/account_transactions'
+export const useApiBookingPickups = () => {
+    const path = '/api/booking_pickups'
 
     function index(queryString: String) {
         let query = queryString ?? ''
@@ -20,7 +20,7 @@ export const useApiAccountTransactions = () => {
 
     function update(id: number, params: {}) {
         const url = HOSTNAME + path + '/' + id
-        return request('post', url, params, true)
+        return request('put', url, params, true)
     }
 
     function destroy(id: number) {

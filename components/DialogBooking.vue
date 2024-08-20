@@ -67,6 +67,7 @@
             title="รับรถ"
             value="3"
             :complete="['รับรถ', 'คืนรถ', 'คืนเงิน'].includes(formData.booking_status)"
+            :color="['รับรถ', 'คืนรถ', 'คืนเงิน'].includes(formData.booking_status) ? 'success' : ''"
             :editable="['มัดจำ', 'รับรถ'].includes(formData.booking_status)"
           ></v-stepper-item>
           <v-divider></v-divider>
@@ -74,12 +75,14 @@
             title="คืนรถ"
             value="4"
             :complete="['คืนรถ', 'คืนเงิน'].includes(formData.booking_status)"
+            :color="['คืนรถ', 'คืนเงิน'].includes(formData.booking_status) ? 'success' : ''"
           ></v-stepper-item>
           <v-divider></v-divider>
           <v-stepper-item
             title="คืนเงิน"
             value="5"
             :complete="['คืนเงิน'].includes(formData.booking_status)"
+            :color="['คืนเงิน'].includes(formData.booking_status) ? 'success' : ''"
           ></v-stepper-item>
         </v-stepper-header>
         <v-stepper-window :style="`height: ${innerHeight - 170}px;`">
@@ -332,7 +335,7 @@
                     hide-details
                     @click:prepend-inner="
                       formData.required_driver = !formData.required_driver;
-                      calPrice();
+                      getDriverPrice();
                     "
                     @keyup="calPrice()"
                     :rules="[(value) => !isNaN(parseFloat(value)) || 'Must be a number']"
@@ -531,6 +534,13 @@
               @success="success()"
             />
           </v-stepper-window-item>
+          <v-stepper-window-item value="3">
+            <BookingComPickup
+              :booking_id="formData.id"
+              :booking_status="formData.booking_status"
+              @success="success()"
+            />
+          </v-stepper-window-item>
         </v-stepper-window>
       </v-stepper>
     </v-card>
@@ -624,6 +634,17 @@ const getRentalPrice = () => {
   formData.value.deposit = car.value ? car.value.deposit : 0;
 };
 
+const getDriverPrice = () => {
+  const { excess_houre_charge } = car.value || {};
+  const days = period_day.value || 0;
+  const remainingHours = period_remain_hours.value || 0;
+  // Calculate driver cost if applicable
+  formData.value.driver_per_day = formData.value.required_driver
+    ? car.value.driver_per_day * (remainingHours > excess_houre_charge ? days + 1 : days)
+    : 0;
+  calPrice();
+};
+
 watch(
   () => period_day.value,
   (value) => calPrice()
@@ -637,11 +658,6 @@ const calPrice = () => {
 
   // Calculate base rental cost
   formData.value.rental = formData.value.rental_per_day * (remainingHours > excess_houre_charge ? days + 1 : days);
-
-  // Calculate driver cost if applicable
-  formData.value.driver_per_day = formData.value.required_driver
-    ? car.value.driver_per_day * (remainingHours > excess_houre_charge ? days + 1 : days)
-    : 0;
 
   // Calculate extra charge if applicable
   formData.value.extra_charge = 0;
@@ -736,6 +752,7 @@ watch(dialog, (value) => {
           props.branch_id ? (formData.value.return_branch_id = props.branch_id) : null;
           formData.value.vat_percent = 0;
           getRentalPrice();
+          getDriverPrice();
           calPrice();
           loading.value = false;
         } else {

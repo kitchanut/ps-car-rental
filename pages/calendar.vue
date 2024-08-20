@@ -119,7 +119,7 @@
           >
             <g-gantt-row v-for="item in filterData" :label="item.license_plate" :bars="item.bookings">
               <template #label>
-                <div class="d-flex" style="position: fixed; background-color: white; border: 1px solid #eee">
+                <div class="d-flex px-2" style="position: fixed; background-color: white; border: 1px solid #eee">
                   <div
                     style="border-right: 1px solid #ccc; padding: 5px 5px; min-width: 70px; text-align: center"
                     @click="
