@@ -536,6 +536,7 @@
           </v-stepper-window-item>
           <v-stepper-window-item value="3">
             <BookingComPickup
+              :step="step"
               :booking_id="formData.id"
               :booking_status="formData.booking_status"
               @success="success()"
@@ -627,6 +628,7 @@ const changeCar = () => {
   formData.value.pickup_branch_id = car.value ? car.value.branch_id : null;
   formData.value.return_branch_id = car.value ? car.value.branch_id : null;
   getRentalPrice();
+  getDriverPrice();
   calPrice();
 };
 const getRentalPrice = () => {
@@ -646,8 +648,11 @@ const getDriverPrice = () => {
 };
 
 watch(
-  () => period_day.value,
-  (value) => calPrice()
+  () => [period_day.value, period_remain_hours.value],
+  () => {
+    getDriverPrice();
+    calPrice();
+  }
 );
 const calPrice = () => {
   const { discount, vat_percent, deposit } = formData.value;

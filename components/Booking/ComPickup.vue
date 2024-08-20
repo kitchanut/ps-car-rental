@@ -23,12 +23,13 @@
         <v-col>
           <v-file-input
             class="pl-3 right-input"
-            ref="file"
+            ref="files"
             prepend-icon=""
             type="file"
             accept="image/*"
             append-inner-icon="mdi-image"
             density="compact"
+            multiple
             outlined
             dense
             hide-details="auto"
@@ -55,7 +56,47 @@
           </v-textarea>
         </v-col>
       </v-row>
-      <v-btn class="mt-5" type="submit" color="primary" variant="tonal" size="large" block> บันทึก </v-btn>
+      <v-row v-if="formData.booking" class="mt-5" no-gutters v-viewer>
+        <v-col cols="4 px-1 mb-2" v-for="image in formData.booking.uploads" :key="image.id">
+          <v-card style="height: 90px" variant="text">
+            <v-img
+              style="border-radius: 6px"
+              height="100%"
+              cover
+              :src="$getImage(image.file_path)"
+              :lazy-src="$getImage(image.file_path)"
+            />
+            <v-btn
+              style="top: 0px; right: 0px; position: absolute; z-index: 2000"
+              color="red"
+              icon="mdi-delete"
+              density="comfortable"
+              size="small"
+              variant="tonal"
+              @click="
+                dialogDelete = true;
+                imageId = image.id;
+              "
+            >
+            </v-btn>
+          </v-card>
+        </v-col>
+        <v-col cols="4 px-1">
+          <v-card variant="outlined" height="90" style="border: 1px solid #ddd">
+            <ImageUpload
+              :id="props.booking_id"
+              type="รับรถ"
+              location="pickup"
+              :loading="loadingImage"
+              @success="uploadSuccess()"
+            />
+          </v-card>
+        </v-col>
+      </v-row>
+
+      <v-btn :loading="loading" class="mt-5" type="submit" color="primary" variant="tonal" size="large" block>
+        บันทึก
+      </v-btn>
     </v-form>
 
     <v-btn
@@ -72,10 +113,13 @@
     >
       ลบข้อมูล
     </v-btn>
+
+    <DialogDelete :dialogDelete="dialogDelete" @cancleItem="dialogDelete = false" @deleteItem="deleteItem" />
   </div>
 </template>
 <script setup>
 const props = defineProps({
+  step: { type: String, default: null },
   booking_id: { type: Number, default: null },
   booking_status: String,
 });
@@ -87,24 +131,22 @@ const emit = defineEmits(["success", "close"]);
 const loading = ref(false);
 const form = ref(null);
 const formData = ref({});
-const file = ref([]);
 const actionType = ref("");
+const loadingImage = ref(false);
 
 onMounted(() => {
   getData();
 });
 const getData = async () => {
   loading.value = true;
-  let query = `?booking_id=${props.booking_id}`;
+  let query = props.booking_id ? `?booking_id=${props.booking_id}` : "";
   const response = await useApiBookingPickups().index(query);
-  console.log(response.data);
+  //   console.log(response.data);
   if (response.data.length > 0) {
-    console.log("edit");
     actionType.value = "edit";
     formData.value = response.data[0];
     formData.value.pickup_date = useGlobalFunction().toDatetimeLocal(response.data[0].pickup_date);
   } else {
-    console.log("add");
     actionType.value = "add";
     formData.value = {};
     form.value.reset();
@@ -112,7 +154,14 @@ const getData = async () => {
   loading.value = false;
 };
 
+// Upload Success
+const uploadSuccess = () => {
+  $toast.success("อัพโหลดสำเร็จ");
+  getData();
+};
+
 // Submit Data
+const files = ref([]);
 const onSubmit = async () => {
   const formValue = form.value;
   const validate = await formValue.validate();
@@ -126,7 +175,9 @@ const onSubmit = async () => {
     let response;
     if (actionType.value == "add") {
       props.booking_id ? formDataNew.append("booking_id", Number(props.booking_id)) : "";
-      formDataNew.append("file", file.value.files[0]);
+      for (let i = 0; i < files.value.files.length; i++) {
+        formDataNew.append("files", files.value.files[i]);
+      }
       response = await useApiBookingPickups().store(formDataNew);
     } else {
       response = await useApiBookingPickups().update(props.id, formDataNew);
@@ -147,4 +198,22 @@ const onSubmit = async () => {
     loading.value = false;
   }
 };
+
+const imageId = ref(0);
+const dialogDelete = ref(false);
+const deleteItem = async () => {
+  dialogDelete.value = false;
+  const response = await useApiUploads().destroy(imageId.value);
+  response.status == 200 ? $toast.success("ลบสำเร็จ") : $toast.error("เกิดข้อผิดพลาด! กรุณาติดต่อผู้แลระบบ");
+  getData();
+};
+
+watch(
+  () => props.step,
+  (newValue, oldValue) => {
+    if (newValue == "3") {
+      getData();
+    }
+  }
+);
 </script>

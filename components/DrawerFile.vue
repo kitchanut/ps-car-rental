@@ -24,7 +24,6 @@
               variant="tonal"
               @click="
                 dialogDelete = true;
-                deleteType = 'image';
                 imageId = image.id;
               "
             >

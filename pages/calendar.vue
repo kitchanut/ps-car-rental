@@ -115,13 +115,13 @@
             row-height="65"
             bar-start="begin"
             bar-end="end"
-            @click-bar="onClickedBar"
+            @dblclick-bar="onMouseupBar($event.bar, $event.e, $event.datetime)"
           >
             <g-gantt-row v-for="item in filterData" :label="item.license_plate" :bars="item.bookings">
               <template #label>
                 <div class="d-flex px-2" style="position: fixed; background-color: white; border: 1px solid #eee">
                   <div
-                    style="border-right: 1px solid #ccc; padding: 5px 5px; min-width: 70px; text-align: center"
+                    style="border-right: 1px solid #ccc; padding: 5px 5px; min-width: 85px; text-align: center"
                     @click="
                       dialogCar = true;
                       id = item.id;
@@ -250,6 +250,14 @@ const drawer = ref(false);
 const onClickedBar = (item) => {
   dialogBooking.value = true;
   id.value = item.bar.id;
+};
+
+// Double Click Bar
+const onMouseupBar = (bar, e, datetime) => {
+  // dialogCar.value = true;
+  console.log(bar);
+  alert("Double Click");
+  // id.value = item.bar.id;
 };
 
 // Filter

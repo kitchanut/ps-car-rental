@@ -1,7 +1,7 @@
 <template>
   <div class="uploader">
     <div class="file-input">
-      <label :for="`file_${props.id}`" style="display: flex; justify-content: center; align-items: center">
+      <label :for="`${props.type}_${props.id}`" style="display: flex; justify-content: center; align-items: center">
         <span v-if="!loadingComponent" style="font-size: 48px">+</span>
         <Icon v-else name="svg-spinners:180-ring" size="1.5em" />
       </label>
@@ -10,7 +10,7 @@
       <v-file-input
         v-show="false"
         v-model="files"
-        :id="`file_${props.id}`"
+        :id="`${props.type}_${props.id}`"
         :accept="props.accept"
         multiple
         prepend-icon=""
