@@ -115,7 +115,8 @@
             row-height="65"
             bar-start="begin"
             bar-end="end"
-            @dblclick-bar="onMouseupBar($event.bar, $event.e, $event.datetime)"
+            @click-bar="onClickedBar"
+            @dblclick-bar="onMouseupBar"
           >
             <g-gantt-row v-for="item in filterData" :label="item.license_plate" :bars="item.bookings">
               <template #label>
@@ -182,6 +183,7 @@
       @success="getData()"
       @close="dialogBooking = false"
     />
+    <DialogBookingDetails :dialog="dialogBookingDetails" :id="id" @close="dialogBookingDetails = false" />
     <DialogCar :dialog="dialogCar" :id="id" actionType="edit" @success="getData()" @close="dialogCar = false" />
     <DrawerFile :drawer="drawer" :id="id" type="car" @close="drawer = false" />
   </div>
@@ -243,21 +245,34 @@ const filterData = computed(() => {
 // Additional Information
 const id = ref(0);
 const dialogBooking = ref(false);
+const dialogBookingDetails = ref(false);
 const dialogCar = ref(false);
 const drawer = ref(false);
 
 // Click Bar
 const onClickedBar = (item) => {
-  dialogBooking.value = true;
+  clickEvent.value = "click";
   id.value = item.bar.id;
+  clickEventDialog();
 };
 
 // Double Click Bar
-const onMouseupBar = (bar, e, datetime) => {
-  // dialogCar.value = true;
-  console.log(bar);
-  alert("Double Click");
-  // id.value = item.bar.id;
+const onMouseupBar = (item) => {
+  clickEvent.value = "dbclick";
+  id.value = item.bar.id;
+  clickEventDialog();
+};
+
+// Select Dialog
+const clickEvent = ref(null);
+const clickEventDialog = (item) => {
+  setTimeout(() => {
+    if (clickEvent.value == "click") {
+      dialogBooking.value = true;
+    } else if (clickEvent.value == "dbclick") {
+      dialogBookingDetails.value = true;
+    }
+  }, 200);
 };
 
 // Filter
