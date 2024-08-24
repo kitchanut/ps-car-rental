@@ -19,11 +19,6 @@ export async function request(method: string, url: string, data: {}, auth = fals
             url,
             data,
             headers,
-            onUploadProgress: (progressEvent) => {
-                // console.log('Upload Progress:', progressEvent)
-                useCookie("uploadProgress").value = Math.ceil(progressEvent.progress * 100);
-
-            }
         })
         return response
     } catch (error) {
