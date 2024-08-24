@@ -102,7 +102,7 @@
           <v-card variant="outlined" height="90" style="border: 1px solid #ddd">
             <ImageUpload
               :id="props.booking_id"
-              type="รับรถ"
+              type="คืนรถ"
               location="return"
               :loading="loadingImage"
               @success="uploadSuccess()"
