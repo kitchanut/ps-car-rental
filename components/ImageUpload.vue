@@ -3,7 +3,15 @@
     <div class="file-input">
       <label :for="`${props.type}_${props.id}`" style="display: flex; justify-content: center; align-items: center">
         <span v-if="!loadingComponent" style="font-size: 48px">+</span>
-        <Icon v-else name="svg-spinners:180-ring" size="1.5em" />
+        <!-- <Icon v-else name="svg-spinners:180-ring" size="1.5em" /> -->
+        <v-progress-linear
+          v-else
+          class="mx-2"
+          v-model="progress"
+          color="primary"
+          height="6"
+          rounded
+        ></v-progress-linear>
       </label>
       <!-- <input v-model="files" type="file" id="'file'" @change="handleFileSelection($event)" /> -->
 
@@ -43,6 +51,14 @@ watch(loading, () => {
 const { $toast } = useNuxtApp();
 const emit = defineEmits(["success"]);
 
+// loading
+const uploadProgress = useCookie("uploadProgress");
+const progress = ref(0);
+progress.value = uploadProgress.value;
+watch(uploadProgress, (newValue, oldValue) => {
+  progress.value = newValue;
+});
+
 //Upload
 const files = ref([]);
 const handleFileSelection = async (event) => {
@@ -63,6 +79,7 @@ const handleFileSelection = async (event) => {
   response.status == 200
     ? ($toast.success("อัพโหลดสำเร็จ"), emit("success"), (files.value = []))
     : $toast.error("เกิดข้อผิดพลาด! กรุณาติดต่อผู้แลระบบ");
+  useCookie("uploadProgress").value = 0;
   loadingComponent.value = false;
 };
 </script>
