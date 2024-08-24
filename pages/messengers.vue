@@ -22,6 +22,7 @@
         </thead>
         <tbody>
           <tr
+            v-if="data.length"
             v-for="item in data"
             :key="item.name"
             @click="
@@ -66,6 +67,11 @@
                 <div>{{ item.return_location }}</div>
                 <div style="color: grey">{{ item.return_branch.branch_name }}</div>
               </div>
+            </td>
+          </tr>
+          <tr v-else>
+            <td colspan="4">
+              <div class="text-center">- ไม่มีข้อมูล -</div>
             </td>
           </tr>
         </tbody>
