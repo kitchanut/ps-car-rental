@@ -1,5 +1,35 @@
 <template>
   <div>
+    <v-card class="mb-1 py-2" border flat>
+      <v-row style="height: 100%" no-gutters="">
+        <v-col cols="4" class="d-flex justify-center align-center">มัดจำ</v-col>
+        <v-col class="d-flex justify-center align-center" style="border-left: 1px solid #eee">
+          <span style="font-size: 1.2rem; font-weight: 700; color: green">{{ totalDeposit.toLocaleString() }}</span>
+        </v-col>
+      </v-row>
+    </v-card>
+    <v-card class="mb-1 py-2" border flat>
+      <v-row style="height: 100%" no-gutters="">
+        <v-col cols="4" class="d-flex justify-center align-center">ค่าปรับ</v-col>
+        <v-col class="d-flex justify-center align-center" style="border-left: 1px solid #eee">
+          <span style="font-size: 1.2rem; font-weight: 700; color: red">
+            {{ return_penalty.toLocaleString() }}
+          </span>
+        </v-col>
+      </v-row>
+    </v-card>
+    <v-card class="mb-1 py-2" border flat>
+      <v-row style="height: 100%" no-gutters="">
+        <v-col cols="4" class="d-flex justify-center align-center"> เงินที่ต้องคืน</v-col>
+        <v-col class="d-flex justify-center align-center" style="border-left: 1px solid #eee">
+          <span style="font-size: 1.2rem; font-weight: 700; color: blue">
+            {{ (totalDeposit - return_penalty).toLocaleString() }}
+          </span>
+        </v-col>
+      </v-row>
+    </v-card>
+    <div class="mt-5"></div>
+    <v-divider v-if="data.length" class="my-5">รายการคืนเงิน</v-divider>
     <v-data-iterator v-if="data.length" class="mb-5" :items="data" :items-per-page="10" :search="search">
       <template v-slot:default="{ items }">
         <v-card v-for="item in items" class="mb-2" border flat>
@@ -31,26 +61,28 @@
                 id = item.raw.id;
               "
             >
-              <b style="color: green">{{ Number(item.raw.transaction_amount).toLocaleString() }}</b>
+              <b style="color: orange">{{ Number(item.raw.transaction_amount * -1).toLocaleString() }}</b>
             </v-col>
           </v-row>
         </v-card>
       </template>
     </v-data-iterator>
 
-    <v-card class="mb-5" border flat height="70px">
+    <!-- <v-card class="mb-5" border flat height="70px">
       <v-row style="height: 100%" no-gutters="">
         <v-col cols="4" class="d-flex justify-center align-center">รวมมัดจำ</v-col>
         <v-col class="d-flex justify-center align-center" style="border-left: 1px solid #eee">
           <span style="font-size: 1.2rem; font-weight: 700; color: green">{{ totalValue.toLocaleString() }}</span>
         </v-col>
       </v-row>
-    </v-card>
+    </v-card> -->
 
     <DialogAccountTransaction
+      v-if="!data.length"
       :booking_id="props.booking_id"
-      transaction_type="รับเงินมัดจำ"
-      appearance="addFullWidthDeposit"
+      type="withdraw"
+      transaction_type="คืนเงินมัดจำ"
+      appearance="addFullWidthRefund"
       actionType="add"
       @success="success()"
     />
@@ -58,7 +90,8 @@
     <DialogAccountTransaction
       :dialog="dialog"
       :id="id"
-      transaction_type="รับเงินมัดจำ"
+      type="withdraw"
+      transaction_type="คืนเงินมัดจำ"
       actionType="edit"
       @success="getData()"
       @close="dialog = false"
@@ -69,6 +102,7 @@
 const { $toast } = useNuxtApp();
 const emit = defineEmits(["success", "close"]);
 const props = defineProps({
+  step: { type: String, default: null },
   booking_id: Number,
   booking_status: String,
 });
@@ -77,30 +111,45 @@ const id = ref(null);
 
 const loading = ref(false);
 const search = ref("");
-const data = ref([]);
+
 onMounted(() => {
+  getDeposit();
+  getReturn();
   getData();
 });
+
+const data = ref([]);
 const getData = async () => {
   loading.value = true;
-  let query = `?booking_id=${props.booking_id}&&transaction_type=รับเงินมัดจำ`;
+  let query = `?booking_id=${props.booking_id}&&transaction_type=คืนเงินมัดจำ`;
   const response = await useApiAccountTransactions().index(query);
   data.value = response.data;
-
   data.value.map((item) => {
     item.account_number = item.account.account_number;
   });
-
   loading.value = false;
 };
 
-const totalValue = computed(() => data.value.reduce((sum, item) => sum + item.transaction_amount, 0));
+const deposits = ref([]);
+const getDeposit = async () => {
+  let query = `?booking_id=${props.booking_id}&&transaction_type=รับเงินมัดจำ`;
+  const response = await useApiAccountTransactions().index(query);
+  deposits.value = response.data;
+};
+const totalDeposit = computed(() => deposits.value.reduce((sum, item) => sum + item.transaction_amount, 0));
+
+const return_penalty = ref(0);
+const getReturn = async () => {
+  let query = props.booking_id ? `?booking_id=${props.booking_id}` : "";
+  const response = await useApiBookingReturns().index(query);
+  return_penalty.value = response.data[0].return_penalty;
+};
 
 const success = async () => {
   loading.value = true;
-  if (props.booking_status == "จอง") {
+  if (props.booking_status == "คืนรถ") {
     let formData = {
-      booking_status: "มัดจำ",
+      booking_status: "คืนมัดจำ",
     };
     const response = await useApiBookings().update(props.booking_id, formData);
     response.status == 200 ? emit("success") : $toast.error("เกิดข้อผิดพลาด! กรุณาติดต่อผู้แลระบบ");
@@ -110,11 +159,13 @@ const success = async () => {
 };
 
 watch(
-  () => props.booking_id,
+  () => props.step,
   (newValue, oldValue) => {
-    getData();
-  },
-  { deep: true }
+    if (newValue == "5") {
+      getDeposit();
+      getReturn();
+    }
+  }
 );
 </script>
 

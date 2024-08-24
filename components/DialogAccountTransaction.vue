@@ -12,7 +12,7 @@
         <span style="font-size: 24px">+</span>
       </v-btn>
       <v-btn
-        v-if="props.appearance == 'addFullWidth'"
+        v-if="props.appearance == 'addFullWidthDeposit'"
         v-bind="activatorProps"
         color="primary"
         dark
@@ -21,6 +21,18 @@
         size="x-large"
       >
         <span><b>+</b><span> รับเงินมัดจำ</span></span>
+        <div></div>
+      </v-btn>
+      <v-btn
+        v-if="props.appearance == 'addFullWidthRefund'"
+        v-bind="activatorProps"
+        color="warning"
+        dark
+        variant="tonal"
+        block
+        size="x-large"
+      >
+        <span><span> คืนเงินมัดจำ</span></span>
         <div></div>
       </v-btn>
       <v-btn
@@ -50,7 +62,7 @@
         </v-toolbar>
         <v-container>
           <v-row no-gutters>
-            <v-col cols="4" class="d-flex align-center">บัญชีที่รับเงิน</v-col>
+            <v-col cols="4" class="d-flex align-center">บัญชี</v-col>
             <v-col>
               <v-autocomplete
                 class="pl-3"
@@ -75,7 +87,7 @@
           </v-row>
 
           <v-row class="mt-3" no-gutters>
-            <v-col cols="4" class="d-flex align-center">วันรับเงิน</v-col>
+            <v-col cols="4" class="d-flex align-center">วันที่</v-col>
             <v-col>
               <v-text-field
                 class="pl-3"
@@ -123,7 +135,7 @@
                 dense
                 hide-details="auto"
                 :rules="[
-                  (value) => value.length || 'กรุณาอัพโหลดรูปภาพ!',
+                  (value) => !!value.length || 'กรุณาอัพโหลดรูปภาพ!',
                   (value) => !value.length || value[0].size < 10000000 || 'รูปภาพต้องน้อยกว่า 10 MB!',
                 ]"
               >
@@ -173,6 +185,8 @@
 const props = defineProps({
   dialog: { type: Boolean, default: false },
   booking_id: { type: Number, default: null },
+  type: { type: String, default: "deposit" },
+  transaction_type: String,
   actionType: String,
   appearance: String,
   id: Number,
@@ -198,6 +212,10 @@ const getData = async () => {
   const response = await useApiAccountTransactions().show(props.id);
   formData.value = response.data;
   formData.value.transaction_date = useGlobalFunction().toDatetimeLocal(response.data.transaction_date);
+  if (props.type == "withdraw") {
+    // formData.value.transaction_amount = Math.abs(response.data.transaction_amount);
+    formData.value.transaction_amount = Number(response.data.transaction_amount) * -1;
+  }
   loading.value = false;
 };
 
@@ -214,12 +232,19 @@ const onSubmit = async () => {
 
     let formDataNew = new FormData();
     formDataNew.append("account_id", formData.value.account_id);
-    formDataNew.append("transaction_type", "รับเงินมัดจำ");
+    formDataNew.append("transaction_type", props.transaction_type);
     formDataNew.append("transaction_date", formData.value.transaction_date);
-    formDataNew.append("transaction_amount", formData.value.transaction_amount);
+    if (props.type == "withdraw") {
+      formDataNew.append("transaction_amount", Number(formData.value.transaction_amount) * -1);
+    } else {
+      formDataNew.append("transaction_amount", formData.value.transaction_amount);
+    }
+
     formDataNew.append("location", "slip");
     formData.value.transaction_note ? formDataNew.append("transaction_note", formData.value.transaction_note) : "";
-    formDataNew.append("file", file.value.files[0]);
+    for (let i = 0; i < file.value.files.length; i++) {
+      formDataNew.append("files", file.value.files[i]);
+    }
     let response;
     if (props.actionType == "add") {
       props.booking_id ? formDataNew.append("booking_id", props.booking_id) : "";

@@ -98,15 +98,16 @@
       ></v-text-field>
     </div>
     <div class="text-right px-3">
-      <v-badge color="warning" inline dot></v-badge>จอง <v-badge color="secondary" inline dot></v-badge>มัดจำ
+      <v-badge color="warning" inline dot></v-badge>จอง <v-badge color="grey" inline dot></v-badge>มัดจำ
       <v-badge color="error" inline dot></v-badge>รับรถ <v-badge color="primary" inline dot></v-badge>คืนรถ
-      <v-badge color="success" inline dot></v-badge>คืนเงิน
+      <v-badge color="success" inline dot></v-badge>คืนมัดจำ
     </div>
     <div>
-      <v-sheet border style="position: relative">
+      <v-card variant="outlined" color="#eee" class="rounded-0">
         <div style="overflow-x: scroll; overflow-y: visible" :style="`width: ${innerWidth - 2}px;`">
           <g-gantt-chart
-            :chart-start="$dayjs().add(-6, 'day').format('YYYY-MM-DD 00:00')"
+            class="g-gantt-chart-custom"
+            :chart-start="$dayjs().add(-7, 'day').format('YYYY-MM-DD 00:00')"
             :chart-end="$dayjs().add(60, 'day').format('YYYY-MM-DD 00:00')"
             precision="day"
             label-column-width="300px"
@@ -174,7 +175,7 @@
             </g-gantt-row>
           </g-gantt-chart>
         </div>
-      </v-sheet>
+      </v-card>
     </div>
     <DialogBooking
       :dialog="dialogBooking"
@@ -222,10 +223,10 @@ getData();
 
 const colorBar = (status) => {
   if (status == "จอง") return "#FB8C00";
-  if (status == "มัดจำ") return "#48A9A6";
+  if (status == "มัดจำ") return "#9E9E9E";
   if (status == "รับรถ") return "#B00020";
   if (status == "คืนรถ") return "#1966C0";
-  if (status == "คืนเงิน") return "#4CAF4F";
+  if (status == "คืนมัดจำ") return "#4CAF4F";
 };
 
 const filterData = computed(() => {
@@ -317,4 +318,4 @@ const car_model_filters = computed(() => {
   return car_models.value.filter((item) => item.car_brand_id == car_brand_id.value);
 });
 </script>
-<style scoped></style>
+<style></style>

@@ -75,11 +75,6 @@ const manu = ref([
     to: ["/customers"],
   },
   {
-    icon: "mdi-account-cancel",
-    title: "ข้อมูลแบล็กลิสต์",
-    to: ["/blacklists"],
-  },
-  {
     icon: "mdi-wallet",
     title: "บัญชี",
     to: ["/accounts"],

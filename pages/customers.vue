@@ -41,7 +41,7 @@ const search = ref("");
 const loading = ref(true);
 const headers = ref([
   { title: "ชื่อลูกค้า", key: "customer_name" },
-  // { title: "เบอร์โทร", key: "customer_tel", width: "10%" },
+  { title: "เบอร์โทร", key: "customer_tel", width: "50%" },
   // { title: "", key: "actions", width: "10%" },
 ]);
 

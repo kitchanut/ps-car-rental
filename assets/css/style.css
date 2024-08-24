@@ -6,6 +6,9 @@
     font-size: 0.75rem;
 }
 
+.g-gantt-chart-custom .g-gantt-chart {
+    border-radius: 0px !important;
+  }
 
 .viewer-container{
     z-index: 3000 !important;

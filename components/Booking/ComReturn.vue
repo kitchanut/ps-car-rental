@@ -2,11 +2,11 @@
   <div>
     <v-form ref="form" lazy-validation @submit.prevent="onSubmit()">
       <v-row class="mt-3" no-gutters>
-        <v-col cols="4" class="d-flex align-center">วันรับรถ</v-col>
+        <v-col cols="4" class="d-flex align-center">วันคืนรถ</v-col>
         <v-col>
           <v-text-field
             class="pl-3"
-            v-model="formData.pickup_date"
+            v-model="formData.return_date"
             type="datetime-local"
             density="compact"
             outlined
@@ -17,7 +17,39 @@
           </v-text-field>
         </v-col>
       </v-row>
+      <v-row class="mt-3" no-gutters>
+        <v-col cols="4" class="d-flex align-center">ค่าปรับ</v-col>
+        <v-col>
+          <v-text-field
+            class="pl-3 right-input"
+            v-model.number="formData.return_penalty"
+            type="number"
+            append-inner-icon="mdi-currency-thb"
+            density="compact"
+            outlined
+            dense
+            hide-details
+            :rules="[(value) => !isNaN(parseFloat(value)) || 'Must be a number']"
+          >
+          </v-text-field>
+        </v-col>
+      </v-row>
 
+      <v-row class="mt-3" no-gutters>
+        <v-col cols="4" class="d-flex align-center">หมายเหตุ</v-col>
+        <v-col>
+          <v-textarea
+            class="pl-3 right-input"
+            rows="2"
+            v-model="formData.return_note"
+            density="compact"
+            outlined
+            dense
+            hide-details
+          >
+          </v-textarea>
+        </v-col>
+      </v-row>
       <v-row v-if="actionType == 'add'" class="mt-3" no-gutters>
         <v-col cols="4" class="d-flex align-center">รูปภาพประกอบ</v-col>
         <v-col>
@@ -39,21 +71,6 @@
             ]"
           >
           </v-file-input>
-        </v-col>
-      </v-row>
-      <v-row class="mt-3" no-gutters>
-        <v-col cols="4" class="d-flex align-center">หมายเหตุ</v-col>
-        <v-col>
-          <v-textarea
-            class="pl-3 right-input"
-            rows="2"
-            v-model="formData.pickup_note"
-            density="compact"
-            outlined
-            dense
-            hide-details
-          >
-          </v-textarea>
         </v-col>
       </v-row>
       <v-row v-if="formData.booking" class="mt-5" no-gutters v-viewer>
@@ -86,8 +103,7 @@
             <ImageUpload
               :id="props.booking_id"
               type="รับรถ"
-              location="pickup"
-              accept="image/*"
+              location="return"
               :loading="loadingImage"
               @success="uploadSuccess()"
             />
@@ -101,19 +117,19 @@
     </v-form>
 
     <!-- <v-btn
-      v-if="actionType == 'edit'"
-      class="mt-2"
-      color="error"
-      variant="tonal"
-      size="large"
-      block
-      @click="
-        dialogDelete = true;
-        id = formData.id;
-      "
-    >
-      ลบข้อมูล
-    </v-btn> -->
+        v-if="actionType == 'edit'"
+        class="mt-2"
+        color="error"
+        variant="tonal"
+        size="large"
+        block
+        @click="
+          dialogDelete = true;
+          id = formData.id;
+        "
+      >
+        ลบข้อมูล
+      </v-btn> -->
 
     <DialogDelete :dialogDelete="dialogDelete" @cancleItem="dialogDelete = false" @deleteItem="deleteItem" />
   </div>
@@ -141,11 +157,12 @@ onMounted(() => {
 const getData = async () => {
   loading.value = true;
   let query = props.booking_id ? `?booking_id=${props.booking_id}` : "";
-  const response = await useApiBookingPickups().index(query);
-  if (response.data.length) {
+  const response = await useApiBookingReturns().index(query);
+  //   console.log(response.data);
+  if (response.data.length > 0) {
     actionType.value = "edit";
     formData.value = response.data[0];
-    formData.value.pickup_date = useGlobalFunction().toDatetimeLocal(response.data[0].pickup_date);
+    formData.value.return_date = useGlobalFunction().toDatetimeLocal(response.data[0].return_date);
   } else {
     actionType.value = "add";
     formData.value = {};
@@ -156,6 +173,7 @@ const getData = async () => {
 
 // Upload Success
 const uploadSuccess = () => {
+  $toast.success("อัพโหลดสำเร็จ");
   getData();
 };
 
@@ -170,23 +188,24 @@ const onSubmit = async () => {
     let response;
     if (actionType.value == "add") {
       let formDataNew = new FormData();
-      formDataNew.append("pickup_date", formData.value.pickup_date);
-      formData.value.pickup_note ? formDataNew.append("pickup_note", formData.value.pickup_note) : "";
+      formDataNew.append("return_date", formData.value.return_date);
+      formDataNew.append("return_penalty", formData.value.return_penalty);
+      formData.value.return_note ? formDataNew.append("return_note", formData.value.return_note) : "";
       props.booking_id ? formDataNew.append("booking_id", Number(props.booking_id)) : "";
-      formDataNew.append("location", "pickup");
+      formDataNew.append("location", "return");
       for (let i = 0; i < files.value.files.length; i++) {
         formDataNew.append("files", files.value.files[i]);
       }
-      response = await useApiBookingPickups().store(formDataNew);
+      response = await useApiBookingReturns().store(formDataNew);
     } else {
-      response = await useApiBookingPickups().update(formData.value.id, formData.value);
+      response = await useApiBookingReturns().update(formData.value.id, formData.value);
     }
     if (response.status == 200) {
       $toast.success("ทำรายการสำเร็จ");
       getData();
-      if (props.booking_status == "มัดจำ") {
+      if (props.booking_status == "รับรถ") {
         let updateBooking = {
-          booking_status: "รับรถ",
+          booking_status: "คืนรถ",
         };
         const response = await useApiBookings().update(props.booking_id, updateBooking);
         response.status == 200 ? emit("success") : $toast.error("เกิดข้อผิดพลาด! ในขั้นตอนอัพเดทสถานะ");

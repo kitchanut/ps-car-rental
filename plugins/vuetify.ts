@@ -28,6 +28,12 @@ export default defineNuxtPlugin(nuxtApp => {
             VSelect: {
                 menuIcon: 'mdi-chevron-down',
             },
+            VCombobox: {
+                menuIcon: 'mdi-chevron-down',
+            },
+            VAutocomplete: {
+                menuIcon: 'mdi-chevron-down',
+            },
         },
         components: {
             ...components,

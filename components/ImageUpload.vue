@@ -54,6 +54,7 @@ const handleFileSelection = async (event) => {
     formDataNew.append("files", files.value[i]);
   }
   const response = await useApiUploads().store(formDataNew);
+
   response.status == 200
     ? ($toast.success("อัพโหลดสำเร็จ"), emit("success"), (files.value = []))
     : $toast.error("เกิดข้อผิดพลาด! กรุณาติดต่อผู้แลระบบ");

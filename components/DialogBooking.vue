@@ -51,45 +51,64 @@
             title="จอง"
             value="1"
             editable
-            :complete="['จอง', 'มัดจำ', 'รับรถ', 'คืนรถ', 'คืนเงิน'].includes(formData.booking_status)"
-            :color="['จอง', 'มัดจำ', 'รับรถ', 'คืนรถ', 'คืนเงิน'].includes(formData.booking_status) ? 'success' : ''"
+            :complete="['จอง', 'มัดจำ', 'รับรถ', 'คืนรถ', 'คืนมัดจำ'].includes(formData.booking_status)"
+            :color="['จอง', 'มัดจำ', 'รับรถ', 'คืนรถ', 'คืนมัดจำ'].includes(formData.booking_status) ? 'success' : ''"
           ></v-stepper-item>
           <v-divider></v-divider>
           <v-stepper-item
             title="มัดจำ"
             value="2"
-            :editable="['จอง', 'มัดจำ', 'รับรถ', 'คืนรถ', 'คืนเงิน'].includes(formData.booking_status)"
-            :complete="['มัดจำ', 'รับรถ', 'คืนรถ', 'คืนเงิน'].includes(formData.booking_status)"
-            :color="['มัดจำ', 'รับรถ', 'คืนรถ', 'คืนเงิน'].includes(formData.booking_status) ? 'success' : ''"
+            :editable="['จอง', 'มัดจำ', 'รับรถ', 'คืนรถ', 'คืนมัดจำ'].includes(formData.booking_status)"
+            :complete="['มัดจำ', 'รับรถ', 'คืนรถ', 'คืนมัดจำ'].includes(formData.booking_status)"
+            :color="['มัดจำ', 'รับรถ', 'คืนรถ', 'คืนมัดจำ'].includes(formData.booking_status) ? 'success' : ''"
           ></v-stepper-item>
           <v-divider></v-divider>
           <v-stepper-item
             title="รับรถ"
             value="3"
-            :complete="['รับรถ', 'คืนรถ', 'คืนเงิน'].includes(formData.booking_status)"
-            :color="['รับรถ', 'คืนรถ', 'คืนเงิน'].includes(formData.booking_status) ? 'success' : ''"
-            :editable="['มัดจำ', 'รับรถ'].includes(formData.booking_status)"
+            :editable="['มัดจำ', 'รับรถ', 'คืนรถ', 'คืนมัดจำ'].includes(formData.booking_status)"
+            :complete="['รับรถ', 'คืนรถ', 'คืนมัดจำ'].includes(formData.booking_status)"
+            :color="['รับรถ', 'คืนรถ', 'คืนมัดจำ'].includes(formData.booking_status) ? 'success' : ''"
           ></v-stepper-item>
           <v-divider></v-divider>
           <v-stepper-item
             title="คืนรถ"
             value="4"
-            :complete="['คืนรถ', 'คืนเงิน'].includes(formData.booking_status)"
-            :color="['คืนรถ', 'คืนเงิน'].includes(formData.booking_status) ? 'success' : ''"
+            :editable="['รับรถ', 'คืนรถ', 'คืนมัดจำ'].includes(formData.booking_status)"
+            :complete="['คืนรถ', 'คืนมัดจำ'].includes(formData.booking_status)"
+            :color="['คืนรถ', 'คืนมัดจำ'].includes(formData.booking_status) ? 'success' : ''"
           ></v-stepper-item>
           <v-divider></v-divider>
           <v-stepper-item
-            title="คืนเงิน"
+            title="คืนมัดจำ"
             value="5"
-            :complete="['คืนเงิน'].includes(formData.booking_status)"
-            :color="['คืนเงิน'].includes(formData.booking_status) ? 'success' : ''"
+            :editable="['คืนรถ', 'คืนมัดจำ'].includes(formData.booking_status)"
+            :complete="['คืนมัดจำ'].includes(formData.booking_status)"
+            :color="['คืนมัดจำ'].includes(formData.booking_status) ? 'success' : ''"
           ></v-stepper-item>
         </v-stepper-header>
         <v-stepper-window :style="`height: ${innerHeight - 170}px;`">
           <v-stepper-window-item value="1">
             <v-form ref="form" lazy-validation @submit.prevent="onSubmit()">
-              <v-divider>ลูกค้า/รถยนต์</v-divider>
+              <v-divider>ข้อมูลเบื้องต้น</v-divider>
               <v-row class="mt-3" no-gutters>
+                <v-col cols="4" class="d-flex align-center">วันจอง</v-col>
+                <v-col>
+                  <v-text-field
+                    class="pl-3"
+                    v-model="formData.booking_date"
+                    type="datetime-local"
+                    density="compact"
+                    outlined
+                    dense
+                    hide-details
+                    :rules="[(value) => !!value || 'Required.']"
+                  >
+                  </v-text-field>
+                </v-col>
+              </v-row>
+
+              <v-row class="mt-1" no-gutters>
                 <v-col cols="4" class="d-flex align-center">ลูกค้า</v-col>
                 <v-col>
                   <v-autocomplete
@@ -152,6 +171,19 @@
                       </v-list-item>
                     </template>
                   </v-autocomplete>
+                </v-col>
+              </v-row>
+              <v-row v-if="actionType == 'edit'" class="mt-1" no-gutters>
+                <v-col cols="4" class="d-flex align-center">สถานะงาน</v-col>
+                <v-col>
+                  <v-select
+                    class="ml-3"
+                    :items="['จอง', 'มัดจำ', 'รับรถ', 'คืนรถ', 'คืนมัดจำ', 'ยกเลิกการจอง']"
+                    v-model="formData.booking_status"
+                    density="compact"
+                    hide-details
+                    :rules="[(value) => !!value || 'Required.']"
+                  ></v-select>
                 </v-col>
               </v-row>
 
@@ -542,6 +574,22 @@
               @success="success()"
             />
           </v-stepper-window-item>
+          <v-stepper-window-item value="4">
+            <BookingComReturn
+              :step="step"
+              :booking_id="formData.id"
+              :booking_status="formData.booking_status"
+              @success="success()"
+            />
+          </v-stepper-window-item>
+          <v-stepper-window-item value="5">
+            <BookingComRefund
+              :step="step"
+              :booking_id="formData.id"
+              :booking_status="formData.booking_status"
+              @success="success()"
+            />
+          </v-stepper-window-item>
         </v-stepper-window>
       </v-stepper>
     </v-card>
@@ -687,6 +735,7 @@ const getData = async () => {
   loading.value = true;
   const response = await useApiBookings().show(props.id);
   formData.value = response.data;
+  formData.value.booking_date = useGlobalFunction().toDatetimeLocal(response.data.booking_date);
   formData.value.pickup_date = useGlobalFunction().toDatetimeLocal(response.data.pickup_date);
   formData.value.return_date = useGlobalFunction().toDatetimeLocal(response.data.return_date);
   formTitle.value = "Booking No : " + response.data.booking_number;
