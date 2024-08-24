@@ -115,6 +115,7 @@ const dataFiltered = computed(() => {
     return (
       item.booking_number.toLowerCase().includes(search.value.toLowerCase()) ||
       item.car.license_plate.toLowerCase().includes(search.value.toLowerCase()) ||
+      item.car.car_model.car_model_name.toLowerCase().includes(search.value.toLowerCase()) ||
       item.customer.customer_name.toLowerCase().includes(search.value.toLowerCase()) ||
       item.customer.customer_tel.toLowerCase().includes(search.value.toLowerCase())
     );

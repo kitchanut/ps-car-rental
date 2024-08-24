@@ -3,7 +3,7 @@ export const useApiBookings = () => {
     const path = '/api/bookings'
 
     function index(queryString: string) {
-        const url = HOSTNAME + path + queryString ? queryString : ''
+        const url = HOSTNAME + path + queryString
         return request('get', url, {}, true)
     }
 

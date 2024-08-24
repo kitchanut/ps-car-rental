@@ -1,12 +1,9 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
-
+// nvm use 20
 export default defineNuxtConfig({
   compatibilityDate: '2024-04-03',
   devtools: { enabled: false },
   ssr: false,
-  nitro: {
-    preset: 'cloudflare-pages'
-  },
   css: ["@/assets/scss/style.scss", "@/assets/css/style.css"],
   modules: ["@nuxtjs/robots", 'dayjs-nuxt', "@nuxt/icon"],
   dayjs: {
