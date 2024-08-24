@@ -25,6 +25,8 @@
 // Props
 const props = defineProps({
   id: Number,
+  car_id: { type: Number, default: null },
+  booking_id: { type: Number, default: null },
   type: String,
   location: String,
   accept: String,
@@ -47,12 +49,15 @@ const handleFileSelection = async (event) => {
   loadingComponent.value = true;
   files.value.push(event.target.files);
   let formDataNew = new FormData();
-  formDataNew.append("id", props.id);
+  props.id ? formDataNew.append("id", props.id) : "";
+  props.car_id ? formDataNew.append("car_id", props.car_id) : "";
+  props.booking_id ? formDataNew.append("booking_id", props.booking_id) : "";
   formDataNew.append("type", props.type);
   formDataNew.append("location", props.location);
   for (let i = 0; i < files.value.length; i++) {
     formDataNew.append("files", files.value[i]);
   }
+
   const response = await useApiUploads().store(formDataNew);
 
   response.status == 200

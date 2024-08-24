@@ -84,7 +84,7 @@
         <v-col cols="4 px-1">
           <v-card variant="outlined" height="90" style="border: 1px solid #ddd">
             <ImageUpload
-              :id="props.booking_id"
+              :booking_id="props.booking_id"
               type="รับรถ"
               location="pickup"
               accept="image/*"

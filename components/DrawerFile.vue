@@ -33,7 +33,7 @@
         <v-col cols="4 px-1">
           <v-card variant="outlined" height="70" style="border: 1px solid #ddd">
             <ImageUpload
-              :id="myProps.id"
+              :car_id="myProps.id"
               :type="myProps.type"
               location="cars"
               :loading="loadingImage"

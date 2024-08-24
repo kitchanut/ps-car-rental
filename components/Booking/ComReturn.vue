@@ -101,9 +101,10 @@
         <v-col cols="4 px-1">
           <v-card variant="outlined" height="90" style="border: 1px solid #ddd">
             <ImageUpload
-              :id="props.booking_id"
+              :booking_id="props.booking_id"
               type="คืนรถ"
               location="return"
+              accept="image/*"
               :loading="loadingImage"
               @success="uploadSuccess()"
             />
@@ -173,7 +174,6 @@ const getData = async () => {
 
 // Upload Success
 const uploadSuccess = () => {
-  $toast.success("อัพโหลดสำเร็จ");
   getData();
 };
 
