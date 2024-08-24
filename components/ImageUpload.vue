@@ -62,6 +62,7 @@ watch(uploadProgress, (newValue, oldValue) => {
 //Upload
 const files = ref([]);
 const handleFileSelection = async (event) => {
+  progress.value = 0;
   loadingComponent.value = true;
   files.value.push(event.target.files);
   let formDataNew = new FormData();
@@ -73,7 +74,6 @@ const handleFileSelection = async (event) => {
   for (let i = 0; i < files.value.length; i++) {
     formDataNew.append("files", files.value[i]);
   }
-
   const response = await useApiUploads().store(formDataNew);
 
   response.status == 200
