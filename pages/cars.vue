@@ -19,10 +19,10 @@
           <v-fab
             icon="mdi-image-outline"
             location="left"
-            size="x-small"
+            size="small"
             density="comfortable"
             absolute
-            style="top: 25px; left: -10px"
+            style="top: 20px; left: -10px"
             @click="
               drawer = !drawer;
               id = item.raw.id;
@@ -31,10 +31,10 @@
           <v-fab
             icon="mdi-wallet-outline"
             location="left"
-            size="x-small"
+            size="small"
             density="comfortable"
             absolute
-            style="top: 50px; left: -10px"
+            style="top: 55px; left: -10px"
             @click="
               dialogAccountTransaction = true;
               id = item.raw.id;

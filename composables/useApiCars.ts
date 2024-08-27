@@ -2,8 +2,9 @@ import { request, HOSTNAME } from "./api"
 export const useApiCars = () => {
     const path = '/api/cars'
 
-    function index() {
-        const url = HOSTNAME + path
+    function index(queryString: String) {
+        let query = queryString ?? ''
+        const url = HOSTNAME + path + query
         return request('get', url, {}, true)
     }
 

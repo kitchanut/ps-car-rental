@@ -6,8 +6,8 @@
           <v-row no-gutters>
             <v-col cols="2" v-viewer>
               <v-img
-                :src="item.raw.upload ? $getImage(item.raw.upload.file_path) : $imageBaseApp()"
-                :lazy-src="item.raw.upload ? $getImage(item.raw.upload.file_path) : $imageBaseApp()"
+                :src="item.raw.uploads.length ? $getImage(item.raw.uploads[0].file_path) : $imageBaseApp()"
+                :lazy-src="item.raw.uploads.length ? $getImage(item.raw.uploads[0].file_path) : $imageBaseApp()"
                 height="100%"
                 cover
               />

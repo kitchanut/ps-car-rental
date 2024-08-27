@@ -24,7 +24,7 @@
         </v-container>
       </v-toolbar>
       <v-container>
-        <v-card variant="text" border :loading="loading">
+        <v-card variant="text" border>
           <div class="d-flex ma-3">
             <DialogAccountTransaction
               :account_id="props.account_id"

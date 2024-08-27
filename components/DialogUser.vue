@@ -179,7 +179,6 @@ const onSubmit = async () => {
     // formData.value.permissions = permissions.value;
     if (props.actionType == "add") {
       const response = await useApiUsers().store(formData.value);
-      console.log(response);
       if (response.status == 201) {
         $toast.success("ทำรายการสำเร็จ");
         dialog.value = false;

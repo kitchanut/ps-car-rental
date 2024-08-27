@@ -35,21 +35,6 @@
         </v-col>
       </v-row>
 
-      <v-row class="mt-3" no-gutters>
-        <v-col cols="4" class="d-flex align-center">หมายเหตุ</v-col>
-        <v-col>
-          <v-textarea
-            class="pl-3 right-input"
-            rows="2"
-            v-model="formData.return_note"
-            density="compact"
-            outlined
-            dense
-            hide-details
-          >
-          </v-textarea>
-        </v-col>
-      </v-row>
       <v-row v-if="actionType == 'add'" class="mt-3" no-gutters>
         <v-col cols="4" class="d-flex align-center">รูปภาพประกอบ</v-col>
         <v-col>
@@ -73,6 +58,23 @@
           </v-file-input>
         </v-col>
       </v-row>
+
+      <v-row class="mt-3" no-gutters>
+        <v-col cols="4" class="d-flex align-center">หมายเหตุ</v-col>
+        <v-col>
+          <v-textarea
+            class="pl-3 right-input"
+            rows="2"
+            v-model="formData.return_note"
+            density="compact"
+            outlined
+            dense
+            hide-details
+          >
+          </v-textarea>
+        </v-col>
+      </v-row>
+
       <v-row v-if="formData.booking" class="mt-5" no-gutters v-viewer>
         <v-col cols="4 px-1 mb-2" v-for="image in formData.booking.uploads" :key="image.id">
           <v-card style="height: 90px" variant="text">

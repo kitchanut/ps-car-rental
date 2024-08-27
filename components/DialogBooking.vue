@@ -737,6 +737,13 @@ const calPrice = () => {
 const getData = async () => {
   loading.value = true;
   const response = await useApiBookings().show(props.id);
+  delete response.data.customer;
+  delete response.data.pickup_branch;
+  delete response.data.return_branch;
+  delete response.data.car;
+  delete response.data.booking_pickups;
+  delete response.data.booking_returns;
+  delete response.data.account_transactions;
   formData.value = response.data;
   formData.value.booking_date = useGlobalFunction().toDatetimeLocal(response.data.booking_date);
   formData.value.pickup_date = useGlobalFunction().toDatetimeLocal(response.data.pickup_date);

@@ -11,7 +11,7 @@ export async function request(method, url, data, auth = false) {
     headers["authorization"] = token;
   }
   if (user) {
-    headers["branch_id"] = user.branch_id;
+    headers["branch-id"] = user.branch_id;
   }
   try {
     const response = await axios({

@@ -177,6 +177,7 @@
         </div>
       </v-card>
     </div>
+
     <DialogBooking
       :dialog="dialogBooking"
       :id="id"
@@ -200,13 +201,20 @@ const loading = ref(true);
 const data = ref([]);
 const getData = async () => {
   loading.value = true;
-  const response = await useApiCars().index();
+  let queryString = "?include=bookings";
+  const response = await useApiCars().index(queryString);
+  // console.log(response.data);
   data.value = response.data;
   data.value.map((item, index) => {
     item.car_model_name = item.car_model.car_model_name;
     item.bookings.map((booking) => {
       booking.begin = dayjs(booking.pickup_date).format("YYYY-MM-DD HH:mm");
-      booking.end = dayjs(booking.return_date).format("YYYY-MM-DD HH:mm");
+      if (booking.booking_returns) {
+        booking.end = dayjs(booking.booking_returns.return_date).format("YYYY-MM-DD HH:mm");
+      } else {
+        booking.end = dayjs(booking.return_date).format("YYYY-MM-DD HH:mm");
+      }
+
       booking.ganttBarConfig = {
         id: booking.id,
         style: {
@@ -274,6 +282,7 @@ const clickEventDialog = (item) => {
     } else if (clickEvent.value == "dbclick") {
       dialogBookingDetails.value = true;
     }
+    console.log(clickEvent.value);
   }, 200);
 };
 

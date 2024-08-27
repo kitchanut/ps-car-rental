@@ -79,6 +79,7 @@
               <v-text-field
                 class="pr-1"
                 label="เบอร์โทร"
+                type="number"
                 v-model="formData.customer_tel"
                 density="comfortable"
                 outlined
