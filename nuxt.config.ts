@@ -6,6 +6,9 @@ export default defineNuxtConfig({
   ssr: false,
   css: ["@/assets/scss/style.scss", "@/assets/css/style.css"],
   modules: ["@nuxtjs/robots", 'dayjs-nuxt', "@nuxt/icon"],
+  plugins: [
+    '~/plugins/facebook-sdk.js'
+  ],
   dayjs: {
     locales: ['th'],
     plugins: ['timezone'],
