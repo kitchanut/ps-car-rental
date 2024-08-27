@@ -36,14 +36,14 @@
               <v-col>{{ $dayjs(item.return_date).format("YYYY-MM-DD HH:mm") }}</v-col>
             </v-row>
             <v-row no-gutters>
-              <v-col cols="5">รถเช่า:</v-col>
+              <v-col cols="5">ลูกค้า:</v-col>
               <v-col>
                 {{ item.customer.customer_name }}
                 <span v-if="item.customer.customer_tel">[{{ item.customer.customer_tel }}]</span>
               </v-col>
             </v-row>
             <v-row no-gutters>
-              <v-col cols="5">ลูกค้า:</v-col>
+              <v-col cols="5">รถเช่า:</v-col>
               <v-col>
                 <div>{{ item.car.license_plate }} {{ item.car.license_plate_province }}</div>
                 <div>{{ item.car.car_brand.car_brand_name }} ( {{ item.car.car_model.car_model_name }} )</div>
@@ -108,43 +108,6 @@
             </v-row>
           </v-card-text>
         </v-card>
-        <div v-if="item.booking_pickups">
-          <div class="mt-3 ml-2">ข้อมูลการรับรถ</div>
-          <v-card class="border" variant="text">
-            <v-card-text>
-              <v-row no-gutters>
-                <v-col cols="5">วันรับรถ:</v-col>
-                <v-col>{{ $dayjs(item.booking_pickups.pickup_date).format("YYYY-MM-DD HH:mm") }}</v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col cols="5">หมายเหตุ:</v-col>
-                <v-col>{{ item.booking_pickups.pickup_note ?? "-" }}</v-col>
-              </v-row>
-            </v-card-text>
-          </v-card>
-        </div>
-        <div v-if="item.booking_returns">
-          <div class="mt-3 ml-2">ข้อมูลการคืนรถ</div>
-          <v-card class="border" variant="text">
-            <v-card-text>
-              <v-row no-gutters>
-                <v-col cols="5">วันรับรถ:</v-col>
-                <v-col>{{ $dayjs(item.booking_returns.return_date).format("YYYY-MM-DD HH:mm") }}</v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col cols="5">ค่าปรับ:</v-col>
-                <v-col>
-                  <span class="text-blue">{{ Number(item.booking_returns.return_penalty).toLocaleString() }}</span>
-                  บาท
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col cols="5">หมายเหตุ:</v-col>
-                <v-col>{{ item.booking_returns.return_note ?? "-" }}</v-col>
-              </v-row>
-            </v-card-text>
-          </v-card>
-        </div>
         <div v-if="item.account_transactions.length">
           <div class="mt-3 ml-2">ข้อมูลการเงิน</div>
           <v-card class="border" variant="text">
@@ -180,6 +143,43 @@
                 <v-col class="text-right">
                   <b class="text-green">{{ Number(Math.abs(sumRefund)).toLocaleString() }}</b> บาท
                 </v-col>
+              </v-row>
+            </v-card-text>
+          </v-card>
+        </div>
+        <div v-if="item.booking_pickups">
+          <div class="mt-3 ml-2">ข้อมูลการรับรถ</div>
+          <v-card class="border" variant="text">
+            <v-card-text>
+              <v-row no-gutters>
+                <v-col cols="5">วันรับรถ:</v-col>
+                <v-col>{{ $dayjs(item.booking_pickups.pickup_date).format("YYYY-MM-DD HH:mm") }}</v-col>
+              </v-row>
+              <v-row no-gutters>
+                <v-col cols="5">หมายเหตุ:</v-col>
+                <v-col>{{ item.booking_pickups.pickup_note ?? "-" }}</v-col>
+              </v-row>
+            </v-card-text>
+          </v-card>
+        </div>
+        <div v-if="item.booking_returns">
+          <div class="mt-3 ml-2">ข้อมูลการคืนรถ</div>
+          <v-card class="border" variant="text">
+            <v-card-text>
+              <v-row no-gutters>
+                <v-col cols="5">วันคืนรถ:</v-col>
+                <v-col>{{ $dayjs(item.booking_returns.return_date).format("YYYY-MM-DD HH:mm") }}</v-col>
+              </v-row>
+              <v-row no-gutters>
+                <v-col cols="5">ค่าปรับ:</v-col>
+                <v-col>
+                  <span class="text-red">{{ Number(item.booking_returns.return_penalty).toLocaleString() }}</span>
+                  บาท
+                </v-col>
+              </v-row>
+              <v-row no-gutters>
+                <v-col cols="5">หมายเหตุ:</v-col>
+                <v-col>{{ item.booking_returns.return_note ?? "-" }}</v-col>
               </v-row>
             </v-card-text>
           </v-card>
