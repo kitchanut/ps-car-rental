@@ -47,14 +47,17 @@
       </v-row>
     </v-card>
 
+    <!-- สำหรับการเพิ่ม -->
     <DialogAccountTransaction
       :booking_id="props.booking_id"
+      :car_id="props.car_id"
       transaction_type="รับเงินมัดจำ"
       appearance="addFullWidthDeposit"
       actionType="add"
       @success="success()"
     />
 
+    <!-- สำหรับการแก้ไข -->
     <DialogAccountTransaction
       :dialog="dialog"
       :id="id"
@@ -70,6 +73,7 @@ const { $toast } = useNuxtApp();
 const emit = defineEmits(["success", "close"]);
 const props = defineProps({
   booking_id: Number,
+  car_id: Number,
   booking_status: String,
 });
 const dialog = ref(false);

@@ -15,10 +15,35 @@
 
     <v-data-iterator class="mt-3" :items="data" :items-per-page="10" :search="search">
       <template v-slot:default="{ items }">
-        <v-card v-for="item in items" class="mb-3" border flat>
+        <v-sheet v-for="item in items" class="mb-2 rounded-lg" border>
+          <v-fab
+            icon="mdi-image-outline"
+            location="left"
+            size="x-small"
+            density="comfortable"
+            absolute
+            style="top: 25px; left: -10px"
+            @click="
+              drawer = !drawer;
+              id = item.raw.id;
+            "
+          ></v-fab>
+          <v-fab
+            icon="mdi-wallet-outline"
+            location="left"
+            size="x-small"
+            density="comfortable"
+            absolute
+            style="top: 50px; left: -10px"
+            @click="
+              dialogAccountTransaction = true;
+              id = item.raw.id;
+              license_plate = item.raw.license_plate;
+            "
+          ></v-fab>
           <v-row no-gutters>
             <v-col cols="3" v-viewer>
-              <v-card variant="text" height="100%" style="border-radius: 0px">
+              <v-card variant="text" height="100%" style="border-radius: 8px 0 0 8px">
                 <v-img
                   v-if="item.raw.uploads.length"
                   height="77"
@@ -26,22 +51,9 @@
                   :lazy-src="$getImage(item.raw.uploads[0].file_path)"
                   cover
                 />
-                <v-btn
-                  v-if="item.raw.uploads.length"
-                  style="position: absolute; top: 2px; left: 2px"
-                  size="small"
-                  density="compact"
-                  dark
-                  :icon="drawer ? 'mdi-chevron-left' : 'mdi-chevron-right'"
-                  @click="
-                    drawer = !drawer;
-                    id = item.raw.id;
-                  "
-                >
-                </v-btn>
                 <ImageUpload
                   v-else
-                  :id="item.raw.id"
+                  :car_id="item.raw.id"
                   type="car"
                   accept="image/*"
                   location="cars"
@@ -58,8 +70,8 @@
               <div class="d-flex">
                 <div
                   style="
-                    border-left: 1px solid #ccc;
-                    border-right: 1px solid #ccc;
+                    border-left: 1px solid #e0e0e0;
+                    border-right: 1px solid #e0e0e0;
                     padding: 5px 5px;
                     width: 100px;
                     text-align: center;
@@ -77,7 +89,7 @@
                   </div>
                 </div>
                 <div class="vertical-text px-1">{{ item.raw.year }}</div>
-                <div class="text-center" style="border-left: 1px solid #ccc; padding: 5px 5px; width: 55%">
+                <div class="text-center" style="border-left: 1px solid #e0e0e0; padding: 5px 5px; width: 55%">
                   <div>
                     <b>{{ item.raw.car_model.car_model_name }}</b>
                   </div>
@@ -102,11 +114,17 @@
               </div>
             </v-col>
           </v-row>
-        </v-card>
+        </v-sheet>
       </template>
     </v-data-iterator>
     <DialogCar :dialog="dialog" :id="id" actionType="edit" @success="getData()" @close="dialog = false" />
-    <DrawerFile :drawer="drawer" :id="id" type="car" @close="drawer = false" />
+    <DialogAccountTransactionTable
+      :dialog="dialogAccountTransaction"
+      :car_id="id"
+      :number="license_plate"
+      @close="dialogAccountTransaction = false"
+    />
+    <DrawerFile :drawer="drawer" :id="id" type="car" @success="getData()" @close="drawer = false" />
   </div>
 </template>
 <script setup>
@@ -127,6 +145,8 @@ const getData = async () => {
 getData();
 
 const id = ref(0);
+const license_plate = ref("");
 const dialog = ref(false);
 const drawer = ref(false);
+const dialogAccountTransaction = ref(false);
 </script>

@@ -57,7 +57,6 @@ const handleSubmit = async () => {
     useCookie("user").value = response.data.user;
     useCookie("token").value = response.data.token;
     useCookie("isLogin").value = true;
-
     router.push({ path: "/" });
   } else {
     alert.value = true;

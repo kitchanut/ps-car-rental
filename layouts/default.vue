@@ -80,6 +80,11 @@ const manu = ref([
     to: ["/accounts"],
   },
   {
+    icon: "mdi-car",
+    title: "รถ",
+    to: ["/cars"],
+  },
+  {
     icon: "mdi-file-document-multiple-outline",
     title: "รายงาน",
     value: "report",
@@ -93,7 +98,6 @@ const manu = ref([
     title: "ตั้งค่า",
     value: "setting",
     to: [
-      { to: "/setting/cars", title: "รถ" },
       { to: "/setting/car_types", title: "ประเภทรถ" },
       { to: "/setting/car_brands", title: "ยี่ห้อรถ/รุ่นรถ" },
       { to: "/setting/branches", title: "สาขา" },
@@ -116,6 +120,7 @@ const logout = () => {
   useCookie("user").value = null;
   useCookie("token").value = null;
   useCookie("isLogin").value = false;
+
   router.push({ path: "/login" });
 };
 </script>

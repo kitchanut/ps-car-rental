@@ -75,7 +75,7 @@
 
 <script setup>
 const { $toast } = useNuxtApp();
-const emit = defineEmits(["close"]);
+const emit = defineEmits(["success", "close"]);
 const drawer = ref(false);
 const myProps = defineProps({
   drawer: Boolean,
@@ -110,17 +110,16 @@ const deleteItem = async () => {
   const response = await useApiUploads().destroy(imageId.value);
   response.status == 200 ? $toast.success("ลบสำเร็จ") : $toast.error("เกิดข้อผิดพลาด! กรุณาติดต่อผู้แลระบบ");
   getData();
+  console.log(images.value.length);
+  if (images.value.length == 0) {
+    emit("success");
+  }
 };
 
 const close = async () => {
   drawer.value = false;
   emit("close");
 };
-
-const openWindow = (url) => {
-  window.open(url, "_blank").focus();
-};
-
 // Check dialog isOpen
 watch(myProps, (value) => {
   if (value.drawer) {

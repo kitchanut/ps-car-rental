@@ -13,11 +13,6 @@
           density="compact"
         ></v-text-field>
       </div>
-      <div class="text-right px-2">
-        <v-badge color="warning" inline dot></v-badge>จอง <v-badge color="grey" inline dot></v-badge>มัดจำ
-        <v-badge color="error" inline dot></v-badge>รับรถ <v-badge color="primary" inline dot></v-badge>คืนรถ
-        <v-badge color="success" inline dot></v-badge>คืนมัดจำ
-      </div>
 
       <div class="text-right px-2 mb-2">
         <v-btn-toggle v-model="period" color="warning" variant="outlined" divided density="compact" :disabled="loading">
@@ -30,6 +25,11 @@
           <v-btn value="2Y" size="small" style="min-width: 20px"><b>2Y</b></v-btn>
           <v-btn value="3Y" size="small" style="min-width: 20px"><b>3Y</b></v-btn>
         </v-btn-toggle>
+      </div>
+      <div class="text-right px-2">
+        <v-badge color="grey" inline dot></v-badge>จอง <v-badge color="warning" inline dot></v-badge>มัดจำ
+        <v-badge color="info" inline dot></v-badge>รับรถ <v-badge color="primary" inline dot></v-badge>คืนรถ
+        <v-badge color="success" inline dot></v-badge>คืนมัดจำ <v-badge color="red" inline dot></v-badge>ยกเลิก
       </div>
 
       <v-divider></v-divider>
@@ -129,11 +129,12 @@ watch(
 );
 
 const colorBar = (status) => {
-  if (status == "จอง") return "#FB8C00";
-  if (status == "มัดจำ") return "#9E9E9E";
-  if (status == "รับรถ") return "#B00020";
+  if (status == "จอง") return "#9E9E9E";
+  if (status == "มัดจำ") return "#FB8C00";
+  if (status == "รับรถ") return "#2096F3";
   if (status == "คืนรถ") return "#1966C0";
   if (status == "คืนมัดจำ") return "#4CAF4F";
+  if (status == "ยกเลิก") return "#FF0000";
 };
 
 const dialog = ref(false);

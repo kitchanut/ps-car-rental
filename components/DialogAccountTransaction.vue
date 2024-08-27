@@ -57,7 +57,7 @@
             </v-btn>
             <v-toolbar-title>{{ formTitle }}</v-toolbar-title>
             <v-spacer></v-spacer>
-            <v-btn variant="text" style="font-size: 1.25rem" type="submit"> บันทึก </v-btn>
+            <v-btn variant="text" style="font-size: 1.25rem" type="submit" :loading="loading"> บันทึก </v-btn>
           </v-container>
         </v-toolbar>
         <v-container>
@@ -93,6 +93,22 @@
                 class="pl-3"
                 v-model="formData.transaction_date"
                 type="datetime-local"
+                density="compact"
+                outlined
+                dense
+                hide-details
+                :rules="[(value) => !!value || 'Required.']"
+              >
+              </v-text-field>
+            </v-col>
+          </v-row>
+
+          <v-row v-if="!props.transaction_type" class="mt-3" no-gutters>
+            <v-col cols="4" class="d-flex align-center">รายการ</v-col>
+            <v-col>
+              <v-text-field
+                class="pl-3"
+                v-model="formData.transaction_type"
                 density="compact"
                 outlined
                 dense
@@ -183,13 +199,15 @@
 
 <script setup>
 const props = defineProps({
+  id: Number,
   dialog: { type: Boolean, default: false },
+  account_id: { type: Number, default: null },
   booking_id: { type: Number, default: null },
+  car_id: { type: Number, default: null },
   type: { type: String, default: "deposit" },
-  transaction_type: String,
+  transaction_type: { type: String, default: null },
   actionType: String,
   appearance: String,
-  id: Number,
 });
 const { $toast } = useNuxtApp();
 const emit = defineEmits(["success", "close"]);
@@ -232,14 +250,15 @@ const onSubmit = async () => {
 
     let formDataNew = new FormData();
     formDataNew.append("account_id", formData.value.account_id);
-    formDataNew.append("transaction_type", props.transaction_type);
+    props.transaction_type
+      ? formDataNew.append("transaction_type", props.transaction_type)
+      : formDataNew.append("transaction_type", formData.value.transaction_type);
     formDataNew.append("transaction_date", formData.value.transaction_date);
     if (props.type == "withdraw") {
       formDataNew.append("transaction_amount", Number(formData.value.transaction_amount) * -1);
     } else {
       formDataNew.append("transaction_amount", formData.value.transaction_amount);
     }
-
     formDataNew.append("location", "slip");
     formData.value.transaction_note ? formDataNew.append("transaction_note", formData.value.transaction_note) : "";
     for (let i = 0; i < file.value.files.length; i++) {
@@ -248,6 +267,7 @@ const onSubmit = async () => {
     let response;
     if (props.actionType == "add") {
       props.booking_id ? formDataNew.append("booking_id", props.booking_id) : "";
+      props.car_id ? formDataNew.append("car_id", props.car_id) : "";
       response = await useApiAccountTransactions().store(formDataNew);
     } else {
       response = await useApiAccountTransactions().update(props.id, formDataNew);
@@ -282,14 +302,17 @@ watch(dialog, (value) => {
     nextTick(() => {
       formData.value = {};
       form.value.reset();
+      nextTick(() => {
+        if (props.actionType == "add") {
+          formTitle.value = "เพิ่มข้อมูล";
+          props.account_id ? (formData.value.account_id = props.account_id) : null;
+          loading.value = false;
+        } else {
+          formTitle.value = "แก้ไขข้อมูล";
+          getData();
+        }
+      });
     });
-    if (props.actionType == "add") {
-      formTitle.value = "เพิ่มข้อมูล";
-      loading.value = false;
-    } else {
-      formTitle.value = "แก้ไขข้อมูล";
-      getData();
-    }
   } else {
     onClose();
   }

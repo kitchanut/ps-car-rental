@@ -68,18 +68,10 @@
       </template>
     </v-data-iterator>
 
-    <!-- <v-card class="mb-5" border flat height="70px">
-      <v-row style="height: 100%" no-gutters="">
-        <v-col cols="4" class="d-flex justify-center align-center">รวมมัดจำ</v-col>
-        <v-col class="d-flex justify-center align-center" style="border-left: 1px solid #eee">
-          <span style="font-size: 1.2rem; font-weight: 700; color: green">{{ totalValue.toLocaleString() }}</span>
-        </v-col>
-      </v-row>
-    </v-card> -->
-
     <DialogAccountTransaction
       v-if="!data.length"
       :booking_id="props.booking_id"
+      :car_id="props.car_id"
       type="withdraw"
       transaction_type="คืนเงินมัดจำ"
       appearance="addFullWidthRefund"
@@ -104,6 +96,7 @@ const emit = defineEmits(["success", "close"]);
 const props = defineProps({
   step: { type: String, default: null },
   booking_id: Number,
+  car_id: Number,
   booking_status: String,
 });
 const dialog = ref(false);

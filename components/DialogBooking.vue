@@ -178,7 +178,7 @@
                 <v-col>
                   <v-select
                     class="ml-3"
-                    :items="['จอง', 'มัดจำ', 'รับรถ', 'คืนรถ', 'คืนมัดจำ', 'ยกเลิกการจอง']"
+                    :items="['จอง', 'มัดจำ', 'รับรถ', 'คืนรถ', 'คืนมัดจำ', 'ยกเลิก']"
                     v-model="formData.booking_status"
                     density="compact"
                     hide-details
@@ -562,6 +562,7 @@
           <v-stepper-window-item value="2">
             <BookingComDeposit
               :booking_id="formData.id"
+              :car_id="formData.car_id"
               :booking_status="formData.booking_status"
               @success="success()"
             />
@@ -586,6 +587,7 @@
             <BookingComRefund
               :step="step"
               :booking_id="formData.id"
+              :car_id="formData.car_id"
               :booking_status="formData.booking_status"
               @success="success()"
             />
@@ -673,6 +675,7 @@ const period_remain_hours = computed({
 
 const car = computed(() => cars.value.find((item) => item.id == formData.value.car_id));
 const changeCar = () => {
+  formData.value.branch_id = car.value ? car.value.branch_id : null;
   formData.value.pickup_branch_id = car.value ? car.value.branch_id : null;
   formData.value.return_branch_id = car.value ? car.value.branch_id : null;
   getRentalPrice();
@@ -798,12 +801,12 @@ watch(dialog, (value) => {
           formTitle.value = "เพิ่มข้อมูล";
           formData.value.pickup_location = "สถานบิน";
           formData.value.return_location = "สถานบิน";
-
           formData.value.extra_charge = 0;
           formData.value.discount = 0;
-          props.car_id ? (formData.value.car_id = props.car_id) : null;
-          props.branch_id ? (formData.value.pickup_branch_id = props.branch_id) : null;
-          props.branch_id ? (formData.value.return_branch_id = props.branch_id) : null;
+          formData.value.car_id = props.car_id ?? null;
+          formData.value.branch_id = props.branch_id ?? null;
+          formData.value.pickup_branch_id = props.branch_id ?? null;
+          formData.value.return_branch_id = props.branch_id ?? null;
           formData.value.vat_percent = 0;
           getRentalPrice();
           getDriverPrice();

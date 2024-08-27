@@ -23,11 +23,20 @@
         density="compact"
         hide-default-footer
         :items-per-page="-1"
-        @click:row="handleClick"
       >
-        <template v-slot:item.account_name="{ item }">
+        <template v-slot:item.account_number="{ item }">
           <v-badge :color="item.account_status == 'เปิดใช้งาน' ? 'success' : 'warning'" inline dot></v-badge>
-          {{ item.account_name }}
+          <span
+            style="color: blue"
+            @click="
+              id = item.id;
+              dialog = true;
+            "
+            >{{ item.account_number }}</span
+          >
+        </template>
+        <template v-slot:item.actions="{ item }">
+          <DialogAccountTransactionTable appearance="list" :account_id="item.id" :number="item.account_number" />
         </template>
       </v-data-table>
     </v-card>
@@ -42,29 +51,18 @@ const loading = ref(true);
 const headers = ref([
   { title: "เลขที่บัญชี", key: "account_number" },
   { title: "ชื่อบัญชี", key: "account_name" },
-  // { title: "สถานะ", key: "account_status", width: "10%" },
-  // { title: "", key: "actions", width: "10%" },
+  { title: "", key: "actions", width: "10%" },
 ]);
 
+// Commonvariable
+const dialog = ref(false);
+const id = ref(0);
 const data = ref([]);
-
 const getData = async () => {
   loading.value = true;
-
   const response = await useApiAccounts().index();
-  // console.log(response.data);
   data.value = response.data;
-  data.value.map((item, index) => {
-    item.no = index + 1;
-  });
   loading.value = false;
 };
 getData();
-
-const dialog = ref(false);
-const id = ref(0);
-const handleClick = (e, row) => {
-  dialog.value = true;
-  id.value = row.item.id;
-};
 </script>
