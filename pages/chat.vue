@@ -12,9 +12,7 @@ const loginWithFacebook = () => {
     function (response) {
       if (response.authResponse) {
         const accessToken = response.authResponse.accessToken;
-        // คุณสามารถใช้ accessToken นี้ในการเรียก API ต่างๆ
         console.log("Access Token:", accessToken);
-        // router.push("/select-page");
       } else {
         console.error("User cancelled login or did not fully authorize.");
       }
