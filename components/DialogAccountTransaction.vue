@@ -61,7 +61,24 @@
           </v-container>
         </v-toolbar>
         <v-container>
-          <v-row no-gutters>
+          <v-row class="mt-3" no-gutters>
+            <v-col cols="4" class="d-flex align-center">ประเภท</v-col>
+            <v-col class="pl-3">
+              <v-btn-toggle
+                v-model="formData.type"
+                :color="formData.type == 'deposit' ? 'success' : 'warning'"
+                variant="outlined"
+                divided
+                density="comfortable"
+                style="width: 100%"
+              >
+                <v-btn value="deposit" width="50%">รายรับ</v-btn>
+                <v-btn value="withdraw" width="50%">รายจ่าย</v-btn>
+              </v-btn-toggle>
+            </v-col>
+          </v-row>
+
+          <v-row class="mt-3" no-gutters>
             <v-col cols="4" class="d-flex align-center">บัญชี</v-col>
             <v-col>
               <v-autocomplete
@@ -230,7 +247,7 @@ const getData = async () => {
   const response = await useApiAccountTransactions().show(props.id);
   formData.value = response.data;
   formData.value.transaction_date = useGlobalFunction().toDatetimeLocal(response.data.transaction_date);
-  if (props.type == "withdraw") {
+  if (formData.value.type == "withdraw") {
     // formData.value.transaction_amount = Math.abs(response.data.transaction_amount);
     formData.value.transaction_amount = Number(response.data.transaction_amount) * -1;
   }
@@ -250,11 +267,9 @@ const onSubmit = async () => {
 
     let formDataNew = new FormData();
     formDataNew.append("account_id", formData.value.account_id);
-    props.transaction_type
-      ? formDataNew.append("transaction_type", props.transaction_type)
-      : formDataNew.append("transaction_type", formData.value.transaction_type);
     formDataNew.append("transaction_date", formData.value.transaction_date);
-    if (props.type == "withdraw") {
+    formDataNew.append("type", formData.value.type);
+    if (formData.value.type == "withdraw") {
       formDataNew.append("transaction_amount", Number(formData.value.transaction_amount) * -1);
     } else {
       formDataNew.append("transaction_amount", formData.value.transaction_amount);
@@ -266,10 +281,14 @@ const onSubmit = async () => {
     }
     let response;
     if (props.actionType == "add") {
+      props.transaction_type
+        ? formDataNew.append("transaction_type", props.transaction_type)
+        : formDataNew.append("transaction_type", formData.value.transaction_type);
       props.booking_id ? formDataNew.append("booking_id", props.booking_id) : "";
       props.car_id ? formDataNew.append("car_id", props.car_id) : "";
       response = await useApiAccountTransactions().store(formDataNew);
     } else {
+      formDataNew.append("transaction_type", formData.value.transaction_type);
       response = await useApiAccountTransactions().update(props.id, formDataNew);
     }
     response.status == 200
@@ -306,6 +325,7 @@ watch(dialog, (value) => {
         if (props.actionType == "add") {
           formTitle.value = "เพิ่มข้อมูล";
           props.account_id ? (formData.value.account_id = props.account_id) : null;
+          props.type ? (formData.value.type = props.type) : null;
           loading.value = false;
         } else {
           formTitle.value = "แก้ไขข้อมูล";
