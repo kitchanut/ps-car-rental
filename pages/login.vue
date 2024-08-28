@@ -39,7 +39,7 @@
 </template>
 
 <script setup>
-definePageMeta({ layout: "empty" });
+definePageMeta({ layout: "home" });
 const { $toast } = useNuxtApp();
 const router = useRouter();
 
