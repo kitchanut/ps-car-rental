@@ -4,7 +4,7 @@ export default defineNuxtPlugin((nuxtApp) => {
       appId: "1245851429937055", // แทนที่ด้วย Facebook App ID ของคุณ
       cookie: true,
       xfbml: true,
-      version: "v16.0",
+      version: "v20.0",
     });
     FB.AppEvents.logPageView();
   };

@@ -2,13 +2,19 @@
   <div>
     <v-layout>
       <v-app-bar color="primary" density="compact">
-        <template v-slot:prepend>
+        <div class="v-container d-flex align-center" style="max-width: 870px">
+          <v-app-bar-nav-icon @click.stop="drawer = !drawer" aria-label="nav-icon"></v-app-bar-nav-icon>
+          <v-app-bar-title>Car Rental</v-app-bar-title>
+          <v-spacer></v-spacer>
+          <v-btn icon="mdi-power-standby" @click="logout()"></v-btn>
+        </div>
+        <!-- <template v-slot:prepend>
           <v-app-bar-nav-icon @click.stop="drawer = !drawer" aria-label="nav-icon"></v-app-bar-nav-icon>
         </template>
         <v-app-bar-title>Car Rental</v-app-bar-title>
         <template v-slot:append>
           <v-btn icon="mdi-power-standby" @click="logout()"></v-btn>
-        </template>
+        </template> -->
       </v-app-bar>
 
       <v-navigation-drawer v-model="drawer" temporary>
@@ -46,7 +52,7 @@ const manu = ref([
   {
     icon: "mdi-chart-areaspline",
     title: "หน้าหลัก",
-    to: ["/"],
+    to: ["/dashboard"],
   },
   {
     icon: "mdi-message-text-outline",

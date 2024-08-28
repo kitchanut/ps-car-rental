@@ -1,5 +1,5 @@
 <template>
-  <div class="login-container">
+  <v-container class="login-container">
     <h1 style="margin-top: 20vh">PS Car Rental</h1>
     <form @submit.prevent="handleSubmit">
       <v-text-field
@@ -35,7 +35,7 @@
         </template>
       </v-btn>
     </form>
-  </div>
+  </v-container>
 </template>
 
 <script setup>
@@ -57,7 +57,7 @@ const handleSubmit = async () => {
     useCookie("user").value = response.data.user;
     useCookie("token").value = response.data.token;
     useCookie("isLogin").value = true;
-    router.push({ path: "/" });
+    router.push({ path: "/dashboard" });
   } else {
     alert.value = true;
     $toast.error("ชื่อผู้ใช้ หรือ รหัสผ่าน ผิด !!");
@@ -68,7 +68,7 @@ const handleSubmit = async () => {
 
 <style scoped>
 .login-container {
-  /* max-width: 400px; */
+  max-width: 500px;
   margin: 0 auto;
   padding: 2em;
   /* background: #f7f7f7; */
