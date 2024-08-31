@@ -207,7 +207,7 @@ const innerWidth = ref(0);
 if (displaySize.value == "xs") {
   innerWidth.value = window.innerWidth - 28;
 } else {
-  innerWidth.value = 850 - 244.5;
+  innerWidth.value = 850 - 223.5;
 }
 const user = ref(useCookie("user").value);
 

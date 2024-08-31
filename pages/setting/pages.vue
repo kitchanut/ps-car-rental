@@ -88,7 +88,6 @@ const getFageList = async (accessToken) => {
 
 const loading = ref(false);
 const addPage = () => {
-  console.log(pageSelect.value);
   pageSelect.value.forEach(async (page) => {
     const responseAccessToken = await axios({
       method: "GET",
@@ -106,9 +105,11 @@ const addPage = () => {
       : $toast.error("เกิดข้อผิดพลาด! กรุณาติดต่อผู้แลระบบ"),
       (loading.value = false);
   });
-  pageLists.value = [];
-  pageSelectId.value = [];
-  getData();
+  nextTick(() => {
+    pageLists.value = [];
+    pageSelectId.value = [];
+    getData();
+  });
 };
 
 const headers = ref([{ title: "เพจ", key: "page_name" }]);
