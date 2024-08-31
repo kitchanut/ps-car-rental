@@ -83,7 +83,8 @@ export default defineNuxtConfig({
       serverUrl: process.env.NODE_ENV === "development"
         ? "http://localhost:3001"
         : "https://ps-car-rental-api.ie-advisor.co.th",
-
+      FACEBOOK_APP_ID: process.env.FACEBOOK_APP_ID,
+      FACEBOOK_APP_SECRET: process.env.FACEBOOK_APP_SECRET
     }
   }
 

@@ -2,9 +2,13 @@
   <div>
     <v-layout>
       <v-app-bar color="primary" density="compact">
-        <div class="v-container d-flex align-center" style="max-width: 870px">
-          <v-app-bar-nav-icon @click.stop="drawer = !drawer" aria-label="nav-icon"></v-app-bar-nav-icon>
-          <v-app-bar-title>Car Rental</v-app-bar-title>
+        <div class="v-container d-flex align-center" style="max-width: 870px !important">
+          <v-app-bar-nav-icon
+            v-if="displaySize == 'xs'"
+            @click.stop="drawer = !drawer"
+            aria-label="nav-icon"
+          ></v-app-bar-nav-icon>
+          <v-app-bar-title>Car24Rent</v-app-bar-title>
           <v-spacer></v-spacer>
           <v-btn icon="mdi-power-standby" @click="logout()"></v-btn>
         </div>
@@ -36,18 +40,47 @@
         </v-list>
       </v-navigation-drawer>
 
-      <v-main style="max-width: 850px; margin-left: auto; margin-right: auto">
+      <v-main v-if="displaySize == 'xs'" style="max-width: 850px; margin-left: auto; margin-right: auto">
         <NuxtPage />
+      </v-main>
+      <v-main v-else style="max-width: 850px; margin-left: auto; margin-right: auto">
+        <v-row no-gutters>
+          <v-col cols="3" style="flex: 0 0 23%">
+            <v-card class="mt-3" variant="outlined" style="border: 1px solid #ddd; position: fixed">
+              <v-list color="primary">
+                <div v-for="item in manu">
+                  <v-list-item
+                    v-if="item.to.length == 1"
+                    :prepend-icon="item.icon"
+                    :title="item.title"
+                    :to="item.to[0]"
+                  ></v-list-item>
+                  <v-list-group v-else-if="item.to.length > 1" :value="item.value">
+                    <template v-slot:activator="{ props }">
+                      <v-list-item v-bind="props" :prepend-icon="item.icon" :title="item.title"></v-list-item>
+                    </template>
+                    <v-list-item v-for="sub in item.to" :to="sub.to" :title="sub.title"></v-list-item>
+                  </v-list-group>
+                </div>
+              </v-list>
+            </v-card>
+          </v-col>
+          <v-col>
+            <NuxtPage />
+          </v-col>
+        </v-row>
       </v-main>
     </v-layout>
   </div>
 </template>
 <script setup>
+import { useDisplay } from "vuetify";
+const { name } = useDisplay();
+const displaySize = computed(() => name.value);
+
 const drawer = ref(false);
 const router = useRouter();
-const route = useRoute();
 
-const open = ref([]);
 const manu = ref([
   {
     icon: "mdi-chart-areaspline",
@@ -107,6 +140,7 @@ const manu = ref([
       { to: "/setting/car_types", title: "ประเภทรถ" },
       { to: "/setting/car_brands", title: "ยี่ห้อรถ/รุ่นรถ" },
       { to: "/setting/branches", title: "สาขา" },
+      { to: "/setting/pages", title: "เพจ" },
       { to: "/setting/users", title: "ผู้ใช้งาน" },
     ],
   },

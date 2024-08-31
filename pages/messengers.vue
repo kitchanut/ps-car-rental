@@ -1,16 +1,17 @@
 <template>
   <div class="pa-3">
-    <div class="text-right px-2 mb-2">
-      <v-btn-toggle v-model="period" color="warning" variant="outlined" divided density="compact">
-        <v-btn value="lastDay"><b>เมื่อวาน</b></v-btn>
-        <v-btn value="D"><b>วันนี้</b></v-btn>
-        <v-btn value="nextDay"><b>วันพรุ่งนี้</b></v-btn>
-      </v-btn-toggle>
-    </div>
-    <div class="text-right px-2">
-      <v-badge color="grey" inline dot></v-badge>รอรับรถ <v-badge color="error" inline dot></v-badge>รอคืนรถ
-    </div>
     <v-card variant="outlined" style="border: 1px solid #ddd">
+      <div class="text-right pt-2 px-2 mb-2">
+        <v-btn-toggle v-model="period" color="warning" variant="outlined" divided density="compact">
+          <v-btn value="lastDay"><b>เมื่อวาน</b></v-btn>
+          <v-btn value="D"><b>วันนี้</b></v-btn>
+          <v-btn value="nextDay"><b>วันพรุ่งนี้</b></v-btn>
+        </v-btn-toggle>
+      </div>
+      <div class="text-right px-2">
+        <v-badge color="grey" inline dot></v-badge>รอรับรถ <v-badge color="error" inline dot></v-badge>รอคืนรถ
+      </div>
+      <v-divider></v-divider>
       <v-table density="compact">
         <thead>
           <tr>

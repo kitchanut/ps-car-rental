@@ -1,3 +1,3 @@
 <template>
-  <div>สวัสดี</div>
+  <div class="pa-3">สวัสดี</div>
 </template>

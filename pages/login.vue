@@ -1,6 +1,6 @@
 <template>
   <v-container class="login-container">
-    <h1 style="margin-top: 20vh">PS Car Rental</h1>
+    <h1 style="margin-top: 20vh">Car24Rent</h1>
     <form @submit.prevent="handleSubmit">
       <v-text-field
         prepend-inner-icon="mdi-account"
@@ -68,7 +68,7 @@ const handleSubmit = async () => {
 
 <style scoped>
 .login-container {
-  max-width: 500px;
+  max-width: 500px !important;
   margin: 0 auto;
   padding: 2em;
   /* background: #f7f7f7; */
