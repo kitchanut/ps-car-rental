@@ -1,6 +1,12 @@
 <template>
   <div class="pa-3" style="height: 100%">
-    <v-card v-if="!conversation_id" variant="outlined" style="border: 1px solid #ddd" height="100%" :loading="loading">
+    <v-card
+      v-if="!conversation_id"
+      variant="outlined"
+      style="border: 1px solid #ddd; max-width: 94vw"
+      height="100%"
+      :loading="loading"
+    >
       <v-card-title primary-title>
         <v-select
           v-model="page_id"
@@ -55,7 +61,7 @@
                   v-if="msg.from.id != page_id"
                   variant="outlined"
                   class="pa-3"
-                  style="border: 1px solid #ddd; max-width: 500px"
+                  style="border: 1px solid #ddd; max-width: min(500px, 70vw)"
                 >
                   <v-chip class="pa-2" color="success" size="small">
                     <span>{{ conversation_name }}</span>
@@ -66,7 +72,12 @@
                     <v-img v-for="file in msg.attachments.data" class="mt-1" :src="file.image_data.url"></v-img>
                   </div>
                 </v-card>
-                <v-card v-else variant="outlined" class="pa-3" style="border: 1px solid #ddd; max-width: 450px">
+                <v-card
+                  v-else
+                  variant="outlined"
+                  class="pa-3"
+                  style="border: 1px solid #ddd; max-width: min(500px, 70vw)"
+                >
                   <div class="text-right">
                     <v-chip class="pa-2" color="primary" size="small">
                       <span>คุณ</span>
