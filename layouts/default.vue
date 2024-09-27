@@ -8,7 +8,7 @@
             @click.stop="drawer = !drawer"
             aria-label="nav-icon"
           ></v-app-bar-nav-icon>
-          <v-app-bar-title>Car24Rent</v-app-bar-title>
+          <v-app-bar-title>PSCarRental</v-app-bar-title>
           <v-spacer></v-spacer>
           <v-btn icon="mdi-power-standby" @click="logout()"></v-btn>
         </div>

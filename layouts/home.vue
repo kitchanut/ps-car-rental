@@ -5,7 +5,7 @@
         <div class="v-container d-flex align-center">
           <v-app-bar-title>
             <v-app-bar-nav-icon v-if="displaySize == 'xs'" @click="drawer = !drawer"></v-app-bar-nav-icon>
-            <b class="mr-5 cursor-pointer" @click="$router.push('/')">Car24Rent</b>
+            <b class="mr-5 cursor-pointer" @click="$router.push('/')">PSCarRental</b>
             <v-btn v-if="displaySize != 'xs'" size="large" to="/privacy" variant="plain">นโยบายความเป็นส่วนตัว</v-btn>
             <v-btn v-if="displaySize != 'xs'" size="large" to="/contact" variant="plain">ติดต่อเรา</v-btn>
           </v-app-bar-title>

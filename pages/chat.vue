@@ -7,7 +7,7 @@
       height="100%"
       :loading="loading"
     >
-      <v-card-title primary-title>
+      <v-card-title class="pa-0">
         <v-select
           v-model="page_id"
           :items="pages"
@@ -111,7 +111,9 @@ const conversation_name = ref(null);
 
 const loading = ref(false);
 const pages = ref([]);
-const page_id = ref(null);
+
+// const page_id = ref(null);
+const page_id = useState("page_id", () => null);
 const getPage = async () => {
   loading.value = true;
   const response = await useApiFacebookPages().index();
@@ -119,7 +121,8 @@ const getPage = async () => {
   loading.value = false;
 };
 getPage();
-const conversations = ref([]);
+// const conversations = ref([]);
+const conversations = useState("conversations", () => []);
 const getConversations = async () => {
   try {
     loading.value = true;

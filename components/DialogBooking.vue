@@ -45,555 +45,571 @@
         </v-container>
       </v-toolbar>
 
-      <v-stepper v-model="step" class="mobile" hide-actions alt-labels>
-        <v-stepper-header>
-          <v-stepper-item
-            title="จอง"
-            value="1"
-            editable
-            :complete="['จอง', 'มัดจำ', 'รับรถ', 'คืนรถ', 'คืนมัดจำ'].includes(formData.booking_status)"
-            :color="['จอง', 'มัดจำ', 'รับรถ', 'คืนรถ', 'คืนมัดจำ'].includes(formData.booking_status) ? 'success' : ''"
-          ></v-stepper-item>
-          <v-divider></v-divider>
-          <v-stepper-item
-            title="มัดจำ"
-            value="2"
-            :editable="['จอง', 'มัดจำ', 'รับรถ', 'คืนรถ', 'คืนมัดจำ'].includes(formData.booking_status)"
-            :complete="['มัดจำ', 'รับรถ', 'คืนรถ', 'คืนมัดจำ'].includes(formData.booking_status)"
-            :color="['มัดจำ', 'รับรถ', 'คืนรถ', 'คืนมัดจำ'].includes(formData.booking_status) ? 'success' : ''"
-          ></v-stepper-item>
-          <v-divider></v-divider>
-          <v-stepper-item
-            title="รับรถ"
-            value="3"
-            :editable="['มัดจำ', 'รับรถ', 'คืนรถ', 'คืนมัดจำ'].includes(formData.booking_status)"
-            :complete="['รับรถ', 'คืนรถ', 'คืนมัดจำ'].includes(formData.booking_status)"
-            :color="['รับรถ', 'คืนรถ', 'คืนมัดจำ'].includes(formData.booking_status) ? 'success' : ''"
-          ></v-stepper-item>
-          <v-divider></v-divider>
-          <v-stepper-item
-            title="คืนรถ"
-            value="4"
-            :editable="['รับรถ', 'คืนรถ', 'คืนมัดจำ'].includes(formData.booking_status)"
-            :complete="['คืนรถ', 'คืนมัดจำ'].includes(formData.booking_status)"
-            :color="['คืนรถ', 'คืนมัดจำ'].includes(formData.booking_status) ? 'success' : ''"
-          ></v-stepper-item>
-          <v-divider></v-divider>
-          <v-stepper-item
-            title="คืนมัดจำ"
-            value="5"
-            :editable="['คืนรถ', 'คืนมัดจำ'].includes(formData.booking_status)"
-            :complete="['คืนมัดจำ'].includes(formData.booking_status)"
-            :color="['คืนมัดจำ'].includes(formData.booking_status) ? 'success' : ''"
-          ></v-stepper-item>
-        </v-stepper-header>
-        <v-stepper-window :style="`height: ${innerHeight - 170}px;`">
-          <v-stepper-window-item value="1">
-            <v-form ref="form" lazy-validation @submit.prevent="onSubmit()">
-              <v-divider>ข้อมูลเบื้องต้น</v-divider>
-              <v-row class="mt-3" no-gutters>
-                <v-col cols="4" class="d-flex align-center">วันจอง</v-col>
-                <v-col>
-                  <v-text-field
-                    class="pl-3"
-                    v-model="formData.booking_date"
-                    type="datetime-local"
-                    density="compact"
-                    outlined
-                    dense
-                    hide-details
-                    :rules="[(value) => !!value || 'Required.']"
-                  >
-                  </v-text-field>
-                </v-col>
-              </v-row>
+      <v-container class="pa-0">
+        <v-stepper v-model="step" class="mobile" hide-actions alt-labels>
+          <v-stepper-header>
+            <v-stepper-item
+              title="จอง"
+              value="1"
+              editable
+              :complete="['จอง', 'มัดจำ', 'รับรถ', 'คืนรถ', 'คืนมัดจำ'].includes(formData.booking_status)"
+              :color="['จอง', 'มัดจำ', 'รับรถ', 'คืนรถ', 'คืนมัดจำ'].includes(formData.booking_status) ? 'success' : ''"
+            ></v-stepper-item>
+            <v-divider></v-divider>
+            <v-stepper-item
+              title="มัดจำ"
+              value="2"
+              :editable="['จอง', 'มัดจำ', 'รับรถ', 'คืนรถ', 'คืนมัดจำ'].includes(formData.booking_status)"
+              :complete="['มัดจำ', 'รับรถ', 'คืนรถ', 'คืนมัดจำ'].includes(formData.booking_status)"
+              :color="['มัดจำ', 'รับรถ', 'คืนรถ', 'คืนมัดจำ'].includes(formData.booking_status) ? 'success' : ''"
+            ></v-stepper-item>
+            <v-divider></v-divider>
+            <v-stepper-item
+              title="รับรถ"
+              value="3"
+              :editable="['มัดจำ', 'รับรถ', 'คืนรถ', 'คืนมัดจำ'].includes(formData.booking_status)"
+              :complete="['รับรถ', 'คืนรถ', 'คืนมัดจำ'].includes(formData.booking_status)"
+              :color="['รับรถ', 'คืนรถ', 'คืนมัดจำ'].includes(formData.booking_status) ? 'success' : ''"
+            ></v-stepper-item>
+            <v-divider></v-divider>
+            <v-stepper-item
+              title="คืนรถ"
+              value="4"
+              :editable="['รับรถ', 'คืนรถ', 'คืนมัดจำ'].includes(formData.booking_status)"
+              :complete="['คืนรถ', 'คืนมัดจำ'].includes(formData.booking_status)"
+              :color="['คืนรถ', 'คืนมัดจำ'].includes(formData.booking_status) ? 'success' : ''"
+            ></v-stepper-item>
+            <v-divider></v-divider>
+            <v-stepper-item
+              title="คืนมัดจำ"
+              value="5"
+              :editable="['คืนรถ', 'คืนมัดจำ'].includes(formData.booking_status)"
+              :complete="['คืนมัดจำ'].includes(formData.booking_status)"
+              :color="['คืนมัดจำ'].includes(formData.booking_status) ? 'success' : ''"
+            ></v-stepper-item>
+          </v-stepper-header>
+          <v-stepper-window :style="`height: ${innerHeight - 170}px;`">
+            <v-stepper-window-item value="1">
+              <v-form ref="form" lazy-validation @submit.prevent="onSubmit()">
+                <v-divider>ข้อมูลเบื้องต้น</v-divider>
+                <v-row class="mt-3" no-gutters>
+                  <v-col cols="4" class="d-flex align-center">วันจอง</v-col>
+                  <v-col>
+                    <v-text-field
+                      class="pl-3"
+                      v-model="formData.booking_date"
+                      type="datetime-local"
+                      density="compact"
+                      outlined
+                      dense
+                      hide-details
+                      :rules="[(value) => !!value || 'Required.']"
+                    >
+                    </v-text-field>
+                  </v-col>
+                </v-row>
 
-              <v-row class="mt-1" no-gutters>
-                <v-col cols="4" class="d-flex align-center">ลูกค้า</v-col>
-                <v-col>
-                  <v-autocomplete
-                    class="pl-3"
-                    v-model="formData.customer_id"
-                    :items="customers"
-                    item-title="customer_name"
-                    item-value="id"
-                    density="compact"
-                    hide-details
-                    :rules="[(value) => !!value || 'Required.']"
-                  >
-                    <template v-slot:item="{ props, item }">
-                      <v-list-item
-                        v-bind="props"
-                        :prepend-avatar="item.raw.customer_image ? $getImage(item.raw.customer_image) : $imageBaseApp()"
-                        :title="item.raw.customer_name"
-                        :subtitle="item.raw.customer_tel"
-                      >
-                      </v-list-item>
-                    </template>
-                  </v-autocomplete>
-                </v-col>
-              </v-row>
+                <v-row class="mt-1" no-gutters>
+                  <v-col cols="4" class="d-flex align-center">
+                    <div class="pr-2">ลูกค้า</div>
+                    <DialogCustomer appearance="icon" actionType="add" @success="getCustomers()" />
+                  </v-col>
+                  <v-col>
+                    <v-autocomplete
+                      class="pl-3"
+                      v-model="formData.customer_id"
+                      :items="customers"
+                      item-title="customer_name"
+                      item-value="id"
+                      density="compact"
+                      hide-details
+                      :rules="[(value) => !!value || 'Required.']"
+                    >
+                      <template v-slot:item="{ props, item }">
+                        <v-list-item
+                          v-bind="props"
+                          :prepend-avatar="
+                            item.raw.customer_image ? $getImage(item.raw.customer_image) : $imageBaseApp()
+                          "
+                          :title="item.raw.customer_name"
+                          :subtitle="item.raw.customer_tel"
+                        >
+                        </v-list-item>
+                      </template>
+                    </v-autocomplete>
+                  </v-col>
+                </v-row>
 
-              <v-row class="mt-1" no-gutters>
-                <v-col cols="4" class="d-flex align-center">รถเช่า</v-col>
-                <v-col>
-                  <v-autocomplete
-                    class="pl-3"
-                    v-model="formData.car_id"
-                    :items="cars"
-                    item-title="license_plate"
-                    item-value="id"
-                    density="compact"
-                    hide-details
-                    @update:modelValue="changeCar()"
-                    :rules="[(value) => !!value || 'Required.']"
-                  >
-                    <template v-slot:item="{ props, item }">
-                      <v-list-item
-                        v-bind="props"
-                        :prepend-avatar="
-                          item.raw.uploads.length ? $getImage(item.raw.uploads[0].file_path) : $imageBaseApp()
-                        "
-                        :title="item.raw.license_plate"
-                      >
-                        <div class="d-flex" style="font-size: 0.875rem; color: grey">
-                          {{ item.raw.car_model.car_model_name }} | {{ item.raw.year }} |
-                          <b style="color: green" class="mx-1">{{ item.raw.rental_per_day.toLocaleString() }}</b> |
+                <v-row class="mt-1" no-gutters>
+                  <v-col cols="4" class="d-flex align-center">รถเช่า</v-col>
+                  <v-col>
+                    <v-autocomplete
+                      class="pl-3"
+                      v-model="formData.car_id"
+                      :items="cars"
+                      item-title="license_plate"
+                      item-value="id"
+                      density="compact"
+                      hide-details
+                      @update:modelValue="changeCar()"
+                      :rules="[(value) => !!value || 'Required.']"
+                    >
+                      <template v-slot:item="{ props, item }">
+                        <v-list-item
+                          v-bind="props"
+                          :prepend-avatar="
+                            item.raw.uploads.length ? $getImage(item.raw.uploads[0].file_path) : $imageBaseApp()
+                          "
+                          :title="item.raw.license_plate"
+                        >
+                          <div class="d-flex" style="font-size: 0.875rem; color: grey">
+                            {{ item.raw.car_model.car_model_name }} | {{ item.raw.year }} |
+                            <b style="color: green" class="mx-1">{{ item.raw.rental_per_day.toLocaleString() }}</b> |
 
-                          <v-chip :color="item.raw.color_code" label variant="flat" density="compact" size="small">
-                            {{ item.raw.color }}
-                          </v-chip>
-                          |
-                          <v-chip :color="item.raw.branch.branch_color" label density="compact" size="small">
-                            {{ item.raw.branch.branch_name }}
-                          </v-chip>
-                        </div>
-                      </v-list-item>
-                    </template>
-                  </v-autocomplete>
-                </v-col>
-              </v-row>
-              <v-row v-if="actionType == 'edit'" class="mt-1" no-gutters>
-                <v-col cols="4" class="d-flex align-center">สถานะงาน</v-col>
-                <v-col>
-                  <v-select
-                    class="ml-3"
-                    :items="['จอง', 'มัดจำ', 'รับรถ', 'คืนรถ', 'คืนมัดจำ', 'ยกเลิก']"
-                    v-model="formData.booking_status"
-                    density="compact"
-                    hide-details
-                    :rules="[(value) => !!value || 'Required.']"
-                  ></v-select>
-                </v-col>
-              </v-row>
+                            <v-chip :color="item.raw.color_code" label variant="flat" density="compact" size="small">
+                              {{ item.raw.color }}
+                            </v-chip>
+                            |
+                            <v-chip :color="item.raw.branch.branch_color" label density="compact" size="small">
+                              {{ item.raw.branch.branch_name }}
+                            </v-chip>
+                          </div>
+                        </v-list-item>
+                      </template>
+                    </v-autocomplete>
+                  </v-col>
+                </v-row>
+                <v-row v-if="actionType == 'edit'" class="mt-1" no-gutters>
+                  <v-col cols="4" class="d-flex align-center">สถานะงาน</v-col>
+                  <v-col>
+                    <v-select
+                      class="ml-3"
+                      :items="['จอง', 'มัดจำ', 'รับรถ', 'คืนรถ', 'คืนมัดจำ', 'ยกเลิก']"
+                      v-model="formData.booking_status"
+                      density="compact"
+                      hide-details
+                      :rules="[(value) => !!value || 'Required.']"
+                    ></v-select>
+                  </v-col>
+                </v-row>
 
-              <br />
-              <v-divider>การรับคืนรถ</v-divider>
+                <br />
+                <v-divider>การรับคืนรถ</v-divider>
 
-              <v-row class="mt-3" no-gutters>
-                <v-col cols="4" class="d-flex align-center">วันรับรถ</v-col>
-                <v-col>
-                  <v-text-field
-                    class="pl-3"
-                    v-model="formData.pickup_date"
-                    type="datetime-local"
-                    density="compact"
-                    outlined
-                    dense
-                    hide-details
-                    :rules="[(value) => !!value || 'Required.']"
-                  >
-                  </v-text-field>
-                </v-col>
-              </v-row>
+                <v-row class="mt-3" no-gutters>
+                  <v-col cols="4" class="d-flex align-center">วันรับรถ</v-col>
+                  <v-col>
+                    <v-text-field
+                      class="pl-3"
+                      v-model="formData.pickup_date"
+                      type="datetime-local"
+                      density="compact"
+                      outlined
+                      dense
+                      hide-details
+                      :rules="[(value) => !!value || 'Required.']"
+                    >
+                    </v-text-field>
+                  </v-col>
+                </v-row>
 
-              <v-row no-gutters>
-                <v-col cols="4" class="d-flex align-center">สถานที่รับรถ</v-col>
-                <v-col>
-                  <v-combobox
-                    class="pl-3"
-                    v-model="formData.pickup_location"
-                    :items="['สถานบิน', 'บริษัท']"
-                    density="compact"
-                    outlined
-                    dense
-                    hide-details
-                    :rules="[(value) => !!value || 'Required.']"
-                  >
-                  </v-combobox>
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col cols="4" class="d-flex align-center">สาขา</v-col>
-                <v-col>
-                  <v-select
-                    class="pl-3"
-                    v-model="formData.pickup_branch_id"
-                    :items="branches"
-                    item-title="branch_name"
-                    item-value="id"
-                    density="compact"
-                    hide-details
-                    :rules="[(value) => !!value || 'Required.']"
-                  >
-                  </v-select>
-                </v-col>
-              </v-row>
+                <v-row no-gutters>
+                  <v-col cols="4" class="d-flex align-center">สถานที่รับรถ</v-col>
+                  <v-col>
+                    <v-combobox
+                      class="pl-3"
+                      v-model="formData.pickup_location"
+                      :items="['สถานบิน', 'บริษัท']"
+                      density="compact"
+                      outlined
+                      dense
+                      hide-details
+                      :rules="[(value) => !!value || 'Required.']"
+                    >
+                    </v-combobox>
+                  </v-col>
+                </v-row>
+                <v-row no-gutters>
+                  <v-col cols="4" class="d-flex align-center">สาขา</v-col>
+                  <v-col>
+                    <v-select
+                      class="pl-3"
+                      v-model="formData.pickup_branch_id"
+                      :items="branches"
+                      item-title="branch_name"
+                      item-value="id"
+                      density="compact"
+                      hide-details
+                      :rules="[(value) => !!value || 'Required.']"
+                    >
+                    </v-select>
+                  </v-col>
+                </v-row>
 
-              <v-row class="mt-3" no-gutters>
-                <v-col cols="4" class="d-flex align-center">วันคืนรถ</v-col>
-                <v-col>
-                  <v-text-field
-                    class="pl-3"
-                    v-model="formData.return_date"
-                    type="datetime-local"
-                    density="compact"
-                    outlined
-                    dense
-                    hide-details
-                    :rules="[(value) => !!value || 'Required.']"
-                  >
-                  </v-text-field>
-                </v-col>
-              </v-row>
+                <v-row class="mt-3" no-gutters>
+                  <v-col cols="4" class="d-flex align-center">วันคืนรถ</v-col>
+                  <v-col>
+                    <v-text-field
+                      class="pl-3"
+                      v-model="formData.return_date"
+                      type="datetime-local"
+                      density="compact"
+                      outlined
+                      dense
+                      hide-details
+                      :rules="[(value) => !!value || 'Required.']"
+                    >
+                    </v-text-field>
+                  </v-col>
+                </v-row>
 
-              <v-row no-gutters>
-                <v-col cols="4" class="d-flex align-center">สถานที่คืนรถ</v-col>
-                <v-col>
-                  <v-combobox
-                    class="pl-3"
-                    v-model="formData.return_location"
-                    :items="['สถานบิน', 'บริษัท']"
-                    density="compact"
-                    outlined
-                    dense
-                    hide-details
-                    :rules="[(value) => !!value || 'Required.']"
-                  >
-                  </v-combobox>
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col cols="4" class="d-flex align-center">สาขา</v-col>
-                <v-col>
-                  <v-select
-                    class="pl-3"
-                    v-model="formData.return_branch_id"
-                    :items="branches"
-                    item-title="branch_name"
-                    item-value="id"
-                    density="compact"
-                    hide-details
-                    :rules="[(value) => !!value || 'Required.']"
-                  >
-                  </v-select>
-                </v-col>
-              </v-row>
+                <v-row no-gutters>
+                  <v-col cols="4" class="d-flex align-center">สถานที่คืนรถ</v-col>
+                  <v-col>
+                    <v-combobox
+                      class="pl-3"
+                      v-model="formData.return_location"
+                      :items="['สถานบิน', 'บริษัท']"
+                      density="compact"
+                      outlined
+                      dense
+                      hide-details
+                      :rules="[(value) => !!value || 'Required.']"
+                    >
+                    </v-combobox>
+                  </v-col>
+                </v-row>
+                <v-row no-gutters>
+                  <v-col cols="4" class="d-flex align-center">สาขา</v-col>
+                  <v-col>
+                    <v-select
+                      class="pl-3"
+                      v-model="formData.return_branch_id"
+                      :items="branches"
+                      item-title="branch_name"
+                      item-value="id"
+                      density="compact"
+                      hide-details
+                      :rules="[(value) => !!value || 'Required.']"
+                    >
+                    </v-select>
+                  </v-col>
+                </v-row>
 
-              <v-row class="mt-3" no-gutters>
-                <v-col cols="4" class="d-flex align-center">ระยะเวลา</v-col>
-                <v-col>
-                  <v-text-field
-                    class="pl-3 pr-1"
-                    v-model="period_day"
-                    suffix=" วัน"
-                    density="compact"
-                    hide-details
-                    readonly
-                  >
-                  </v-text-field>
-                </v-col>
-                <v-col>
-                  <v-text-field v-model="period_remain_hours" suffix=" ชั่วโมง" density="compact" hide-details readonly>
-                  </v-text-field>
-                </v-col>
-              </v-row>
+                <v-row class="mt-3" no-gutters>
+                  <v-col cols="4" class="d-flex align-center">ระยะเวลา</v-col>
+                  <v-col>
+                    <v-text-field
+                      class="pl-3 pr-1"
+                      v-model="period_day"
+                      suffix=" วัน"
+                      density="compact"
+                      hide-details
+                      readonly
+                    >
+                    </v-text-field>
+                  </v-col>
+                  <v-col>
+                    <v-text-field
+                      v-model="period_remain_hours"
+                      suffix=" ชั่วโมง"
+                      density="compact"
+                      hide-details
+                      readonly
+                    >
+                    </v-text-field>
+                  </v-col>
+                </v-row>
 
-              <br />
-              <v-divider>ข้อมูลราคา</v-divider>
-              <v-row class="mt-3" no-gutters>
-                <v-col cols="4" class="d-flex align-center">ค่าเช่าต่อวัน</v-col>
-                <v-col>
-                  <v-text-field
-                    class="pl-3 right-input"
-                    v-model.number="formData.rental_per_day"
-                    type="number"
-                    append-inner-icon="mdi-currency-thb"
-                    density="compact"
-                    outlined
-                    dense
-                    hide-details
-                    @keyup="calPrice()"
-                    :rules="[(value) => !isNaN(parseFloat(value)) || 'Must be a number']"
-                  >
-                  </v-text-field>
-                </v-col>
-              </v-row>
+                <br />
+                <v-divider>ข้อมูลราคา</v-divider>
+                <v-row class="mt-3" no-gutters>
+                  <v-col cols="4" class="d-flex align-center">ค่าเช่าต่อวัน</v-col>
+                  <v-col>
+                    <v-text-field
+                      class="pl-3 right-input"
+                      v-model.number="formData.rental_per_day"
+                      type="number"
+                      append-inner-icon="mdi-currency-thb"
+                      density="compact"
+                      outlined
+                      dense
+                      hide-details
+                      @keyup="calPrice()"
+                      :rules="[(value) => !isNaN(parseFloat(value)) || 'Must be a number']"
+                    >
+                    </v-text-field>
+                  </v-col>
+                </v-row>
 
-              <v-row class="mt-1" no-gutters>
-                <v-col cols="4" class="d-flex align-center">ค่าเช่าทั้งหมด</v-col>
-                <v-col>
-                  <v-text-field
-                    class="pl-3 right-input"
-                    v-model.number="formData.rental"
-                    type="number"
-                    append-inner-icon="mdi-currency-thb"
-                    density="compact"
-                    outlined
-                    dense
-                    hide-details
-                    readonly
-                    bg-color="white"
-                    :rules="[(value) => !isNaN(parseFloat(value)) || 'Must be a number']"
-                  >
-                  </v-text-field>
-                </v-col>
-              </v-row>
+                <v-row class="mt-1" no-gutters>
+                  <v-col cols="4" class="d-flex align-center">ค่าเช่าทั้งหมด</v-col>
+                  <v-col>
+                    <v-text-field
+                      class="pl-3 right-input"
+                      v-model.number="formData.rental"
+                      type="number"
+                      append-inner-icon="mdi-currency-thb"
+                      density="compact"
+                      outlined
+                      dense
+                      hide-details
+                      readonly
+                      bg-color="white"
+                      :rules="[(value) => !isNaN(parseFloat(value)) || 'Must be a number']"
+                    >
+                    </v-text-field>
+                  </v-col>
+                </v-row>
 
-              <v-row class="mt-1" no-gutters>
-                <v-col cols="4" class="d-flex align-center"> คนขับ </v-col>
-                <v-col>
-                  <v-text-field
-                    class="pl-3 right-input"
-                    v-model.number="formData.driver_per_day"
-                    type="number"
-                    :prepend-inner-icon="
-                      formData.required_driver ? 'mdi-checkbox-marked' : 'mdi-checkbox-blank-outline'
-                    "
-                    append-inner-icon="mdi-currency-thb"
-                    density="compact"
-                    outlined
-                    dense
-                    hide-details
-                    @click:prepend-inner="
-                      formData.required_driver = !formData.required_driver;
-                      getDriverPrice();
-                    "
-                    @keyup="calPrice()"
-                    :rules="[(value) => !isNaN(parseFloat(value)) || 'Must be a number']"
-                  >
-                  </v-text-field>
-                </v-col>
-              </v-row>
+                <v-row class="mt-1" no-gutters>
+                  <v-col cols="4" class="d-flex align-center"> คนขับ </v-col>
+                  <v-col>
+                    <v-text-field
+                      class="pl-3 right-input"
+                      v-model.number="formData.driver_per_day"
+                      type="number"
+                      :prepend-inner-icon="
+                        formData.required_driver ? 'mdi-checkbox-marked' : 'mdi-checkbox-blank-outline'
+                      "
+                      append-inner-icon="mdi-currency-thb"
+                      density="compact"
+                      outlined
+                      dense
+                      hide-details
+                      @click:prepend-inner="
+                        formData.required_driver = !formData.required_driver;
+                        getDriverPrice();
+                      "
+                      @keyup="calPrice()"
+                      :rules="[(value) => !isNaN(parseFloat(value)) || 'Must be a number']"
+                    >
+                    </v-text-field>
+                  </v-col>
+                </v-row>
 
-              <v-row class="mt-1" no-gutters>
-                <v-col cols="4" class="d-flex align-center">ค่าเช่าเพิ่มเติม</v-col>
-                <v-col>
-                  <v-text-field
-                    class="pl-3 right-input"
-                    v-model.number="formData.extra_charge"
-                    type="number"
-                    append-inner-icon="mdi-currency-thb"
-                    density="compact"
-                    outlined
-                    dense
-                    hide-details
-                    @keyup="calPrice()"
-                    :rules="[(value) => !isNaN(parseFloat(value)) || 'Must be a number']"
-                  >
-                  </v-text-field>
-                </v-col>
-              </v-row>
+                <v-row class="mt-1" no-gutters>
+                  <v-col cols="4" class="d-flex align-center">ค่าเช่าเพิ่มเติม</v-col>
+                  <v-col>
+                    <v-text-field
+                      class="pl-3 right-input"
+                      v-model.number="formData.extra_charge"
+                      type="number"
+                      append-inner-icon="mdi-currency-thb"
+                      density="compact"
+                      outlined
+                      dense
+                      hide-details
+                      readonly
+                      @keyup="calPrice()"
+                      :rules="[(value) => !isNaN(parseFloat(value)) || 'Must be a number']"
+                    >
+                    </v-text-field>
+                  </v-col>
+                </v-row>
 
-              <v-row class="mt-1" no-gutters>
-                <v-col cols="4" class="d-flex align-center">ส่วนลด</v-col>
-                <v-col>
-                  <v-text-field
-                    class="pl-3 right-input"
-                    v-model.number="formData.discount"
-                    type="number"
-                    append-inner-icon="mdi-currency-thb"
-                    density="compact"
-                    outlined
-                    dense
-                    hide-details
-                    @keyup="calPrice()"
-                    :rules="[(value) => !isNaN(parseFloat(value)) || 'Must be a number']"
-                  >
-                  </v-text-field>
-                </v-col>
-              </v-row>
+                <v-row class="mt-1" no-gutters>
+                  <v-col cols="4" class="d-flex align-center">ส่วนลด</v-col>
+                  <v-col>
+                    <v-text-field
+                      class="pl-3 right-input"
+                      v-model.number="formData.discount"
+                      type="number"
+                      append-inner-icon="mdi-currency-thb"
+                      density="compact"
+                      outlined
+                      dense
+                      hide-details
+                      @keyup="calPrice()"
+                      :rules="[(value) => !isNaN(parseFloat(value)) || 'Must be a number']"
+                    >
+                    </v-text-field>
+                  </v-col>
+                </v-row>
 
-              <v-row class="mt-1" no-gutters>
-                <v-col cols="4" class="d-flex align-center">รวม</v-col>
-                <v-col>
-                  <v-text-field
-                    class="pl-3 right-input"
-                    v-model.number="formData.sub_total"
-                    type="number"
-                    append-inner-icon="mdi-currency-thb"
-                    density="compact"
-                    outlined
-                    dense
-                    hide-details
-                    readonly
-                    bg-color="white"
-                    :rules="[(value) => !isNaN(parseFloat(value)) || 'Must be a number']"
-                  >
-                  </v-text-field>
-                </v-col>
-              </v-row>
+                <v-row class="mt-1" no-gutters>
+                  <v-col cols="4" class="d-flex align-center">รวม</v-col>
+                  <v-col>
+                    <v-text-field
+                      class="pl-3 right-input"
+                      v-model.number="formData.sub_total"
+                      type="number"
+                      append-inner-icon="mdi-currency-thb"
+                      density="compact"
+                      outlined
+                      dense
+                      hide-details
+                      readonly
+                      bg-color="white"
+                      :rules="[(value) => !isNaN(parseFloat(value)) || 'Must be a number']"
+                    >
+                    </v-text-field>
+                  </v-col>
+                </v-row>
 
-              <v-row class="mt-1" no-gutters>
-                <v-col cols="4" class="d-flex align-center">% Vat</v-col>
-                <v-col cols="3">
-                  <v-select
-                    class="pl-3"
-                    :items="[0, 7]"
-                    v-model.number="formData.vat_percent"
-                    density="compact"
-                    suffix="%"
-                    menu-icon=""
-                    :reverse="false"
-                    hide-details
-                    @update:model-value="calPrice()"
-                    :rules="[(value) => !isNaN(parseFloat(value)) || 'Must be a number']"
-                  ></v-select>
-                </v-col>
-                <v-col>
-                  <v-text-field
-                    class="pl-1 right-input"
-                    v-model.number="formData.vat_amount"
-                    type="number"
-                    append-inner-icon="mdi-currency-thb"
-                    density="compact"
-                    outlined
-                    dense
-                    hide-details
-                    :rules="[(value) => !isNaN(parseFloat(value)) || 'Must be a number']"
-                  >
-                  </v-text-field>
-                </v-col>
-              </v-row>
+                <v-row class="mt-1" no-gutters>
+                  <v-col cols="4" class="d-flex align-center">% Vat</v-col>
+                  <v-col cols="3">
+                    <v-select
+                      class="pl-3"
+                      :items="[0, 7]"
+                      v-model.number="formData.vat_percent"
+                      density="compact"
+                      suffix="%"
+                      menu-icon=""
+                      :reverse="false"
+                      hide-details
+                      @update:model-value="calPrice()"
+                      :rules="[(value) => !isNaN(parseFloat(value)) || 'Must be a number']"
+                    ></v-select>
+                  </v-col>
+                  <v-col>
+                    <v-text-field
+                      class="pl-1 right-input"
+                      v-model.number="formData.vat_amount"
+                      type="number"
+                      append-inner-icon="mdi-currency-thb"
+                      density="compact"
+                      outlined
+                      dense
+                      hide-details
+                      :rules="[(value) => !isNaN(parseFloat(value)) || 'Must be a number']"
+                    >
+                    </v-text-field>
+                  </v-col>
+                </v-row>
 
-              <v-row class="mt-1" no-gutters>
-                <v-col cols="4" class="d-flex align-center">รวมทั้งหมด</v-col>
-                <v-col>
-                  <v-text-field
-                    class="pl-3 right-input"
-                    v-model.number="formData.total"
-                    type="number"
-                    append-inner-icon="mdi-currency-thb"
-                    density="compact"
-                    outlined
-                    dense
-                    hide-details
-                    readonly
-                    bg-color="white"
-                    :rules="[(value) => !isNaN(parseFloat(value)) || 'Must be a number']"
-                  >
-                  </v-text-field>
-                </v-col>
-              </v-row>
+                <v-row class="mt-1" no-gutters>
+                  <v-col cols="4" class="d-flex align-center">รวมทั้งหมด</v-col>
+                  <v-col>
+                    <v-text-field
+                      class="pl-3 right-input"
+                      v-model.number="formData.total"
+                      type="number"
+                      append-inner-icon="mdi-currency-thb"
+                      density="compact"
+                      outlined
+                      dense
+                      hide-details
+                      readonly
+                      bg-color="white"
+                      :rules="[(value) => !isNaN(parseFloat(value)) || 'Must be a number']"
+                    >
+                    </v-text-field>
+                  </v-col>
+                </v-row>
 
-              <v-row class="mt-1" no-gutters>
-                <v-col cols="4" class="d-flex align-center">มัดจำ</v-col>
-                <v-col>
-                  <v-text-field
-                    class="pl-3 right-input"
-                    v-model.number="formData.deposit"
-                    type="number"
-                    append-inner-icon="mdi-currency-thb"
-                    density="compact"
-                    outlined
-                    dense
-                    hide-details
-                    @keyup="calPrice()"
-                    :rules="[(value) => !isNaN(parseFloat(value)) || 'Must be a number']"
-                  >
-                  </v-text-field>
-                </v-col>
-              </v-row>
+                <v-row class="mt-1" no-gutters>
+                  <v-col cols="4" class="d-flex align-center">มัดจำ</v-col>
+                  <v-col>
+                    <v-text-field
+                      class="pl-3 right-input"
+                      v-model.number="formData.deposit"
+                      type="number"
+                      append-inner-icon="mdi-currency-thb"
+                      density="compact"
+                      outlined
+                      dense
+                      hide-details
+                      @keyup="calPrice()"
+                      :rules="[(value) => !isNaN(parseFloat(value)) || 'Must be a number']"
+                    >
+                    </v-text-field>
+                  </v-col>
+                </v-row>
 
-              <v-row class="mt-1" no-gutters>
-                <v-col cols="4" class="d-flex align-center">รวมสุทธิ</v-col>
-                <v-col>
-                  <v-text-field
-                    class="pl-3 right-input"
-                    v-model.number="formData.net_total"
-                    type="number"
-                    append-inner-icon="mdi-currency-thb"
-                    density="compact"
-                    outlined
-                    dense
-                    hide-details
-                    readonly
-                    bg-color="white"
-                    :rules="[(value) => !isNaN(parseFloat(value)) || 'Must be a number']"
-                  >
-                  </v-text-field>
-                </v-col>
-              </v-row>
+                <v-row class="mt-1" no-gutters>
+                  <v-col cols="4" class="d-flex align-center">รวมสุทธิ</v-col>
+                  <v-col>
+                    <v-text-field
+                      class="pl-3 right-input"
+                      v-model.number="formData.net_total"
+                      type="number"
+                      append-inner-icon="mdi-currency-thb"
+                      density="compact"
+                      outlined
+                      dense
+                      hide-details
+                      readonly
+                      bg-color="white"
+                      :rules="[(value) => !isNaN(parseFloat(value)) || 'Must be a number']"
+                    >
+                    </v-text-field>
+                  </v-col>
+                </v-row>
 
-              <v-row class="mt-1" no-gutters>
-                <v-col cols="4" class="d-flex align-center">หมายเหตุ</v-col>
-                <v-col>
-                  <v-textarea
-                    class="pl-3 right-input"
-                    rows="2"
-                    v-model="formData.booking_note"
-                    density="compact"
-                    outlined
-                    dense
-                    hide-details
-                  >
-                  </v-textarea>
-                </v-col>
-              </v-row>
+                <v-row class="mt-1" no-gutters>
+                  <v-col cols="4" class="d-flex align-center">หมายเหตุ</v-col>
+                  <v-col>
+                    <v-textarea
+                      class="pl-3 right-input"
+                      rows="2"
+                      v-model="formData.booking_note"
+                      density="compact"
+                      outlined
+                      dense
+                      hide-details
+                    >
+                    </v-textarea>
+                  </v-col>
+                </v-row>
 
-              <v-btn
-                v-if="props.actionType == 'edit' && formData.booking_status == 'ระงับการใช้งาน'"
-                class="mt-5"
-                color="error"
-                variant="tonal"
-                size="large"
-                block
-                @click="
-                  dialogDelete = true;
-                  id = formData.id;
-                "
-              >
-                ลบข้อมูล
-              </v-btn>
+                <v-btn
+                  v-if="props.actionType == 'edit' && formData.booking_status == 'ระงับการใช้งาน'"
+                  class="mt-5"
+                  color="error"
+                  variant="tonal"
+                  size="large"
+                  block
+                  @click="
+                    dialogDelete = true;
+                    id = formData.id;
+                  "
+                >
+                  ลบข้อมูล
+                </v-btn>
 
-              <v-btn class="mt-5 mb-5" type="submit" color="primary" block size="large" variant="tonal"> บันทึก </v-btn>
-            </v-form>
-          </v-stepper-window-item>
-          <v-stepper-window-item value="2">
-            <BookingComDeposit
-              :booking_id="formData.id"
-              :car_id="formData.car_id"
-              :booking_status="formData.booking_status"
-              @success="success()"
-            />
-          </v-stepper-window-item>
-          <v-stepper-window-item value="3">
-            <BookingComPickup
-              :step="step"
-              :booking_id="formData.id"
-              :booking_status="formData.booking_status"
-              @success="success()"
-            />
-          </v-stepper-window-item>
-          <v-stepper-window-item value="4">
-            <BookingComReturn
-              :step="step"
-              :booking_id="formData.id"
-              :booking_status="formData.booking_status"
-              @success="success()"
-            />
-          </v-stepper-window-item>
-          <v-stepper-window-item value="5">
-            <BookingComRefund
-              :step="step"
-              :booking_id="formData.id"
-              :car_id="formData.car_id"
-              :booking_status="formData.booking_status"
-              @success="success()"
-            />
-          </v-stepper-window-item>
-        </v-stepper-window>
-      </v-stepper>
+                <v-btn class="mt-5 mb-5" type="submit" color="primary" block size="large" variant="tonal">
+                  บันทึก
+                </v-btn>
+              </v-form>
+            </v-stepper-window-item>
+            <v-stepper-window-item value="2">
+              <BookingComDeposit
+                :booking_id="formData.id"
+                :car_id="formData.car_id"
+                :booking_status="formData.booking_status"
+                @success="success()"
+              />
+            </v-stepper-window-item>
+            <v-stepper-window-item value="3">
+              <BookingComPickup
+                :step="step"
+                :booking_id="formData.id"
+                :booking_status="formData.booking_status"
+                @success="success()"
+              />
+            </v-stepper-window-item>
+            <v-stepper-window-item value="4">
+              <BookingComReturn
+                :step="step"
+                :booking_id="formData.id"
+                :booking_status="formData.booking_status"
+                @success="success()"
+              />
+            </v-stepper-window-item>
+            <v-stepper-window-item value="5">
+              <BookingComRefund
+                :step="step"
+                :booking_id="formData.id"
+                :car_id="formData.car_id"
+                :booking_status="formData.booking_status"
+                @success="success()"
+              />
+            </v-stepper-window-item>
+          </v-stepper-window>
+        </v-stepper>
+      </v-container>
     </v-card>
 
     <!-- <DialogLoader :loading="loading" /> -->
@@ -625,7 +641,7 @@ const formTitle = ref("");
 onMounted(() => {
   getCars();
   getBranches();
-  getCarTypes();
+  getCustomers();
 });
 
 const cars = ref([]);
@@ -641,7 +657,7 @@ const getBranches = async () => {
 };
 
 const customers = ref([]);
-const getCarTypes = async () => {
+const getCustomers = async () => {
   const response = await useApiCustomers().index();
   customers.value = response.data.filter((item) => item.customer_status == "เปิดใช้งาน");
 };

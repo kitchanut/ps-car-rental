@@ -12,6 +12,16 @@
         <span style="font-size: 24px">+</span>
       </v-btn>
       <v-btn
+        v-if="props.appearance == 'icon'"
+        v-bind="activatorProps"
+        icon="mdi-plus"
+        color="primary"
+        variant="tonal"
+        density="comfortable"
+        size="small"
+      >
+      </v-btn>
+      <v-btn
         v-if="props.appearance == 'edit'"
         color="primary"
         dark

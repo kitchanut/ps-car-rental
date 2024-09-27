@@ -2,9 +2,7 @@
   <div class="pa-3">
     <v-card variant="outlined" style="border: 1px solid #ddd" :loading="loading">
       <div class="d-flex ma-3">
-        <DialogBooking appearance="add" actionType="add" @success="getData()" />
         <v-text-field
-          class="pl-3"
           v-model="search"
           append-inner-icon="mdi-magnify"
           label="ค้นหา"
@@ -85,7 +83,6 @@
         </tbody>
       </v-table>
     </v-card>
-
     <DialogBooking :dialog="dialog" :id="id" actionType="edit" @success="getData()" @close="dialog = false" />
   </div>
 </template>

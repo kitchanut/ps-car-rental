@@ -11,6 +11,7 @@
                 height="100%"
                 cover
               />
+              {{ $getImage(item.raw.uploads[0].file_path) }}
             </v-col>
             <v-col
               class="pa-3"
@@ -90,6 +91,7 @@ const getData = async () => {
   let query = `?booking_id=${props.booking_id}&&transaction_type=รับเงินมัดจำ`;
   const response = await useApiAccountTransactions().index(query);
   data.value = response.data;
+  console.log(response.data);
 
   data.value.map((item) => {
     item.account_number = item.account.account_number;

@@ -25,26 +25,26 @@
           <v-card-text>
             <v-row no-gutters>
               <v-col cols="5">วันจอง:</v-col>
-              <v-col>{{ $dayjs(item.booking_date).format("YYYY-MM-DD HH:mm") }}</v-col>
+              <v-col class="text-right">{{ $dayjs(item.booking_date).format("YYYY-MM-DD HH:mm") }}</v-col>
             </v-row>
             <v-row no-gutters>
               <v-col cols="5">วันรับรถ:</v-col>
-              <v-col>{{ $dayjs(item.pickup_date).format("YYYY-MM-DD HH:mm") }}</v-col>
+              <v-col class="text-right">{{ $dayjs(item.pickup_date).format("YYYY-MM-DD HH:mm") }}</v-col>
             </v-row>
             <v-row no-gutters>
               <v-col cols="5">วันคืนรถ:</v-col>
-              <v-col>{{ $dayjs(item.return_date).format("YYYY-MM-DD HH:mm") }}</v-col>
+              <v-col class="text-right">{{ $dayjs(item.return_date).format("YYYY-MM-DD HH:mm") }}</v-col>
             </v-row>
             <v-row no-gutters>
               <v-col cols="5">ลูกค้า:</v-col>
-              <v-col>
+              <v-col class="text-right">
                 {{ item.customer.customer_name }}
                 <span v-if="item.customer.customer_tel">[{{ item.customer.customer_tel }}]</span>
               </v-col>
             </v-row>
             <v-row no-gutters>
               <v-col cols="5">รถเช่า:</v-col>
-              <v-col>
+              <v-col class="text-right">
                 <div>{{ item.car.license_plate }} {{ item.car.license_plate_province }}</div>
                 <div>{{ item.car.car_brand.car_brand_name }} ( {{ item.car.car_model.car_model_name }} )</div>
               </v-col>

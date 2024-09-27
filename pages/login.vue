@@ -1,6 +1,6 @@
 <template>
   <v-container class="login-container">
-    <h1 style="margin-top: 20vh">Car24Rent</h1>
+    <h1 style="margin-top: 20vh">PSCarRental</h1>
     <form @submit.prevent="handleSubmit">
       <v-text-field
         prepend-inner-icon="mdi-account"

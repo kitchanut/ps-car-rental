@@ -5,7 +5,7 @@
 
       <h2 class="mt-2">Introduction</h2>
       <p>
-        IE Advisor Partnership ("Company") has developed the Car24Rent ("Product") app to provide a commercial service
+        IE Advisor Partnership ("Company") has developed the PSCarRental ("Product") app to provide a commercial service
         ("Service"). This Privacy Policy aims to inform users about our policies regarding the collection, use, and
         disclosure of personal information for those who choose to use our Service.
       </p>
@@ -17,7 +17,7 @@
 
       <h2 class="mt-2">Data Collection and Use</h2>
       <p>
-        To provide the car24rent vehicle management service, we may collect personal information such as your name,
+        To provide the PSCarRental vehicle management service, we may collect personal information such as your name,
         email address, phone number, rental details, and other related information.
       </p>
       <p>
