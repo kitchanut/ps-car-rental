@@ -8,10 +8,8 @@
               <v-img
                 :src="item.raw.uploads.length ? $getImage(item.raw.uploads[0].file_path) : $imageBaseApp()"
                 :lazy-src="item.raw.uploads.length ? $getImage(item.raw.uploads[0].file_path) : $imageBaseApp()"
-                height="100%"
                 cover
               />
-              {{ $getImage(item.raw.uploads[0].file_path) }}
             </v-col>
             <v-col
               class="pa-3"
