@@ -132,6 +132,7 @@
           <v-textarea
             v-model="messageSend"
             rows="1"
+            auto-grow
             class="pr-2"
             rounded
             density="comfortable"
