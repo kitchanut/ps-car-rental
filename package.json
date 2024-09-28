@@ -15,6 +15,7 @@
     "@nuxt/icon": "^1.4.5",
     "@nuxtjs/robots": "^4.0.2",
     "axios": "^1.7.2",
+    "echarts": "^5.5.1",
     "nuxt": "^3.12.4",
     "sass": "^1.77.8",
     "v-viewer": "^3.0.13",

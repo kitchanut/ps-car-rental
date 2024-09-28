@@ -4,7 +4,7 @@
       <v-app-bar color="primary" density="compact">
         <div class="v-container d-flex align-center" style="max-width: 870px !important">
           <v-app-bar-nav-icon
-            v-if="displaySize == 'xs'"
+            v-if="displaySize == 'xs' || displaySize == 'sm'"
             @click.stop="drawer = !drawer"
             aria-label="nav-icon"
           ></v-app-bar-nav-icon>
@@ -12,13 +12,6 @@
           <v-spacer></v-spacer>
           <v-btn icon="mdi-power-standby" @click="logout()"></v-btn>
         </div>
-        <!-- <template v-slot:prepend>
-          <v-app-bar-nav-icon @click.stop="drawer = !drawer" aria-label="nav-icon"></v-app-bar-nav-icon>
-        </template>
-        <v-app-bar-title>Car Rental</v-app-bar-title>
-        <template v-slot:append>
-          <v-btn icon="mdi-power-standby" @click="logout()"></v-btn>
-        </template> -->
       </v-app-bar>
 
       <v-navigation-drawer v-model="drawer" temporary>
@@ -40,13 +33,16 @@
         </v-list>
       </v-navigation-drawer>
 
-      <v-main v-if="displaySize == 'xs'" style="max-width: 850px; margin-left: auto; margin-right: auto">
+      <v-main
+        v-if="displaySize == 'xs' || displaySize == 'sm'"
+        style="max-width: 850px; margin-left: auto; margin-right: auto"
+      >
         <NuxtPage />
       </v-main>
       <v-main v-else style="max-width: 850px; margin-left: auto; margin-right: auto">
         <v-row no-gutters>
           <v-col cols="3" style="flex: 0 0 23%">
-            <v-card class="mt-3" variant="outlined" style="border: 1px solid #ddd; position: fixed">
+            <v-card class="mt-3 border" variant="outlined" style="position: fixed">
               <v-list color="primary">
                 <div v-for="item in manu">
                   <v-list-item
@@ -77,6 +73,7 @@
 import { useDisplay } from "vuetify";
 const { name } = useDisplay();
 const displaySize = computed(() => name.value);
+console.log(displaySize.value);
 
 const drawer = ref(false);
 const router = useRouter();

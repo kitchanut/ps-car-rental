@@ -25,7 +25,12 @@
         <v-list-item
           v-for="item in conversations"
           :value="item.id"
-          @click="getMessages(item.id, item.senders.data[0].name)"
+          @click="
+            conversation_id = item.id;
+            conversation_name = item.senders.data[0].name;
+            getMessages();
+            sender_id = item.senders.data[0].id;
+          "
         >
           <template v-slot:prepend="{ item }">
             <v-avatar>
@@ -99,6 +104,24 @@
             </v-col>
           </v-row>
         </div>
+        <div class="pa-3 d-flex">
+          <v-text-field
+            v-model="messageSend"
+            class="pr-2"
+            rounded
+            density="comfortable"
+            placeholder="ข้อความ"
+            variant="outlined"
+            hide-details=""
+          ></v-text-field>
+          <v-btn
+            color="primary"
+            icon="mdi-message-text-fast-outline"
+            variant="tonal"
+            @click="sendMessage()"
+            :loading="loading"
+          ></v-btn>
+        </div>
       </v-card>
     </v-card>
   </div>
@@ -114,6 +137,7 @@ const pages = ref([]);
 
 // const page_id = ref(null);
 const page_id = useState("page_id", () => null);
+const page_access_token = useState("page_access_token", () => null);
 const getPage = async () => {
   loading.value = true;
   const response = await useApiFacebookPages().index();
@@ -127,6 +151,7 @@ const getConversations = async () => {
   try {
     loading.value = true;
     let pageSelect = pages.value.find((page) => page.page_id == page_id.value);
+    page_access_token.value = pageSelect.page_access_token;
     const response = await axios({
       method: "GET",
       url: `https://graph.facebook.com/v20.0/${pageSelect.page_id}?fields=conversations{senders,unread_count,messages.limit(1){message,attachments}}&access_token=${pageSelect.page_access_token}`,
@@ -145,16 +170,16 @@ const getConversations = async () => {
 };
 
 const messages_face = ref([]);
-const getMessages = async (id, name) => {
-  conversation_id.value = id;
-  conversation_name.value = name;
-  messages_face.value = [];
+const getMessages = async () => {
+  // conversation_id.value = id;
+  // conversation_name.value = name;
+  // messages_face.value = [];
   try {
     loading.value = true;
     let pageSelect = pages.value.find((page) => page.page_id == page_id.value);
     const response = await axios({
       method: "GET",
-      url: `https://graph.facebook.com/v20.0/${id}?fields=messages{from,message,attachments,created_time}&access_token=${pageSelect.page_access_token}`,
+      url: `https://graph.facebook.com/v20.0/${conversation_id.value}?fields=messages{from,message,attachments,created_time}&access_token=${pageSelect.page_access_token}`,
     });
 
     messages_face.value = response.data.messages.data;
@@ -172,8 +197,39 @@ const getMessages = async (id, name) => {
   }
 };
 
-const activeChat = ref(1);
-const messageForm = ref({ content: "", me: true, created_at: "11:11am" });
+const sender_id = ref(null);
+const messageSend = ref(null);
+const sendMessage = async () => {
+  if (!messageSend.value) return;
+  loading.value = true;
+  const pageId = page_id.value;
+  const psid = sender_id.value;
+  const accessToken = page_access_token.value;
+
+  const url = `https://graph.facebook.com/v20.0/${pageId}/messages`;
+
+  const recipient = {
+    id: psid,
+  };
+  const message = {
+    text: messageSend.value,
+  };
+
+  const response = await useFetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      recipient,
+      messaging_type: "RESPONSE",
+      message,
+      access_token: accessToken,
+    }),
+  });
+  messageSend.value = "";
+  getMessages();
+};
 </script>
 <style scoped>
 .v-chip__content {

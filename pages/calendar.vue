@@ -204,7 +204,7 @@ const { name } = useDisplay();
 const displaySize = computed(() => name.value);
 
 const innerWidth = ref(0);
-if (displaySize.value == "xs") {
+if (displaySize.value == "xs" || displaySize.value == "sm") {
   innerWidth.value = window.innerWidth - 28;
 } else {
   innerWidth.value = 850 - 223.5;
