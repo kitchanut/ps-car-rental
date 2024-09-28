@@ -129,15 +129,16 @@
           </v-row>
         </div>
         <div class="pa-3 d-flex">
-          <v-text-field
+          <v-textarea
             v-model="messageSend"
+            rows="1"
             class="pr-2"
             rounded
             density="comfortable"
             placeholder="ข้อความ"
             variant="outlined"
             hide-details=""
-          ></v-text-field>
+          ></v-textarea>
           <v-btn
             color="primary"
             icon="mdi-message-text-fast-outline"
