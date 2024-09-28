@@ -22,6 +22,37 @@
       >
       </v-btn>
       <v-btn
+        v-if="props.appearance == 'addAvatar'"
+        v-bind="activatorProps"
+        icon="mdi-account-plus"
+        color="grey"
+        variant="tonal"
+        density="comfortable"
+        class="mr-3"
+      >
+      </v-btn>
+      <v-btn
+        v-if="props.appearance == 'editAvatar'"
+        v-bind="activatorProps"
+        icon="mdi-account-edit"
+        color="success"
+        variant="tonal"
+        density="comfortable"
+        class="mr-3"
+      >
+      </v-btn>
+      <v-btn
+        v-if="props.appearance == 'inactivatAvatar'"
+        v-bind="activatorProps"
+        icon="mdi-account-remove"
+        color="error"
+        variant="tonal"
+        density="comfortable"
+        class="mr-3"
+      >
+      </v-btn>
+
+      <v-btn
         v-if="props.appearance == 'edit'"
         color="primary"
         dark
@@ -83,6 +114,36 @@
             hide-details
           >
           </v-text-field>
+
+          <v-row class="mt-3" no-gutters>
+            <v-col>
+              <v-text-field
+                class="pr-1"
+                label="FB-ID"
+                type="number"
+                v-model="formData.facebook_id"
+                density="comfortable"
+                outlined
+                dense
+                hide-details
+                readonly
+              >
+              </v-text-field>
+            </v-col>
+            <v-col>
+              <v-text-field
+                class="pl-1"
+                label="Facebook Name"
+                v-model="formData.facebook_name"
+                density="comfortable"
+                outlined
+                dense
+                hide-details
+                readonly
+              >
+              </v-text-field>
+            </v-col>
+          </v-row>
 
           <v-row class="mt-3" no-gutters>
             <v-col>
@@ -206,6 +267,8 @@ const props = defineProps({
   actionType: String,
   appearance: String,
   id: Number,
+  facebook_id: String,
+  facebook_name: String,
 });
 const { $toast } = useNuxtApp();
 const emit = defineEmits(["success", "close"]);
@@ -269,14 +332,20 @@ watch(dialog, (value) => {
     nextTick(() => {
       formData.value = {};
       form.value.reset();
+      nextTick(() => {
+        formData.value.facebook_id = props.facebook_id;
+        formData.value.facebook_name = props.facebook_name;
+
+        if (props.actionType == "add") {
+          formTitle.value = "เพิ่มข้อมูล";
+          formData.value.customer_status = "เปิดใช้งาน";
+          loading.value = false;
+        } else {
+          formTitle.value = "แก้ไขข้อมูล";
+          getData();
+        }
+      });
     });
-    if (props.actionType == "add") {
-      formTitle.value = "เพิ่มข้อมูล";
-      loading.value = false;
-    } else {
-      formTitle.value = "แก้ไขข้อมูล";
-      getData();
-    }
   } else {
     onClose();
   }

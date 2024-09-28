@@ -73,7 +73,6 @@
 import { useDisplay } from "vuetify";
 const { name } = useDisplay();
 const displaySize = computed(() => name.value);
-console.log(displaySize.value);
 
 const drawer = ref(false);
 const router = useRouter();

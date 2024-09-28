@@ -22,25 +22,48 @@
       <v-divider></v-divider>
       <div v-if="conversations.length == 0" class="text-center py-10">- ไม่มีข้อมูล -</div>
       <v-list v-else color="primary">
-        <v-list-item
-          v-for="item in conversations"
-          :value="item.id"
-          @click="
-            conversation_id = item.id;
-            conversation_name = item.senders.data[0].name;
-            getMessages();
-            sender_id = item.senders.data[0].id;
-          "
-        >
-          <template v-slot:prepend="{ item }">
-            <v-avatar>
-              <v-icon>mdi-account</v-icon>
-            </v-avatar>
+        <v-list-item v-for="item in conversations" :value="item.id">
+          <template v-slot:prepend>
+            <!-- {{ isCustomer(item.senders.data[0].id) }} -->
+            <DialogCustomer
+              :facebook_id="item.senders.data[0].id"
+              :facebook_name="item.senders.data[0].name"
+              :appearance="
+                isCustomer(item.senders.data[0].id)
+                  ? isCustomer(item.senders.data[0].id).customer_status == 'เปิดใช้งาน'
+                    ? 'editAvatar'
+                    : 'inactivatAvatar'
+                  : 'addAvatar'
+              "
+              :actionType="isCustomer(item.senders.data[0].id) ? 'edit' : 'add'"
+              :id="isCustomer(item.senders.data[0].id) ? isCustomer(item.senders.data[0].id).id : null"
+              @success="
+                getCustomer();
+                getConversations();
+              "
+            />
           </template>
-          <v-list-item-title>
+          <v-list-item-title
+            @click="
+              conversation_id = item.id;
+              conversation_name = item.senders.data[0].name;
+              sender_id = item.senders.data[0].id;
+              getMessages();
+            "
+          >
             {{ item.senders.data[0].name }}
+            <span v-if="isCustomer(item.senders.data[0].id)" style="color: green">
+              [{{ isCustomer(item.senders.data[0].id).customer_name }}]
+            </span>
           </v-list-item-title>
-          <v-list-item-subtitle>
+          <v-list-item-subtitle
+            @click="
+              conversation_id = item.id;
+              conversation_name = item.senders.data[0].name;
+              sender_id = item.senders.data[0].id;
+              getMessages();
+            "
+          >
             <div v-if="item.messages.data[0].message" v-html="item.messages.data[0].message"></div>
             <div v-else-if="item.messages.data[0].attachments">[ไฟล์/รูปภาพ]</div>
           </v-list-item-subtitle>
@@ -49,10 +72,11 @@
     </v-card>
     <v-card v-else variant="outlined" style="border: 1px solid #ddd" height="100%" :loading="loading">
       <v-card flat class="d-flex flex-column fill-height">
-        <v-card-title
-          ><v-btn icon="mdi-keyboard-backspace" size="small" variant="text" @click="conversation_id = null"></v-btn>
+        <v-card-title>
+          <v-btn icon="mdi-keyboard-backspace" size="small" variant="text" @click="conversation_id = null"></v-btn>
           {{ conversation_name }}
         </v-card-title>
+
         <v-divider></v-divider>
         <div class="fill-height px-2">
           <v-row class="fill-height" align="end">
@@ -145,6 +169,20 @@ const getPage = async () => {
   loading.value = false;
 };
 getPage();
+
+// const getProfilePicture = (senderId) => {
+//   const profileUrl = `https://graph.facebook.com/v20.0/${senderId}/picture?redirect=false&access_token=${page_access_token.value}`;
+//   axios
+//     .get(profileUrl)
+//     .then((response) => {
+//       const profileImageUrl = response.data.data.url;
+//       console.log("Profile Image URL:", profileImageUrl);
+//     })
+//     .catch((error) => {
+//       console.error("Error fetching profile image:", error);
+//     });
+// };
+
 // const conversations = ref([]);
 const conversations = useState("conversations", () => []);
 const getConversations = async () => {
@@ -157,6 +195,7 @@ const getConversations = async () => {
       url: `https://graph.facebook.com/v20.0/${pageSelect.page_id}?fields=conversations{senders,unread_count,messages.limit(1){message,attachments}}&access_token=${pageSelect.page_access_token}`,
     });
     conversations.value = response.data.conversations.data;
+    console.log("conversations:", conversations.value);
     loading.value = false;
   } catch (error) {
     console.log(error.response.data.error);
@@ -171,9 +210,6 @@ const getConversations = async () => {
 
 const messages_face = ref([]);
 const getMessages = async () => {
-  // conversation_id.value = id;
-  // conversation_name.value = name;
-  // messages_face.value = [];
   try {
     loading.value = true;
     let pageSelect = pages.value.find((page) => page.page_id == page_id.value);
@@ -184,7 +220,7 @@ const getMessages = async () => {
 
     messages_face.value = response.data.messages.data;
     messages_face.value.sort((a, b) => new Date(a.created_time) - new Date(b.created_time));
-    console.log("messages_face:", messages_face.value);
+    // console.log("messages_face:", messages_face.value);
     loading.value = false;
   } catch (error) {
     console.log(error.response.data.error);
@@ -229,6 +265,18 @@ const sendMessage = async () => {
   });
   messageSend.value = "";
   getMessages();
+};
+
+const customers = ref([]);
+const getCustomer = async () => {
+  const response = await useApiCustomers().index();
+  // console.log(response.data);
+  customers.value = response.data;
+};
+getCustomer();
+
+const isCustomer = (facebook_id) => {
+  return customers.value.find((customer) => customer.facebook_id == facebook_id);
 };
 </script>
 <style scoped>
