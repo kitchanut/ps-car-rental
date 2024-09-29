@@ -107,7 +107,7 @@
                 :class="['d-flex flex-row align-center my-1', msg.from.id == page_id ? 'justify-end' : null]"
               >
                 <div v-if="msg.from.id != page_id">
-                  <div v-if="shouldDisplayChip(index)" class="mt-5">
+                  <div v-if="shouldDisplayChip(index)">
                     <!-- <v-chip class="pa-2 mb-1" size="small" variant="tonal">
                       <span>{{ conversation_name.split("")[0] }}</span>
                     </v-chip> -->
@@ -143,7 +143,7 @@
                   </v-card>
                 </div>
                 <div v-else>
-                  <div v-if="shouldDisplayChip(index)" class="text-right mt-3 mb-1">
+                  <div v-if="shouldDisplayChip(index)" class="text-right mb-1">
                     <!-- <v-chip class="pa-2" color="primary" size="small">
                       <span>คุณ</span>
                     </v-chip> -->
@@ -151,8 +151,8 @@
                   </div>
                   <v-card
                     :variant="!msg.attachments ? 'flat' : 'outlined'"
-                    color="primary"
-                    class="pa-2 border-0"
+                    :color="!msg.attachments ? 'primary' : '#ddd'"
+                    class="pa-2"
                     style="max-width: min(500px, 70vw); border-radius: 12px 0px 12px 12px"
                   >
                     <p class="mt-1" v-html="msg.message" style="white-space: pre-line"></p>
