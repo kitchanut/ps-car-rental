@@ -151,7 +151,7 @@
                   >
                     <p class="mt-1" v-html="msg.message" style="white-space: pre-line"></p>
                     <div v-if="msg.attachments" v-viewer>
-                      <div class="d-flex flex-wrap">
+                      <div class="d-flex flex-wrap justify-center">
                         <div v-for="file in msg.attachments.data">
                           <v-img
                             v-if="msg.attachments.data.length == 1"
@@ -163,8 +163,8 @@
                             v-else
                             class="ma-1 rounded"
                             :src="file.image_data.url"
-                            width="110px"
-                            height="80px"
+                            width="80px"
+                            height="60px"
                             cover
                           ></v-img>
                         </div>
