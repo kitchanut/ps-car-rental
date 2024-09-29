@@ -297,7 +297,6 @@ const clickEventDialog = (item) => {
     } else if (clickEvent.value == "dbclick") {
       dialogBookingDetails.value = true;
     }
-    console.log(clickEvent.value);
   }, 200);
 };
 
