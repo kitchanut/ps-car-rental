@@ -113,7 +113,11 @@
                     </v-chip>
                     <sub class="ml-2" style="font-size: 0.5rem">{{ $dayjs(msg.created_time).fromNow() }} </sub>
                   </div>
-                  <v-card variant="outlined" class="pa-2" style="border: 1px solid #ddd; max-width: min(500px, 70vw)">
+                  <v-card
+                    variant="outlined"
+                    class="pa-2 border"
+                    style="max-width: min(500px, 70vw); border-radius: 0px 12px 12px 12px"
+                  >
                     <p class="ml-1" v-html="msg.message" style="white-space: pre-line"></p>
                     <div v-if="msg.attachments" v-viewer>
                       <div class="d-flex flex-wrap">
@@ -147,7 +151,7 @@
                   <v-card
                     variant="outlined"
                     class="pa-2"
-                    style="border: 1px solid #e4ecf7; max-width: min(500px, 70vw)"
+                    style="border: 1px solid #e4ecf7; max-width: min(500px, 70vw); border-radius: 12px 0px 12px 12px"
                   >
                     <p class="mt-1" v-html="msg.message" style="white-space: pre-line"></p>
                     <div v-if="msg.attachments" v-viewer>
