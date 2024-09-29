@@ -971,6 +971,7 @@ watch(dialog, (value) => {
   if (value) {
     nextTick(() => {
       step.value = "1";
+      tab.value = 0;
       formData.value = {};
       form.value ? form.value.reset() : "";
       nextTick(() => {
