@@ -108,15 +108,16 @@
               >
                 <div v-if="msg.from.id != page_id">
                   <div v-if="shouldDisplayChip(index)" class="mt-5">
-                    <v-chip class="pa-2 mb-1" color="success" size="small">
-                      <span>{{ conversation_name }}</span>
-                    </v-chip>
-                    <sub class="ml-2" style="font-size: 0.5rem">{{ $dayjs(msg.created_time).fromNow() }} </sub>
+                    <!-- <v-chip class="pa-2 mb-1" size="small" variant="tonal">
+                      <span>{{ conversation_name.split("")[0] }}</span>
+                    </v-chip> -->
+                    <sub style="font-size: 0.5rem">{{ $dayjs(msg.created_time).fromNow() }} </sub>
                   </div>
                   <v-card
                     variant="outlined"
+                    color="#eee"
                     class="pa-2 border"
-                    style="max-width: min(500px, 70vw); border-radius: 0px 12px 12px 12px"
+                    style="max-width: min(500px, 70vw); border-radius: 0px 12px 12px 12px; color: black !important"
                   >
                     <p class="ml-1" v-html="msg.message" style="white-space: pre-line"></p>
                     <div v-if="msg.attachments" v-viewer>
@@ -143,15 +144,16 @@
                 </div>
                 <div v-else>
                   <div v-if="shouldDisplayChip(index)" class="text-right mt-3 mb-1">
-                    <v-chip class="pa-2" color="primary" size="small">
+                    <!-- <v-chip class="pa-2" color="primary" size="small">
                       <span>คุณ</span>
-                    </v-chip>
-                    <sub class="ml-2" style="font-size: 0.5rem">{{ $dayjs(msg.created_time).fromNow() }}</sub>
+                    </v-chip> -->
+                    <sub style="font-size: 0.5rem">{{ $dayjs(msg.created_time).fromNow() }}</sub>
                   </div>
                   <v-card
-                    variant="outlined"
-                    class="pa-2"
-                    style="border: 1px solid #e4ecf7; max-width: min(500px, 70vw); border-radius: 12px 0px 12px 12px"
+                    :variant="!msg.attachments ? 'flat' : 'outlined'"
+                    color="primary"
+                    class="pa-2 border-0"
+                    style="max-width: min(500px, 70vw); border-radius: 12px 0px 12px 12px"
                   >
                     <p class="mt-1" v-html="msg.message" style="white-space: pre-line"></p>
                     <div v-if="msg.attachments" v-viewer>
