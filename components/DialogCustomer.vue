@@ -16,7 +16,7 @@
         v-bind="activatorProps"
         icon="mdi-plus"
         color="primary"
-        variant="tonal"
+        variant="text"
         density="comfortable"
         size="small"
       >
@@ -253,11 +253,50 @@
           >
             ลบข้อมูล
           </v-btn>
+
+          <v-row class="mt-3" no-gutters v-viewer>
+            <v-col lg="2" md="3" sm="3" cols="4" class="px-1 mb-2" v-for="image in images" :key="image.id">
+              <v-card style="height: 90px" variant="text">
+                <v-img
+                  style="border-radius: 6px"
+                  height="100%"
+                  cover
+                  :src="$getImage(image.file_path)"
+                  :lazy-src="$getImage(image.file_path)"
+                />
+                <v-btn
+                  style="top: 0px; right: 0px; position: absolute; z-index: 2000"
+                  color="red"
+                  icon="mdi-delete"
+                  density="comfortable"
+                  size="small"
+                  variant="tonal"
+                  @click="
+                    dialogDeleteImage = true;
+                    imageId = image.id;
+                  "
+                >
+                </v-btn>
+              </v-card>
+            </v-col>
+            <v-col lg="2" md="3" sm="3" cols="4" class="px-1">
+              <v-card variant="outlined" height="90" style="border: 1px solid #ddd">
+                <ImageUpload
+                  :customer_id="props.id"
+                  type="customers"
+                  location="customers"
+                  :loading="loadingImage"
+                  @success="getImages()"
+                />
+              </v-card>
+            </v-col>
+          </v-row>
         </v-container>
       </v-form>
     </v-card>
 
     <DialogDelete :dialogDelete="dialogDelete" @cancleItem="dialogDelete = false" @deleteItem="deleteItem" />
+    <DialogDelete :dialogDelete="dialogDeleteImage" @cancleItem="dialogDeleteImage = false" @deleteItem="deleteImage" />
   </v-dialog>
 </template>
 
@@ -287,6 +326,26 @@ const getData = async () => {
   loading.value = false;
 };
 
+const images = ref([]);
+const loadingImage = ref(false);
+const getImages = async () => {
+  loadingImage.value = true;
+  const response = await useApiUploads().index(props.id, "customers");
+  images.value = response.data;
+  loadingImage.value = false;
+};
+
+const dialogDeleteImage = ref(false);
+const imageId = ref(0);
+const deleteImage = async () => {
+  loading.value = true;
+  dialogDeleteImage.value = false;
+  const response = await useApiUploads().destroy(imageId.value);
+  response.status == 200
+    ? ($toast.success("ลบสำเร็จ"), getImages())
+    : $toast.error("เกิดข้อผิดพลาด! กรุณาติดต่อผู้แลระบบ");
+  loading.value = false;
+};
 // Submit Data
 const form = ref(null);
 const onSubmit = async () => {
@@ -343,6 +402,7 @@ watch(dialog, (value) => {
         } else {
           formTitle.value = "แก้ไขข้อมูล";
           getData();
+          getImages();
         }
       });
     });

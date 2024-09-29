@@ -111,7 +111,7 @@
 
                 <v-row class="mt-1" no-gutters>
                   <v-col cols="4" class="d-flex align-center">
-                    <div class="pr-2">ลูกค้า</div>
+                    <div>ลูกค้า</div>
                     <DialogCustomer appearance="icon" actionType="add" @success="getCustomers()" />
                   </v-col>
                   <v-col>
@@ -126,14 +126,19 @@
                       :rules="[(value) => !!value || 'Required.']"
                     >
                       <template v-slot:item="{ props, item }">
-                        <v-list-item
-                          v-bind="props"
-                          :prepend-avatar="
-                            item.raw.customer_image ? $getImage(item.raw.customer_image) : $imageBaseApp()
-                          "
-                          :title="item.raw.customer_name"
-                          :subtitle="item.raw.customer_tel"
-                        >
+                        <v-list-item v-bind="props" :title="item.raw.customer_name" :subtitle="item.raw.customer_tel">
+                          <template v-slot:append>
+                            <v-btn
+                              color="grey-lighten-1"
+                              icon="mdi-information"
+                              :key="item.id"
+                              variant="text"
+                              @click="
+                                customer_id = item.raw.id;
+                                dialogCustomer = true;
+                              "
+                            ></v-btn>
+                          </template>
                         </v-list-item>
                       </template>
                     </v-autocomplete>
@@ -613,6 +618,13 @@
     </v-card>
 
     <!-- <DialogLoader :loading="loading" /> -->
+    <DialogCustomer
+      :dialog="dialogCustomer"
+      :id="customer_id"
+      actionType="edit"
+      @success="getCustomers()"
+      @close="dialogCustomer = false"
+    />
     <DialogDelete :dialogDelete="dialogDelete" @cancleItem="dialogDelete = false" @deleteItem="deleteItem" />
   </v-dialog>
 </template>
@@ -656,6 +668,8 @@ const getBranches = async () => {
   branches.value = response.data.filter((item) => item.branch_status == "เปิดใช้งาน");
 };
 
+const dialogCustomer = ref(false);
+const customer_id = ref(0);
 const customers = ref([]);
 const getCustomers = async () => {
   const response = await useApiCustomers().index();

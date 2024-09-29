@@ -27,6 +27,7 @@ const props = defineProps({
   id: Number,
   car_id: { type: Number, default: null },
   booking_id: { type: Number, default: null },
+  customer_id: { type: Number, default: null },
   type: String,
   location: String,
   accept: String,
@@ -52,6 +53,7 @@ const handleFileSelection = async (event) => {
   props.id ? formDataNew.append("id", props.id) : "";
   props.car_id ? formDataNew.append("car_id", props.car_id) : "";
   props.booking_id ? formDataNew.append("booking_id", props.booking_id) : "";
+  props.customer_id ? formDataNew.append("customer_id", props.customer_id) : "";
   formDataNew.append("type", props.type);
   formDataNew.append("location", props.location);
   for (let i = 0; i < files.value.length; i++) {
