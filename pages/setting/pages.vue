@@ -2,7 +2,7 @@
   <div class="pa-3 pb-0" style="height: 100%">
     <v-card variant="outlined" style="border: 1px solid #ddd">
       <v-card-title class="d-flex">
-        <div>Page Facebook {{ FACEBOOK_APP_ID }}</div>
+        <div>Page Facebook</div>
         <v-spacer></v-spacer>
         <v-btn color="primary" variant="tonal" @click="loginWithFacebook">+ page facebook</v-btn>
       </v-card-title>
