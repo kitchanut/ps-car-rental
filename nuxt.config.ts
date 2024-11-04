@@ -87,5 +87,4 @@ export default defineNuxtConfig({
       FACEBOOK_APP_SECRET: process.env.FACEBOOK_APP_SECRET
     }
   }
-
 })

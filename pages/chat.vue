@@ -143,7 +143,7 @@
                   </v-card>
                 </div>
                 <div v-else>
-                  <div v-if="shouldDisplayChip(index)" class="text-right mb-1">
+                  <div v-if="shouldDisplayChip(index)" class="text-right">
                     <!-- <v-chip class="pa-2" color="primary" size="small">
                       <span>คุณ</span>
                     </v-chip> -->
@@ -192,6 +192,7 @@
             density="comfortable"
             placeholder="ข้อความ"
             variant="outlined"
+            color="primary"
             hide-details=""
           ></v-textarea>
           <v-btn

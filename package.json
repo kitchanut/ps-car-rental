@@ -12,20 +12,20 @@
   "dependencies": {
     "@infectoone/vue-ganttastic": "^2.3.2",
     "@mdi/font": "^7.4.47",
-    "@nuxt/icon": "^1.4.5",
-    "@nuxtjs/robots": "^4.0.2",
-    "axios": "^1.7.2",
+    "@nuxt/icon": "^1.5.2",
+    "@nuxtjs/robots": "^4.1.7",
+    "axios": "^1.7.7",
     "echarts": "^5.5.1",
-    "nuxt": "^3.12.4",
-    "sass": "^1.77.8",
-    "v-viewer": "^3.0.13",
+    "nuxt": "^3.13.2",
+    "sass": "^1.79.4",
+    "v-viewer": "^3.0.20",
     "viewerjs": "^1.11.6",
     "vue": "latest",
     "vue-toastification": "^2.0.0-rc.5"
   },
   "devDependencies": {
-    "dayjs-nuxt": "^2.1.9",
-    "vite-plugin-vuetify": "^2.0.3",
-    "vuetify": "^3.7.0"
+    "dayjs-nuxt": "^2.1.11",
+    "vite-plugin-vuetify": "^2.0.4",
+    "vuetify": "^3.7.2"
   }
 }
