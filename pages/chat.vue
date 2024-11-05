@@ -259,7 +259,12 @@ const getConversations = async () => {
       method: "GET",
       url: `https://graph.facebook.com/v20.0/${pageSelect.page_id}?fields=conversations{senders,unread_count,messages.limit(1){message,attachments}}&access_token=${page_access_token.value}`,
     });
-    conversations.value = response.data.conversations.data;
+    console.log("Conversations:", response.data);
+    if (response.data.conversations) {
+      conversations.value = response.data.conversations.data;
+    } else {
+      conversations.value = [];
+    }
     loading.value = false;
   } catch (error) {
     console.log(error);

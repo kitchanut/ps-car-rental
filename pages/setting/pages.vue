@@ -59,6 +59,7 @@ const loginWithFacebook = () => {
     function (response) {
       if (response.authResponse) {
         const accessToken = response.authResponse.accessToken;
+        console.log("Access Token: ", accessToken);
         getLongLiveToken(accessToken);
         getFageList(accessToken);
       } else {
@@ -71,11 +72,22 @@ const loginWithFacebook = () => {
 };
 const longLiveToken = ref("");
 const getLongLiveToken = async (accessToken) => {
-  const response = await axios({
-    method: "GET",
-    url: `https://graph.facebook.com/v20.0/oauth/access_token?grant_type=fb_exchange_token&client_id=${config.public.FACEBOOK_APP_ID}&client_secret=${config.public.FACEBOOK_APP_SECRET}&fb_exchange_token=${accessToken}`,
-  });
-  longLiveToken.value = response.data.access_token;
+  try {
+    const response = await axios({
+      method: "GET",
+      url: `https://graph.facebook.com/v20.0/oauth/access_token?grant_type=fb_exchange_token&client_id=${config.public.FACEBOOK_APP_ID}&client_secret=${config.public.FACEBOOK_APP_SECRET}&fb_exchange_token=${accessToken}`,
+    });
+    longLiveToken.value = response.data.access_token;
+    console.log("Long Live Token: ", response.data.access_token);
+  } catch (error) {
+    console.error(error);
+  }
+  // const response = await axios({
+  //   method: "GET",
+  //   url: `https://graph.facebook.com/v20.0/oauth/access_token?grant_type=fb_exchange_token&client_id=${config.public.FACEBOOK_APP_ID}&client_secret=${config.public.FACEBOOK_APP_SECRET}&fb_exchange_token=${accessToken}`,
+  // });
+  // longLiveToken.value = response.data.access_token;
+  // console.log("Long Live Token: ", response.data.access_token);
 };
 
 const getFageList = async (accessToken) => {
