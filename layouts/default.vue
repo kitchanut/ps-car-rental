@@ -92,6 +92,12 @@ const manu = ref([
     level: ["แอดมิน", "ผู้บริหาร", "ผู้ใช้งานทั่วไป"],
   },
   {
+    icon: "mdi-crosshairs-gps",
+    title: "GPS",
+    to: ["/gps"],
+    level: ["แอดมิน", "ผู้บริหาร", "ผู้ใช้งานทั่วไป"],
+  },
+  {
     icon: "mdi-message-text-outline",
     title: "แชท",
     to: ["/chat"],

@@ -55,6 +55,10 @@ export default defineNuxtConfig({
         }
       ],
       script: [
+        {
+          src: `https://api.longdo.com/map/?key=9756fdb65bc2a320b39f886ad189cb5b`,
+          defer: true
+        },
       ],
       meta: [
         {
