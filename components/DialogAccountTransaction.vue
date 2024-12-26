@@ -20,7 +20,7 @@
         block
         size="x-large"
       >
-        <span><b>+</b><span> รับเงินมัดจำ</span></span>
+        <span><b>+</b><span> รับเงิน</span></span>
         <div></div>
       </v-btn>
       <v-btn
@@ -32,7 +32,7 @@
         block
         size="x-large"
       >
-        <span><span> คืนเงินมัดจำ</span></span>
+        <span><span> คืนเงิน</span></span>
         <div></div>
       </v-btn>
       <v-btn
@@ -120,12 +120,12 @@
             </v-col>
           </v-row>
 
-          <v-row v-if="!props.transaction_type" class="mt-3" no-gutters>
+          <v-row class="mt-3" no-gutters>
             <v-col cols="4" class="d-flex align-center">รายการ</v-col>
             <v-col>
               <v-text-field
                 class="pl-3"
-                v-model="formData.transaction_type"
+                v-model="formData.transaction_details"
                 density="compact"
                 outlined
                 dense
@@ -153,7 +153,7 @@
               </v-text-field>
             </v-col>
           </v-row>
-          <v-row class="mt-3" no-gutters>
+          <!-- <v-row class="mt-3" no-gutters>
             <v-col cols="4" class="d-flex align-center">สลิป</v-col>
             <v-col>
               <v-file-input
@@ -174,7 +174,7 @@
               >
               </v-file-input>
             </v-col>
-          </v-row>
+          </v-row> -->
           <v-row class="mt-3" no-gutters>
             <v-col cols="4" class="d-flex align-center">หมายเหตุ</v-col>
             <v-col>
@@ -223,17 +223,25 @@ const props = defineProps({
   car_id: { type: Number, default: null },
   type: { type: String, default: "deposit" },
   transaction_type: { type: String, default: null },
+  transaction_details: { type: String, default: null },
   actionType: String,
   appearance: String,
 });
+const supabase = useNuxtApp().$supabase;
 const { $toast } = useNuxtApp();
 const emit = defineEmits(["success", "close"]);
 
 // Get Accounts
 const accounts = ref([]);
 const getAccounts = async () => {
-  const response = await useApiAccounts().index();
-  accounts.value = response.data.filter((item) => item.account_status == "เปิดใช้งาน");
+  // const response = await useApiAccounts().index();
+  // accounts.value = response.data.filter((item) => item.account_status == "เปิดใช้งาน");
+  const { data: response, error } = await supabase.from("accounts").select("*").eq("account_status", "เปิดใช้งาน");
+  if (error) {
+    $toast.error(error.message);
+  } else {
+    accounts.value = response;
+  }
 };
 getAccounts();
 
@@ -244,12 +252,13 @@ const formTitle = ref("");
 // Get Data
 const getData = async () => {
   loading.value = true;
-  const response = await useApiAccountTransactions().show(props.id);
-  formData.value = response.data;
-  formData.value.transaction_date = useGlobalFunction().toDatetimeLocal(response.data.transaction_date);
+  // const response = await useApiAccountTransactions().show(props.id);
+  // formData.value = response.data;
+  const { data: response, error } = await supabase.from("account_transactions").select("*").eq("id", props.id).single();
+  error ? $toast.error(error.message) : (formData.value = response);
+  formData.value.transaction_date = useGlobalFunction().toDatetimeLocal(response.transaction_date);
   if (formData.value.type == "withdraw") {
-    // formData.value.transaction_amount = Math.abs(response.data.transaction_amount);
-    formData.value.transaction_amount = Number(response.data.transaction_amount) * -1;
+    formData.value.transaction_amount = Number(response.transaction_amount) * -1;
   }
   loading.value = false;
 };
@@ -265,35 +274,64 @@ const onSubmit = async () => {
   if (validate.valid) {
     loading.value = true;
 
-    let formDataNew = new FormData();
-    formDataNew.append("account_id", formData.value.account_id);
-    formDataNew.append("transaction_date", formData.value.transaction_date);
-    formDataNew.append("type", formData.value.type);
-    if (formData.value.type == "withdraw") {
-      formDataNew.append("transaction_amount", Number(formData.value.transaction_amount) * -1);
-    } else {
-      formDataNew.append("transaction_amount", formData.value.transaction_amount);
-    }
-    formDataNew.append("location", "slip");
-    formData.value.transaction_note ? formDataNew.append("transaction_note", formData.value.transaction_note) : "";
-    for (let i = 0; i < file.value.files.length; i++) {
-      formDataNew.append("files", file.value.files[i]);
-    }
+    // let formDataNew = new FormData();
+    // formDataNew.append("account_id", formData.value.account_id);
+    // formDataNew.append("transaction_date", formData.value.transaction_date);
+    // formDataNew.append("type", formData.value.type);
+    // if (formData.value.type == "withdraw") {
+    //   formDataNew.append("transaction_amount", Number(formData.value.transaction_amount) * -1);
+    // } else {
+    //   formDataNew.append("transaction_amount", formData.value.transaction_amount);
+    // }
+    // formDataNew.append("location", "slip");
+    // formData.value.transaction_note ? formDataNew.append("transaction_note", formData.value.transaction_note) : "";
+    // for (let i = 0; i < file.value.files.length; i++) {
+    //   formDataNew.append("files", file.value.files[i]);
+    // }
+    let formDataNew = {
+      account_id: formData.value.account_id,
+      transaction_date: formData.value.transaction_date,
+      transaction_type: formData.value.transaction_type,
+      transaction_details: formData.value.transaction_details,
+      type: formData.value.type,
+      transaction_amount:
+        formData.value.type == "withdraw"
+          ? Number(formData.value.transaction_amount) * -1
+          : formData.value.transaction_amount,
+      transaction_note: formData.value.transaction_note,
+    };
     let response;
     if (props.actionType == "add") {
-      props.transaction_type
-        ? formDataNew.append("transaction_type", props.transaction_type)
-        : formDataNew.append("transaction_type", formData.value.transaction_type);
-      props.booking_id ? formDataNew.append("booking_id", props.booking_id) : "";
-      props.car_id ? formDataNew.append("car_id", props.car_id) : "";
-      response = await useApiAccountTransactions().store(formDataNew);
+      props.booking_id ? (formDataNew.booking_id = props.booking_id) : "";
+      props.car_id ? (formDataNew.car_id = props.car_id) : "";
+      // response = await useApiAccountTransactions().store(formDataNew);
+      const { data: response, error } = await supabase.from("account_transactions").insert(formDataNew);
+      if (error) {
+        $toast.error(error.message);
+      } else {
+        dialog.value = false;
+        emit("success");
+        $toast.success("ทำรายการสำเร็จ");
+      }
     } else {
-      formDataNew.append("transaction_type", formData.value.transaction_type);
-      response = await useApiAccountTransactions().update(props.id, formDataNew);
+      // formDataNew.append("transaction_type", formData.value.transaction_type);
+      // response = await useApiAccountTransactions().update(props.id, formDataNew);
+      const { data: response, error } = await supabase
+        .from("account_transactions")
+        .update(formDataNew)
+        .eq("id", props.id);
+
+      if (error) {
+        $toast.error(error.message);
+      } else {
+        dialog.value = false;
+        emit("success");
+        $toast.success("ทำรายการสำเร็จ");
+      }
     }
-    response.status == 200
-      ? ($toast.success("ทำรายการสำเร็จ"), (dialog.value = false), emit("success"))
-      : $toast.error("เกิดข้อผิดพลาด! กรุณาติดต่อผู้แลระบบ");
+    // response.status == 200
+    //   ? ($toast.success("ทำรายการสำเร็จ"), (dialog.value = false), emit("success"))
+    //   : $toast.error("เกิดข้อผิดพลาด! กรุณาติดต่อผู้แลระบบ");
     loading.value = false;
   }
 };
@@ -303,10 +341,12 @@ const dialogDelete = ref(false);
 const deleteItem = async () => {
   loading.value = true;
   dialogDelete.value = false;
-  const response = await useApiAccountTransactions().destroy(id.value);
-  response.status == 200
-    ? ($toast.success("ลบสำเร็จ"), (dialog.value = false), emit("success"))
-    : $toast.error("เกิดข้อผิดพลาด! กรุณาติดต่อผู้แลระบบ");
+  // const response = await useApiAccountTransactions().destroy(id.value);
+  // response.status == 200
+  //   ? ($toast.success("ลบสำเร็จ"), (dialog.value = false), emit("success"))
+  //   : $toast.error("เกิดข้อผิดพลาด! กรุณาติดต่อผู้แลระบบ");
+  const { data, error } = await supabase.from("account_transactions").delete().eq("id", id.value);
+  error ? $toast.error(error.message) : ($toast.success("ลบสำเร็จ"), (dialog.value = false), emit("success"));
   loading.value = false;
 };
 
@@ -324,8 +364,11 @@ watch(dialog, (value) => {
       nextTick(() => {
         if (props.actionType == "add") {
           formTitle.value = "เพิ่มข้อมูล";
+          formData.value.transaction_type = props.transaction_type;
+          formData.value.transaction_details = props.transaction_details;
           props.account_id ? (formData.value.account_id = props.account_id) : null;
           props.type ? (formData.value.type = props.type) : null;
+          formData.value.transaction_date = new Date().toISOString().substr(0, 16);
           loading.value = false;
         } else {
           formTitle.value = "แก้ไขข้อมูล";

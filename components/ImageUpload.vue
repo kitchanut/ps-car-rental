@@ -47,7 +47,6 @@ const emit = defineEmits(["success"]);
 //Upload
 const files = ref([]);
 const handleFileSelection = async (event) => {
-  console.log(files.value);
   loadingComponent.value = true;
   files.value.push(event.target.files);
   let formDataNew = new FormData();

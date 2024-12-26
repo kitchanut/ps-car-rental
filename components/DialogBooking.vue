@@ -14,8 +14,7 @@
       <v-btn
         v-if="props.appearance == 'float'"
         v-bind="activatorProps"
-        style="position: absolute; top: 35px; right: -10px"
-        size="small"
+        style="position: absolute; top: 33px; right: -10px"
         density="compact"
         dark
         icon="mdi-plus"
@@ -52,22 +51,24 @@
               title="จอง"
               value="1"
               editable
-              :complete="['จอง', 'มัดจำ', 'รับรถ', 'คืนรถ', 'คืนมัดจำ'].includes(formData.booking_status)"
-              :color="['จอง', 'มัดจำ', 'รับรถ', 'คืนรถ', 'คืนมัดจำ'].includes(formData.booking_status) ? 'success' : ''"
+              :complete="['จอง', 'รับเงินจอง', 'รับรถ', 'คืนรถ', 'คืนมัดจำ'].includes(formData.booking_status)"
+              :color="
+                ['จอง', 'รับเงินจอง', 'รับรถ', 'คืนรถ', 'คืนมัดจำ'].includes(formData.booking_status) ? 'success' : ''
+              "
             ></v-stepper-item>
             <v-divider></v-divider>
             <v-stepper-item
-              title="มัดจำ"
+              title="เงินจอง"
               value="2"
-              :editable="['จอง', 'มัดจำ', 'รับรถ', 'คืนรถ', 'คืนมัดจำ'].includes(formData.booking_status)"
-              :complete="['มัดจำ', 'รับรถ', 'คืนรถ', 'คืนมัดจำ'].includes(formData.booking_status)"
-              :color="['มัดจำ', 'รับรถ', 'คืนรถ', 'คืนมัดจำ'].includes(formData.booking_status) ? 'success' : ''"
+              :editable="['จอง', 'รับเงินจอง', 'รับรถ', 'คืนรถ', 'คืนมัดจำ'].includes(formData.booking_status)"
+              :complete="['รับเงินจอง', 'รับรถ', 'คืนรถ', 'คืนมัดจำ'].includes(formData.booking_status)"
+              :color="['รับเงินจอง', 'รับรถ', 'คืนรถ', 'คืนมัดจำ'].includes(formData.booking_status) ? 'success' : ''"
             ></v-stepper-item>
             <v-divider></v-divider>
             <v-stepper-item
               title="รับรถ"
               value="3"
-              :editable="['มัดจำ', 'รับรถ', 'คืนรถ', 'คืนมัดจำ'].includes(formData.booking_status)"
+              :editable="['รับเงินจอง', 'รับรถ', 'คืนรถ', 'คืนมัดจำ'].includes(formData.booking_status)"
               :complete="['รับรถ', 'คืนรถ', 'คืนมัดจำ'].includes(formData.booking_status)"
               :color="['รับรถ', 'คืนรถ', 'คืนมัดจำ'].includes(formData.booking_status) ? 'success' : ''"
             ></v-stepper-item>
@@ -88,12 +89,12 @@
               :color="['คืนมัดจำ'].includes(formData.booking_status) ? 'success' : ''"
             ></v-stepper-item>
           </v-stepper-header>
-          <v-stepper-window :style="`height: ${innerHeight - 170}px;`">
+          <v-stepper-window :style="`height: ${innerHeight - 178}px;`">
             <v-stepper-window-item value="1">
-              <div class="mb-3 border rounded-lg">
+              <div v-if="actionType == 'edit'" class="mb-3 border rounded-lg">
                 <v-tabs v-model="tab" color="primary" align-tabs="center">
                   <v-tab>ข้อมูล</v-tab>
-                  <v-tab>รูป/ไฟล์</v-tab>
+                  <!-- <v-tab>รูป/ไฟล์</v-tab> -->
                 </v-tabs>
               </div>
               <v-tabs-window v-model="tab">
@@ -137,7 +138,7 @@
                             <v-list-item
                               v-bind="props"
                               :title="item.raw.customer_name"
-                              :subtitle="item.raw.customer_tel"
+                              :subtitle="`FB: ${item.raw.facebook_name || 'ยังไม่เชื่อมต่อ'}`"
                             >
                               <template v-slot:append>
                                 <v-btn
@@ -172,15 +173,9 @@
                           :rules="[(value) => !!value || 'Required.']"
                         >
                           <template v-slot:item="{ props, item }">
-                            <v-list-item
-                              v-bind="props"
-                              :prepend-avatar="
-                                item.raw.uploads.length ? $getImage(item.raw.uploads[0].file_path) : $imageBaseApp()
-                              "
-                              :title="item.raw.license_plate"
-                            >
+                            <v-list-item v-bind="props" :title="item.raw.license_plate">
                               <div class="d-flex" style="font-size: 0.875rem; color: grey">
-                                {{ item.raw.car_model.car_model_name }} | {{ item.raw.year }} |
+                                {{ item.raw.car_models.car_model_name }} | {{ item.raw.year }} |
                                 <b style="color: green" class="mx-1">{{ item.raw.rental_per_day.toLocaleString() }}</b>
                                 |
 
@@ -194,8 +189,8 @@
                                   {{ item.raw.color }}
                                 </v-chip>
                                 |
-                                <v-chip :color="item.raw.branch.branch_color" label density="compact" size="small">
-                                  {{ item.raw.branch.branch_name }}
+                                <v-chip :color="item.raw.branches.branch_color" label density="compact" size="small">
+                                  {{ item.raw.branches.branch_name }}
                                 </v-chip>
                               </div>
                             </v-list-item>
@@ -208,7 +203,7 @@
                       <v-col>
                         <v-select
                           class="ml-3"
-                          :items="['จอง', 'มัดจำ', 'รับรถ', 'คืนรถ', 'คืนมัดจำ', 'ยกเลิก']"
+                          :items="['จอง', 'รับเงินจอง', 'รับรถ', 'คืนรถ', 'คืนมัดจำ', 'ยกเลิก']"
                           v-model="formData.booking_status"
                           density="compact"
                           hide-details
@@ -243,7 +238,7 @@
                         <v-combobox
                           class="pl-3"
                           v-model="formData.pickup_location"
-                          :items="['สถานบิน', 'บริษัท']"
+                          :items="['สถานบิน', 'บริษัท', 'บขส', 'รถไฟ', 'ในเมือง']"
                           density="compact"
                           outlined
                           dense
@@ -293,7 +288,7 @@
                         <v-combobox
                           class="pl-3"
                           v-model="formData.return_location"
-                          :items="['สถานบิน', 'บริษัท']"
+                          :items="['สถานบิน', 'บริษัท', 'บขส', 'รถไฟ', 'ในเมือง']"
                           density="compact"
                           outlined
                           dense
@@ -378,7 +373,7 @@
                           outlined
                           dense
                           hide-details
-                          readonly
+                          disabled
                           bg-color="white"
                           :rules="[(value) => !isNaN(parseFloat(value)) || 'Must be a number']"
                         >
@@ -401,6 +396,7 @@
                           outlined
                           dense
                           hide-details
+                          :readonly="!formData.required_driver"
                           @click:prepend-inner="
                             formData.required_driver = !formData.required_driver;
                             getDriverPrice();
@@ -413,7 +409,7 @@
                     </v-row>
 
                     <v-row class="mt-1" no-gutters>
-                      <v-col cols="4" class="d-flex align-center">ค่าเช่าเพิ่มเติม</v-col>
+                      <v-col cols="4" class="d-flex align-center">ค่าเช่าเกินเวลา</v-col>
                       <v-col>
                         <v-text-field
                           class="pl-3 right-input"
@@ -424,7 +420,26 @@
                           outlined
                           dense
                           hide-details
-                          readonly
+                          disabled
+                          @keyup="calPrice()"
+                          :rules="[(value) => !isNaN(parseFloat(value)) || 'Must be a number']"
+                        >
+                        </v-text-field>
+                      </v-col>
+                    </v-row>
+
+                    <v-row class="mt-1" no-gutters>
+                      <v-col cols="4" class="d-flex align-center">ค่าใช้จ่ายเพิ่มเติม</v-col>
+                      <v-col>
+                        <v-text-field
+                          class="pl-3 right-input"
+                          v-model.number="formData.rental_extra"
+                          type="number"
+                          append-inner-icon="mdi-currency-thb"
+                          density="compact"
+                          outlined
+                          dense
+                          hide-details
                           @keyup="calPrice()"
                           :rules="[(value) => !isNaN(parseFloat(value)) || 'Must be a number']"
                         >
@@ -463,7 +478,7 @@
                           outlined
                           dense
                           hide-details
-                          readonly
+                          disabled
                           bg-color="white"
                           :rules="[(value) => !isNaN(parseFloat(value)) || 'Must be a number']"
                         >
@@ -472,12 +487,12 @@
                     </v-row>
 
                     <v-row class="mt-1" no-gutters>
-                      <v-col cols="4" class="d-flex align-center">% Vat</v-col>
+                      <v-col cols="4" class="d-flex align-center">หัก ณ ที่จ่าย</v-col>
                       <v-col cols="3">
                         <v-select
                           class="pl-3"
-                          :items="[0, 7]"
-                          v-model.number="formData.vat_percent"
+                          :items="[0, 3, 5]"
+                          v-model.number="formData.withholding_tax_percent"
                           density="compact"
                           suffix="%"
                           menu-icon=""
@@ -490,7 +505,7 @@
                       <v-col>
                         <v-text-field
                           class="pl-1 right-input"
-                          v-model.number="formData.vat_amount"
+                          v-model.number="formData.withholding_tax_amount"
                           type="number"
                           append-inner-icon="mdi-currency-thb"
                           density="compact"
@@ -515,7 +530,7 @@
                           outlined
                           dense
                           hide-details
-                          readonly
+                          disabled
                           bg-color="white"
                           :rules="[(value) => !isNaN(parseFloat(value)) || 'Must be a number']"
                         >
@@ -554,8 +569,26 @@
                           outlined
                           dense
                           hide-details
-                          readonly
+                          disabled
                           bg-color="white"
+                          :rules="[(value) => !isNaN(parseFloat(value)) || 'Must be a number']"
+                        >
+                        </v-text-field>
+                      </v-col>
+                    </v-row>
+                    <v-divider class="mt-3">เงินจองและหมายเหตุ</v-divider>
+                    <v-row class="mt-3" no-gutters>
+                      <v-col cols="4" class="d-flex align-center">เงินจอง</v-col>
+                      <v-col>
+                        <v-text-field
+                          class="pl-3 right-input"
+                          v-model.number="formData.booking_fee"
+                          type="number"
+                          append-inner-icon="mdi-currency-thb"
+                          density="compact"
+                          outlined
+                          dense
+                          hide-details
                           :rules="[(value) => !isNaN(parseFloat(value)) || 'Must be a number']"
                         >
                         </v-text-field>
@@ -593,7 +626,7 @@
                       ลบข้อมูล
                     </v-btn>
 
-                    <v-btn class="mt-5 mb-5" type="submit" color="primary" block size="large" variant="tonal">
+                    <v-btn class="mt-5" type="submit" color="primary" block size="large" variant="tonal">
                       บันทึก
                     </v-btn>
                   </v-form>
@@ -685,11 +718,12 @@
                 @success="success()"
               />
             </v-stepper-window-item>
-            <v-stepper-window-item value="3">
+            <v-stepper-window-item value="3" style="height: 100%">
               <BookingComPickup
                 :step="step"
                 :booking_id="formData.id"
                 :booking_status="formData.booking_status"
+                :car_id="formData.car_id"
                 @success="success()"
               />
             </v-stepper-window-item>
@@ -698,6 +732,7 @@
                 :step="step"
                 :booking_id="formData.id"
                 :booking_status="formData.booking_status"
+                :car_id="formData.car_id"
                 @success="success()"
               />
             </v-stepper-window-item>
@@ -738,6 +773,7 @@ const props = defineProps({
   car_id: Number,
   branch_id: Number,
 });
+const supabase = useNuxtApp().$supabase;
 const { $toast } = useNuxtApp();
 const emit = defineEmits(["success", "close"]);
 
@@ -758,22 +794,39 @@ onMounted(() => {
 
 const cars = ref([]);
 const getCars = async () => {
-  const response = await useApiCars().index();
-  cars.value = response.data.filter((item) => item.car_status == "เปิดใช้งาน");
+  // const response = await useApiCars().index();
+  // cars.value = response.data.filter((item) => item.car_status == "เปิดใช้งาน");
+  const { data: response, error } = await supabase
+    .from("cars")
+    .select("*,branches(*),car_models(*),car_brands(*),car_types(*),car_sub_models(*)")
+    .eq("car_status", "เปิดใช้งาน");
+  if (error) {
+    $toast.error(error.message);
+  } else {
+    cars.value = response;
+  }
 };
 
 const branches = ref([]);
 const getBranches = async () => {
-  const response = await useApiBranches().index();
-  branches.value = response.data.filter((item) => item.branch_status == "เปิดใช้งาน");
+  const { data: response, error } = await supabase.from("branches").select("*").eq("branch_status", "เปิดใช้งาน");
+  if (error) {
+    $toast.error(error.message);
+  } else {
+    branches.value = response;
+  }
 };
 
 const dialogCustomer = ref(false);
 const customer_id = ref(0);
 const customers = ref([]);
 const getCustomers = async () => {
-  const response = await useApiCustomers().index();
-  customers.value = response.data.filter((item) => item.customer_status == "เปิดใช้งาน");
+  const { data: response, error } = await supabase.from("customers").select("*").eq("customer_status", "เปิดใช้งาน");
+  if (error) {
+    $toast.error(error.message);
+  } else {
+    customers.value = response;
+  }
 };
 
 const period_day = computed({
@@ -836,7 +889,7 @@ watch(
   }
 );
 const calPrice = () => {
-  const { discount, vat_percent, deposit } = formData.value;
+  const { discount, withholding_tax_percent, deposit } = formData.value;
   const { excess_houre_free, excess_houre_charge, excess_price } = car.value || {};
 
   const days = period_day.value || 0;
@@ -847,17 +900,21 @@ const calPrice = () => {
 
   // Calculate extra charge if applicable
   formData.value.extra_charge = 0;
-  if (remainingHours > excess_houre_free && remainingHours < excess_houre_charge) {
+  if (remainingHours > excess_houre_free && remainingHours <= excess_houre_charge) {
     formData.value.extra_charge = excess_price * remainingHours;
   }
 
   // Calculate subtotal
   formData.value.sub_total =
-    formData.value.rental + formData.value.driver_per_day + formData.value.extra_charge - discount;
+    formData.value.rental +
+    formData.value.driver_per_day +
+    formData.value.extra_charge +
+    formData.value.rental_extra -
+    discount;
 
   // Calculate VAT and total
-  formData.value.vat_amount = (formData.value.sub_total * vat_percent) / 100;
-  formData.value.total = formData.value.sub_total + formData.value.vat_amount;
+  formData.value.withholding_tax_amount = (formData.value.sub_total * withholding_tax_percent) / 100;
+  formData.value.total = formData.value.sub_total - formData.value.withholding_tax_amount;
 
   // Calculate net total
   formData.value.net_total = formData.value.total + deposit;
@@ -866,19 +923,21 @@ const calPrice = () => {
 // Get Data
 const getData = async () => {
   loading.value = true;
-  const response = await useApiBookings().show(props.id);
-  delete response.data.customer;
-  delete response.data.pickup_branch;
-  delete response.data.return_branch;
-  delete response.data.car;
-  delete response.data.booking_pickups;
-  delete response.data.booking_returns;
-  delete response.data.account_transactions;
-  formData.value = response.data;
-  formData.value.booking_date = useGlobalFunction().toDatetimeLocal(response.data.booking_date);
-  formData.value.pickup_date = useGlobalFunction().toDatetimeLocal(response.data.pickup_date);
-  formData.value.return_date = useGlobalFunction().toDatetimeLocal(response.data.return_date);
-  formTitle.value = "Booking No : " + response.data.booking_number;
+  // const response = await useApiBookings().show(props.id);
+  const { data: response, error } = await supabase.from("bookings").select("*").eq("id", props.id).single();
+  error ? $toast.error(error.message) : (formData.value = response);
+  // delete response.data.customer;
+  // delete response.data.pickup_branch;
+  // delete response.data.return_branch;
+  // delete response.data.car;
+  // delete response.data.booking_pickups;
+  // delete response.data.booking_returns;
+  // delete response.data.account_transactions;
+  // formData.value = response.data;
+  // formData.value.booking_date = useGlobalFunction().toDatetimeLocal(response.data.booking_date);
+  // formData.value.pickup_date = useGlobalFunction().toDatetimeLocal(response.data.pickup_date);
+  // formData.value.return_date = useGlobalFunction().toDatetimeLocal(response.data.return_date);
+  // formTitle.value = "Booking No : " + response.data.booking_number;
   loading.value = false;
 };
 
@@ -930,15 +989,23 @@ const onSubmit = async () => {
   if (validate.valid) {
     loading.value = true;
     if (props.actionType == "add") {
-      const response = await useApiBookings().store(formData.value);
-      response.status == 201
-        ? ($toast.success("ทำรายการสำเร็จ"), (dialog.value = false), emit("success"))
-        : $toast.error("เกิดข้อผิดพลาด! กรุณาติดต่อผู้แลระบบ");
+      // const response = await useApiBookings().store(formData.value);
+      // response.status == 201
+      //   ? ($toast.success("ทำรายการสำเร็จ"), (dialog.value = false), emit("success"))
+      //   : $toast.error("เกิดข้อผิดพลาด! กรุณาติดต่อผู้แลระบบ");
+      formData.value.booking_number = Math.floor(Math.random() * 1000000) + 1;
+      formData.value.booking_status = "จอง";
+      const { data, error } = await supabase.from("bookings").insert(formData.value);
+      error ? $toast.error(error.message) : ($toast.success("ทำรายการสำเร็จ"), (dialog.value = false), emit("success"));
     } else {
-      const response = await useApiBookings().update(formData.value.id, formData.value);
-      response.status == 200
-        ? ($toast.success("แก้ไขข้อมูลสำเร็จ"), (dialog.value = false), emit("success"))
-        : $toast.error("เกิดข้อผิดพลาด! กรุณาติดต่อผู้แลระบบ");
+      // const response = await useApiBookings().update(formData.value.id, formData.value);
+      // response.status == 200
+      //   ? ($toast.success("แก้ไขข้อมูลสำเร็จ"), (dialog.value = false), emit("success"))
+      //   : $toast.error("เกิดข้อผิดพลาด! กรุณาติดต่อผู้แลระบบ");
+      const { data, error } = await supabase.from("bookings").update(formData.value).eq("id", formData.value.id);
+      error
+        ? $toast.error(error.message)
+        : ($toast.success("แก้ไขข้อมูลสำเร็จ"), (dialog.value = false), emit("success"));
     }
     loading.value = false;
   }
@@ -954,10 +1021,12 @@ const dialogDelete = ref(false);
 const deleteItem = async () => {
   loading.value = true;
   dialogDelete.value = false;
-  const response = await useApiBookings().destroy(id.value);
-  response.status == 200
-    ? ($toast.success("ลบสำเร็จ"), (dialog.value = false), emit("success"))
-    : $toast.error("เกิดข้อผิดพลาด! กรุณาติดต่อผู้แลระบบ");
+  // const response = await useApiBookings().destroy(id.value);
+  // response.status == 200
+  //   ? ($toast.success("ลบสำเร็จ"), (dialog.value = false), emit("success"))
+  //   : $toast.error("เกิดข้อผิดพลาด! กรุณาติดต่อผู้แลระบบ");
+  const { data, error } = await supabase.from("bookings").delete().eq("id", id.value);
+  error ? $toast.error(error.message) : ($toast.success("ลบสำเร็จ"), (dialog.value = false), emit("success"));
   loading.value = false;
 };
 
@@ -977,15 +1046,20 @@ watch(dialog, (value) => {
       nextTick(() => {
         if (props.actionType == "add") {
           formTitle.value = "เพิ่มข้อมูล";
+          formData.value.booking_date = dayjs().format("YYYY-MM-DDTHH:mm");
           formData.value.pickup_location = "สถานบิน";
           formData.value.return_location = "สถานบิน";
           formData.value.extra_charge = 0;
+          formData.value.rental_extra = 0;
           formData.value.discount = 0;
           formData.value.car_id = props.car_id ?? null;
           formData.value.branch_id = props.branch_id ?? null;
           formData.value.pickup_branch_id = props.branch_id ?? null;
           formData.value.return_branch_id = props.branch_id ?? null;
-          formData.value.vat_percent = 0;
+          formData.value.withholding_tax_percent = 0;
+          formData.value.withholding_tax_amount = 0;
+          formData.value.booking_fee = 1000;
+
           getRentalPrice();
           getDriverPrice();
           calPrice();

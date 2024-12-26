@@ -83,29 +83,29 @@
                   <div style="font-size: 0.7rem">{{ item.raw.license_plate_province }}</div>
 
                   <div>
-                    <v-chip :color="item.raw.branch.branch_color" label density="compact" size="small">
-                      {{ item.raw.branch.branch_name }}
+                    <v-chip :color="item.raw.branches.branch_color" label density="compact" size="small">
+                      {{ item.raw.branches.branch_name }}
                     </v-chip>
                   </div>
                 </div>
                 <div class="vertical-text px-1">{{ item.raw.year }}</div>
                 <div class="text-center" style="border-left: 1px solid #e0e0e0; padding: 5px 5px; width: 55%">
                   <div>
-                    <b>{{ item.raw.car_model.car_model_name }}</b>
+                    <b>{{ item.raw.car_models.car_model_name }}</b>
                   </div>
                   <div style="color: green; font-size: 0.8rem">
                     <b>{{ item.raw.rental_per_day.toLocaleString() }}</b>
                     | {{ item.raw.driver_per_day.toLocaleString() }} | {{ item.raw.deposit.toLocaleString() }}
                   </div>
                   <v-chip
-                    v-if="item.raw.car_sub_model"
+                    v-if="item.raw.car_sub_models"
                     class="mr-1"
                     color="warning"
                     label
                     density="compact"
                     size="small"
                   >
-                    {{ item.raw.car_sub_model.car_sub_model_name }}
+                    {{ item.raw.car_sub_models.car_sub_model_name }}
                   </v-chip>
                   <v-chip :color="item.raw.color_code" label variant="flat" density="compact" size="small">
                     {{ item.raw.color }}
@@ -124,22 +124,24 @@
       :number="license_plate"
       @close="dialogAccountTransaction = false"
     />
-    <DrawerFile :drawer="drawer" :id="id" type="car" @success="getData()" @close="drawer = false" />
+    <!-- <DrawerFile :drawer="drawer" :id="id" type="car" @success="getData()" @close="drawer = false" /> -->
   </div>
 </template>
 <script setup>
-const images = ref(["https://picsum.photos/200/200", "https://picsum.photos/300/200", "https://picsum.photos/250/200"]);
+const supabase = useNuxtApp().$supabase;
+const { $toast } = useNuxtApp();
+
 const search = ref("");
 const loading = ref(true);
 const data = ref([]);
 const getData = async () => {
   loading.value = true;
-  const response = await useApiCars().index();
-  // console.log(response.data);
-  data.value = response.data;
-  data.value.map((item) => {
-    item.car_model_name = item.car_model.car_model_name;
-  });
+  const { data: cars, error } = await supabase
+    .from("cars")
+    .select("*, uploads(*), branches(*), car_types(*), car_brands(*), car_models(*), car_sub_models(*)")
+    .order("created_at", { ascending: false });
+  error ? $toast.error(error.message) : (data.value = cars);
+
   loading.value = false;
 };
 getData();

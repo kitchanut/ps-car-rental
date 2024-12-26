@@ -23,13 +23,13 @@ export async function request(method, url, data, auth = false) {
     return response;
   } catch (error) {
     console.log("api-error", error);
-    if (error.response.status === 401) {
-      useCookie("user").value = null;
-      useCookie("token").value = null;
-      useCookie("isLogin").value = false;
+    // if (error.response.status === 401) {
+    //   useCookie("user").value = null;
+    //   useCookie("token").value = null;
+    //   useCookie("isLogin").value = false;
 
-      window.location.href = "/login";
-    }
+    //   window.location.href = "/login";
+    // }
     return error;
   }
 }

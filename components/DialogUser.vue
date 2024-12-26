@@ -52,7 +52,7 @@
 
               <v-text-field
                 class="mt-3"
-                label="Email/Username"
+                label="Email"
                 v-model="formData.email"
                 density="comfortable"
                 outlined
@@ -135,8 +135,9 @@ const props = defineProps({
   dialog: { type: Boolean, default: false },
   actionType: String,
   appearance: String,
-  id: Number,
+  id: String,
 });
+const supabase = useNuxtApp().$supabase;
 const { $toast } = useNuxtApp();
 const emit = defineEmits(["success", "close"]);
 
@@ -150,18 +151,29 @@ const rulePassword = ref([]);
 // Get Data
 const getData = async () => {
   loading.value = true;
-  const response = await useApiUsers().show(props.id);
-  formData.value = response.data;
+  const { data: user, error } = await supabase.from("users").select("*").eq("id", props.id).single();
+  if (error) {
+    $toast.error(error.message);
+  } else {
+    delete user.password;
+    formData.value = user;
+  }
   loading.value = false;
 };
 
 // Get Branch
 const branches = ref([]);
 const getBranch = async () => {
-  const response = await useApiBranches().index();
-  branches.value = response.data.filter((item) => {
-    return item.branch_status == "เปิดใช้งาน";
-  });
+  const { data: branch, error } = await supabase
+    .from("branches")
+    .select("*")
+    .order("id")
+    .eq("branch_status", "เปิดใช้งาน");
+  if (error) {
+    $toast.error(error.message);
+  } else {
+    branches.value = branch;
+  }
   branches.value.unshift({
     id: null,
     branch_name: "ส่วนกลาง",
@@ -176,29 +188,65 @@ const onSubmit = async () => {
   const validate = await formValue.validate();
   if (validate.valid) {
     loading.value = true;
-    // formData.value.permissions = permissions.value;
+
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
     if (props.actionType == "add") {
-      const response = await useApiUsers().store(formData.value);
-      if (response.status == 201) {
-        $toast.success("ทำรายการสำเร็จ");
-        dialog.value = false;
-        emit("success");
-      } else if (response.response.status == 422) {
-        $toast.warning("Email นี้มีอยู่ในระบบแล้ว");
-      } else {
-        $toast.error("เกิดข้อผิดพลาด! กรุณาติดต่อผู้แลระบบ");
+      // const response = await useApiUsers().store(formData.value);
+      const response = await $fetch("/api/users/create", {
+        method: "POST",
+        headers: { Authorization: "Bearer " + session.access_token },
+        body: {
+          email: formData.value.email,
+          password: formData.value.password,
+          user_metadata: { role: formData.value.level },
+        },
+      });
+      if (response.status != 200) {
+        $toast.error(response.error);
+        loading.value = false;
+        return;
       }
-      // response.status == 201
-      //   ? ($toast.success("ทำรายการสำเร็จ"), (dialog.value = false), emit("success"))
-      //   : $toast.error("เกิดข้อผิดพลาด! กรุณาติดต่อผู้แลระบบ");
+      delete formData.value.password;
+      formData.value.id = response.data.user.id;
+
+      const { data, error } = await supabase.from("users").insert(formData.value).select();
+      if (error) {
+        $toast.error(error.message);
+      } else {
+        $toast.success("บันทึกข้อมูลสำเร็จ");
+        emit("success");
+        dialog.value = false;
+      }
     } else {
-      const response = await useApiUsers().update(formData.value.id, formData.value);
-      response.status == 200
-        ? ($toast.success("แก้ไขข้อมูลสำเร็จ"), (dialog.value = false), emit("success"))
-        : $toast.error("เกิดข้อผิดพลาด! กรุณาติดต่อผู้แลระบบ");
+      // const response = await useApiUsers().update(formData.value.id, formData.value);
+      // response.status == 200
+      //   ? ($toast.success("แก้ไขข้อมูลสำเร็จ"), (dialog.value = false), emit("success"))
+      //   : $toast.error("เกิดข้อผิดพลาด! กรุณาติดต่อผู้แลระบบ");
+
+      const response = await $fetch("/api/users/update", {
+        method: "POST",
+        headers: { Authorization: "Bearer " + session.access_token },
+        body: {
+          userId: formData.value.id,
+          newEmail: formData.value.email,
+          newPassword: formData.value.password,
+        },
+      });
+
+      if (formData.value.password) {
+        delete formData.value.password;
+      }
+
+      const { data, error } = await supabase.from("users").update(formData.value).eq("id", props.id);
+      error
+        ? $toast.error(error.message)
+        : ($toast.success("บันทึกข้อมูลสำเร็จ"), emit("success"), (dialog.value = false));
     }
-    loading.value = false;
   }
+  loading.value = false;
 };
 
 const id = ref(0);

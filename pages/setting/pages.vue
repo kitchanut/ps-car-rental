@@ -45,9 +45,9 @@
 </template>
 <script setup>
 import axios from "axios";
+const supabase = useNuxtApp().$supabase;
 const { $toast } = useNuxtApp();
 const config = useRuntimeConfig();
-const FACEBOOK_APP_ID = ref(config.public.FACEBOOK_APP_ID);
 
 const pageLists = ref([]);
 const pageSelectId = ref([]);
@@ -59,7 +59,6 @@ const loginWithFacebook = () => {
     function (response) {
       if (response.authResponse) {
         const accessToken = response.authResponse.accessToken;
-        console.log("Access Token: ", accessToken);
         getLongLiveToken(accessToken);
         getFageList(accessToken);
       } else {
@@ -78,16 +77,9 @@ const getLongLiveToken = async (accessToken) => {
       url: `https://graph.facebook.com/v20.0/oauth/access_token?grant_type=fb_exchange_token&client_id=${config.public.FACEBOOK_APP_ID}&client_secret=${config.public.FACEBOOK_APP_SECRET}&fb_exchange_token=${accessToken}`,
     });
     longLiveToken.value = response.data.access_token;
-    console.log("Long Live Token: ", response.data.access_token);
   } catch (error) {
     console.error(error);
   }
-  // const response = await axios({
-  //   method: "GET",
-  //   url: `https://graph.facebook.com/v20.0/oauth/access_token?grant_type=fb_exchange_token&client_id=${config.public.FACEBOOK_APP_ID}&client_secret=${config.public.FACEBOOK_APP_SECRET}&fb_exchange_token=${accessToken}`,
-  // });
-  // longLiveToken.value = response.data.access_token;
-  // console.log("Long Live Token: ", response.data.access_token);
 };
 
 const getFageList = async (accessToken) => {
@@ -95,34 +87,43 @@ const getFageList = async (accessToken) => {
     method: "GET",
     url: `https://graph.facebook.com/me/accounts?access_token=${accessToken}`,
   });
-  console.log("User Info:", response.data);
   pageLists.value = response.data.data;
 };
 
 const loading = ref(false);
-const addPage = () => {
-  pageSelect.value.forEach(async (page) => {
-    const responseAccessToken = await axios({
-      method: "GET",
-      url: `https://graph.facebook.com/${page.id}?fields=access_token&access_token=${longLiveToken.value}`,
-    });
-    let pageInsert = {
-      page_id: page.id,
-      page_name: page.name,
-      page_access_token: responseAccessToken.data.access_token,
-    };
-    loading.value = true;
-    const response = await useApiFacebookPages().store(pageInsert);
-    response.status == 201
-      ? ($toast.success("ทำรายการสำเร็จ"), (loading.value = false))
-      : $toast.error("เกิดข้อผิดพลาด! กรุณาติดต่อผู้แลระบบ"),
-      (loading.value = false);
-  });
+const addPage = async () => {
   nextTick(() => {
-    pageLists.value = [];
-    pageSelectId.value = [];
-    getData();
+    pageSelect.value.forEach(async (page) => {
+      const responseAccessToken = await axios({
+        method: "GET",
+        url: `https://graph.facebook.com/${page.id}?fields=access_token&access_token=${longLiveToken.value}`,
+      });
+      let pageInsert = {
+        page_id: page.id,
+        page_name: page.name,
+        page_access_token: responseAccessToken.data.access_token,
+      };
+      loading.value = true;
+
+      // const response = await useApiFacebookPages().store(pageInsert);
+      // response.status == 201
+      //   ? ($toast.success("ทำรายการสำเร็จ"), (loading.value = false))
+      //   : $toast.error("เกิดข้อผิดพลาด! กรุณาติดต่อผู้แลระบบ"),
+      //   (loading.value = false);
+
+      const { error } = await supabase.from("facebook_pages").insert(pageInsert);
+      if (error) {
+        $toast.error(error.message);
+      } else {
+        $toast.success("ทำรายการสำเร็จ");
+      }
+      loading.value = false;
+    });
   });
+
+  pageLists.value = [];
+  pageSelectId.value = [];
+  getData();
 };
 
 const headers = ref([{ title: "เพจ", key: "page_name" }]);
@@ -130,8 +131,18 @@ const headers = ref([{ title: "เพจ", key: "page_name" }]);
 const data = ref([]);
 const getData = async () => {
   loading.value = true;
-  const response = await useApiFacebookPages().index();
-  data.value = response.data;
+  // const response = await useApiFacebookPages().index();
+  // data.value = response.data;
+
+  const { data: pages, error } = await supabase
+    .from("facebook_pages")
+    .select("*")
+    .order("created_at", { ascending: false });
+  if (error) {
+    $toast.error(error.message);
+  } else {
+    data.value = pages;
+  }
   loading.value = false;
 };
 getData();

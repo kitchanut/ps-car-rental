@@ -97,6 +97,7 @@
   </div>
 </template>
 <script setup>
+const supabase = useNuxtApp().$supabase;
 const { $toast } = useNuxtApp();
 const search = ref("");
 const loading = ref(true);
@@ -109,12 +110,16 @@ const headers = ref([
 const data = ref([]);
 const getData = async () => {
   loading.value = true;
-  const response = await useApiCarBrands().index();
-  // console.log(response.data);
-  data.value = response.data;
-  data.value.map((item, index) => {
-    item.no = index + 1;
-  });
+  // const response = await useApiCarBrands().index();
+  const { data: car_brands, error } = await supabase.from("car_brands").select("*, car_models(*, car_sub_models(*))");
+  if (error) {
+    $toast.error(error.message);
+  } else {
+    data.value = car_brands;
+    data.value.map((item, index) => {
+      item.no = index + 1;
+    });
+  }
   loading.value = false;
 };
 getData();

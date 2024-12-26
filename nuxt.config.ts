@@ -38,7 +38,6 @@ export default defineNuxtConfig({
         class: "demo"
       },
       charset: "utf-8",
-      // titleTemplate: "%s | มูเตลู",
       titleTemplate: "PS Car Rental",
       link: [
         // {
@@ -79,12 +78,15 @@ export default defineNuxtConfig({
     }
   },
   runtimeConfig: {
+    supabaseServiceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY,
     public: {
       serverUrl: process.env.NODE_ENV === "development"
         ? "http://localhost:3001"
         : "https://ps-car-rental-api.ie-advisor.co.th",
       FACEBOOK_APP_ID: process.env.FACEBOOK_APP_ID,
-      FACEBOOK_APP_SECRET: process.env.FACEBOOK_APP_SECRET
+      FACEBOOK_APP_SECRET: process.env.FACEBOOK_APP_SECRET,
+      supabaseUrl: process.env.SUPABASE_URL,
+      supabaseAnonKey: process.env.SUPABASE_KEY,
     }
   }
 })

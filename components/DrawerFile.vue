@@ -110,7 +110,6 @@ const deleteItem = async () => {
   const response = await useApiUploads().destroy(imageId.value);
   response.status == 200 ? $toast.success("ลบสำเร็จ") : $toast.error("เกิดข้อผิดพลาด! กรุณาติดต่อผู้แลระบบ");
   getData();
-  console.log(images.value.length);
   if (images.value.length == 0) {
     emit("success");
   }

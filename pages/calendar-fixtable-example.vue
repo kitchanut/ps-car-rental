@@ -250,7 +250,6 @@ const getData = async () => {
       };
     });
   });
-  console.log(data.value);
   loading.value = false;
 };
 getData();
@@ -277,7 +276,6 @@ const drawer = ref(false);
 
 // Click Bar
 const onClickedBar = (item) => {
-  console.log(item.bar);
   dialogBooking.value = true;
   id.value = item.bar.id;
 };

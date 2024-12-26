@@ -210,6 +210,7 @@
 <script setup>
 import axios from "axios";
 const route = useRoute();
+const supabase = useNuxtApp().$supabase;
 const { $toast } = useNuxtApp();
 const conversation_id = useState("conversation_id", () => null);
 const conversation_name = useState("conversation_name", () => null);
@@ -221,27 +222,17 @@ const pages = useState("pages", () => []);
 const page_id = useState("page_id", () => null);
 const page_access_token = useState("page_access_token", () => null);
 const getPage = async () => {
-  // loading.value = true;
-  const response = await useApiFacebookPages().index();
-  pages.value = response.data;
-  // loading.value = false;
+  // const response = await useApiFacebookPages().index();
+  // pages.value = response.data;
+
+  const { data: response, error } = await supabase
+    .from("facebook_pages")
+    .select("*")
+    .order("created_at", { ascending: false });
+  error ? $toast.error(error.message) : (pages.value = response);
 };
 getPage();
 
-// const getProfilePicture = (senderId) => {
-//   const profileUrl = `https://graph.facebook.com/v20.0/${senderId}/picture?redirect=false&access_token=${page_access_token.value}`;
-//   axios
-//     .get(profileUrl)
-//     .then((response) => {
-//       const profileImageUrl = response.data.data.url;
-//       console.log("Profile Image URL:", profileImageUrl);
-//     })
-//     .catch((error) => {
-//       console.error("Error fetching profile image:", error);
-//     });
-// };
-
-// const conversations = ref([]);
 onMounted(() => {
   if (page_id.value && !conversation_id.value) {
     getConversations();
@@ -259,7 +250,6 @@ const getConversations = async () => {
       method: "GET",
       url: `https://graph.facebook.com/v20.0/${pageSelect.page_id}?fields=conversations{senders,unread_count,messages.limit(1){message,attachments}}&access_token=${page_access_token.value}`,
     });
-    console.log("Conversations:", response.data);
     if (response.data.conversations) {
       conversations.value = response.data.conversations.data;
     } else {
@@ -267,7 +257,6 @@ const getConversations = async () => {
     }
     loading.value = false;
   } catch (error) {
-    console.log(error);
     if (error.response.data.error.code == 2 || error.response.data.error.code == 190) {
       $toast.error("เกิดข้อผิดพลาด! กรุณาเพิ่มเพจใหม่อีกครั้งในหน้าตั้งค่าเพจ");
     } else {
@@ -289,10 +278,9 @@ const getMessages = async () => {
 
     messages_face.value = response.data.messages.data;
     messages_face.value.sort((a, b) => new Date(a.created_time) - new Date(b.created_time));
-    // console.log("messages_face:", messages_face.value);
+
     loading.value = false;
   } catch (error) {
-    console.log(error.response.data.error);
     if (error.response.data.error.code == 2 || error.response.data.error.code == 190) {
       $toast.error("เกิดข้อผิดพลาด! กรุณาเพิ่มเพจใหม่อีกครั้งในหน้าตั้งค่าเพจ");
     } else {
@@ -338,9 +326,11 @@ const sendMessage = async () => {
 
 const customers = ref([]);
 const getCustomer = async () => {
-  const response = await useApiCustomers().index();
-  // console.log(response.data);
-  customers.value = response.data;
+  const { data: customers, error } = await supabase
+    .from("customers")
+    .select("*")
+    .order("created_at", { ascending: false });
+  error ? $toast.error(error.message) : (customers.value = customers);
 };
 getCustomer();
 

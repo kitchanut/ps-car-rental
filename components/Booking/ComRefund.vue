@@ -4,7 +4,7 @@
       <v-row style="height: 100%" no-gutters="">
         <v-col cols="4" class="d-flex justify-center align-center">มัดจำ</v-col>
         <v-col class="d-flex justify-center align-center" style="border-left: 1px solid #eee">
-          <span style="font-size: 1.2rem; font-weight: 700; color: green">{{ totalDeposit.toLocaleString() }}</span>
+          <span style="font-size: 1.2rem; font-weight: 700; color: green">{{ deposits.toLocaleString() }}</span>
         </v-col>
       </v-row>
     </v-card>
@@ -23,7 +23,7 @@
         <v-col cols="4" class="d-flex justify-center align-center"> เงินที่ต้องคืน</v-col>
         <v-col class="d-flex justify-center align-center" style="border-left: 1px solid #eee">
           <span style="font-size: 1.2rem; font-weight: 700; color: blue">
-            {{ (totalDeposit - return_penalty).toLocaleString() }}
+            {{ (deposits - return_penalty).toLocaleString() }}
           </span>
         </v-col>
       </v-row>
@@ -34,14 +34,14 @@
       <template v-slot:default="{ items }">
         <v-card v-for="item in items" class="mb-2" border flat>
           <v-row no-gutters>
-            <v-col cols="2" v-viewer>
+            <!-- <v-col cols="2" v-viewer>
               <v-img
                 :src="item.raw.uploads.length ? $getImage(item.raw.uploads[0].file_path) : $imageBaseApp()"
                 :lazy-src="item.raw.uploads.length ? $getImage(item.raw.uploads[0].file_path) : $imageBaseApp()"
                 height="100%"
                 cover
               />
-            </v-col>
+            </v-col> -->
             <v-col
               class="pa-3"
               @click="
@@ -69,11 +69,11 @@
     </v-data-iterator>
 
     <DialogAccountTransaction
-      v-if="!data.length"
       :booking_id="props.booking_id"
       :car_id="props.car_id"
       type="withdraw"
-      transaction_type="คืนเงินมัดจำ"
+      transaction_type="refund"
+      transaction_details="คืนเงินมัดจำ"
       appearance="addFullWidthRefund"
       actionType="add"
       @success="success()"
@@ -83,7 +83,8 @@
       :dialog="dialog"
       :id="id"
       type="withdraw"
-      transaction_type="คืนเงินมัดจำ"
+      transaction_type="refund"
+      transaction_details="คืนเงินมัดจำ"
       actionType="edit"
       @success="getData()"
       @close="dialog = false"
@@ -91,6 +92,7 @@
   </div>
 </template>
 <script setup>
+const supabase = useNuxtApp().$supabase;
 const { $toast } = useNuxtApp();
 const emit = defineEmits(["success", "close"]);
 const props = defineProps({
@@ -106,7 +108,7 @@ const loading = ref(false);
 const search = ref("");
 
 onMounted(() => {
-  getDeposit();
+  getBooking();
   getReturn();
   getData();
 });
@@ -114,38 +116,69 @@ onMounted(() => {
 const data = ref([]);
 const getData = async () => {
   loading.value = true;
-  let query = `?booking_id=${props.booking_id}&&transaction_type=คืนเงินมัดจำ`;
-  const response = await useApiAccountTransactions().index(query);
-  data.value = response.data;
+  // let query = `?booking_id=${props.booking_id}&&transaction_type=คืนเงินมัดจำ`;
+  // const response = await useApiAccountTransactions().index(query);
+  // data.value = response.data;
+  // data.value.map((item) => {
+  //   item.account_number = item.account.account_number;
+  // });
+
+  const { data: response, error } = await supabase
+    .from("account_transactions")
+    .select("*,accounts(*)")
+    .eq("booking_id", props.booking_id)
+    .eq("transaction_type", "refund");
+  error ? $toast.error(error.message) : (data.value = response);
+
   data.value.map((item) => {
-    item.account_number = item.account.account_number;
+    item.account_number = item.accounts.account_number;
   });
+
   loading.value = false;
 };
 
-const deposits = ref([]);
-const getDeposit = async () => {
-  let query = `?booking_id=${props.booking_id}&&transaction_type=รับเงินมัดจำ`;
-  const response = await useApiAccountTransactions().index(query);
-  deposits.value = response.data;
-};
-const totalDeposit = computed(() => deposits.value.reduce((sum, item) => sum + item.transaction_amount, 0));
-
+const deposits = ref(0);
 const return_penalty = ref(0);
 const getReturn = async () => {
-  let query = props.booking_id ? `?booking_id=${props.booking_id}` : "";
-  const response = await useApiBookingReturns().index(query);
-  return_penalty.value = response.data[0].return_penalty;
+  // let query = props.booking_id ? `?booking_id=${props.booking_id}` : "";
+  // const response = await useApiBookingReturns().index(query);
+  // return_penalty.value = response.data[0].return_penalty;
+
+  const { data: response, error } = await supabase
+    .from("booking_returns")
+    .select("*")
+    .eq("booking_id", props.booking_id)
+    .single();
+  if (error) {
+    $toast.error(error.message);
+  } else {
+    return_penalty.value = response.return_penalty;
+  }
+};
+
+const getBooking = async () => {
+  // const response = await useApiBookings().show(props.booking_id);
+  let { data: response, error } = await supabase.from("bookings").select("*").eq("id", props.booking_id).single();
+  if (error) {
+    $toast.error(error.message);
+  } else {
+    deposits.value = response.deposit;
+  }
 };
 
 const success = async () => {
   loading.value = true;
   if (props.booking_status == "คืนรถ") {
-    let formData = {
-      booking_status: "คืนมัดจำ",
-    };
-    const response = await useApiBookings().update(props.booking_id, formData);
-    response.status == 200 ? emit("success") : $toast.error("เกิดข้อผิดพลาด! กรุณาติดต่อผู้แลระบบ");
+    // let formData = {
+    //   booking_status: "คืนมัดจำ",
+    // };
+    // const response = await useApiBookings().update(props.booking_id, formData);
+    // response.status == 200 ? emit("success") : $toast.error("เกิดข้อผิดพลาด! กรุณาติดต่อผู้แลระบบ");
+    let { data, error } = await supabase
+      .from("bookings")
+      .update({ booking_status: "คืนมัดจำ" })
+      .eq("id", props.booking_id);
+    error ? $toast.error(error.message) : (emit("success"), emit("close"));
   }
   loading.value = false;
   getData();
@@ -155,8 +188,8 @@ watch(
   () => props.step,
   (newValue, oldValue) => {
     if (newValue == "5") {
-      getDeposit();
       getReturn();
+      getBooking();
     }
   }
 );

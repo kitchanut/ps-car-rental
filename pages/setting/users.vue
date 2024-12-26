@@ -56,6 +56,7 @@
   </div>
 </template>
 <script setup>
+const supabase = useNuxtApp().$supabase;
 const { $toast } = useNuxtApp();
 const search = ref("");
 const loading = ref(true);
@@ -70,17 +71,21 @@ const data = ref([]);
 const getData = async () => {
   loading.value = true;
 
-  const response = await useApiUsers().index();
-  data.value = response.data;
-  // data.value.map((item, index) => {
-  //   item.no = index + 1;
-  // });
+  // const response = await useApiUsers().index();
+  // data.value = response.data;
+
+  const { data: users, error } = await supabase.from("users").select("*").order("created_at", { ascending: false });
+  if (error) {
+    $toast.error(error.message);
+  } else {
+    data.value = users;
+  }
   loading.value = false;
 };
 getData();
 
 const dialog = ref(false);
-const id = ref(0);
+const id = ref("");
 const handleClick = (e, row) => {
   dialog.value = true;
   id.value = row.item.id;

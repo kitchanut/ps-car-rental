@@ -45,6 +45,7 @@
   </div>
 </template>
 <script setup>
+const supabase = useNuxtApp().$supabase;
 const { $toast } = useNuxtApp();
 const search = ref("");
 const loading = ref(true);
@@ -60,8 +61,14 @@ const id = ref(0);
 const data = ref([]);
 const getData = async () => {
   loading.value = true;
-  const response = await useApiAccounts().index();
-  data.value = response.data;
+  // const response = await useApiAccounts().index();
+  // data.value = response.data;
+
+  const { data: response, error } = await supabase
+    .from("accounts")
+    .select("*")
+    .order("created_at", { ascending: false });
+  error ? $toast.error(error.message) : (data.value = response);
   loading.value = false;
 };
 getData();

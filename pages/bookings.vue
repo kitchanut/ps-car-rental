@@ -22,14 +22,15 @@
           <v-btn value="3M" size="small" style="min-width: 20px"><b>3M</b></v-btn>
           <v-btn value="6M" size="small" style="min-width: 20px"><b>6M</b></v-btn>
           <v-btn value="Y" size="small" style="min-width: 20px"><b>Y</b></v-btn>
-          <v-btn value="2Y" size="small" style="min-width: 20px"><b>2Y</b></v-btn>
-          <v-btn value="3Y" size="small" style="min-width: 20px"><b>3Y</b></v-btn>
         </v-btn-toggle>
       </div>
       <div class="text-right px-2">
-        <v-badge color="grey" inline dot></v-badge>จอง <v-badge color="warning" inline dot></v-badge>มัดจำ
-        <v-badge color="info" inline dot></v-badge>รับรถ <v-badge color="primary" inline dot></v-badge>คืนรถ
-        <v-badge color="success" inline dot></v-badge>คืนมัดจำ <v-badge color="red" inline dot></v-badge>ยกเลิก
+        <v-badge :color="colorBar('จอง')" inline dot></v-badge>จอง
+        <v-badge :color="colorBar('รับเงินจอง')" inline dot></v-badge>มัดจำ
+        <v-badge :color="colorBar('รับรถ')" inline dot></v-badge>รับรถ
+        <v-badge :color="colorBar('คืนรถ')" inline dot></v-badge>คืนรถ
+        <v-badge :color="colorBar('คืนมัดจำ')" inline dot></v-badge>คืนมัดจำ
+        <v-badge :color="colorBar('ยกเลิก')" inline dot></v-badge>ยกเลิก
       </div>
 
       <v-divider></v-divider>
@@ -40,7 +41,7 @@
             <th class="text-left px-2">จอง|รับรถ</th>
             <th class="text-left pl-2">รถเช่า</th>
             <th class="text-left px-2">ลูกค้า</th>
-            <th class="text-right px-2">รวม</th>
+            <th class="text-right px-2">ค่าเช่า</th>
           </tr>
         </thead>
         <tbody>
@@ -48,10 +49,8 @@
             v-if="dataFiltered.length"
             v-for="item in dataFiltered"
             :key="item.name"
-            @click="
-              id = item.id;
-              dialog = true;
-            "
+            @click="handleClick(item)"
+            @dblclick="handleDblClick(item)"
           >
             <td class="px-0">
               <div class="vertical-text" style="width: 20px">
@@ -71,12 +70,12 @@
               <div style="color: grey">{{ $dayjs(item.pickup_date).format("YYYY-MM-DD") }}</div>
             </td>
             <td class="px-2">
-              <div>{{ item.car.license_plate }}</div>
-              <div style="color: grey">{{ item.car.car_model.car_model_name }}</div>
+              <div>{{ item.cars.license_plate }}</div>
+              <div style="color: grey">{{ item.cars.car_models.car_model_name }}</div>
             </td>
             <td class="px-2">
-              <div>{{ item.customer.customer_name }}</div>
-              <div style="color: grey">{{ item.customer.customer_tel }}</div>
+              <div>{{ item.customers.customer_name }}</div>
+              <div style="color: grey">{{ item.customers.customer_tel }}</div>
             </td>
             <td align="end" class="px-2">
               <div style="color: green">{{ Number(item.sub_total).toLocaleString() }}</div>
@@ -92,23 +91,61 @@
     </v-card>
 
     <DialogBooking :dialog="dialog" :id="id" actionType="edit" @success="getData()" @close="dialog = false" />
+    <DialogBookingDetails :dialog="dialogBookingDetails" :id="id" @close="dialogBookingDetails = false" />
   </div>
 </template>
 <script setup>
+const dayjs = useDayjs();
+const supabase = useNuxtApp().$supabase;
 const { $toast } = useNuxtApp();
+const user = ref(localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : null);
+
+onMounted(() => {
+  getData();
+});
 const search = ref("");
 const loading = ref(true);
 const period = ref("D");
 const data = ref([]);
 const getData = async () => {
   loading.value = true;
-  let queryString = `?query_period_by=booking_date&period=${period.value}`;
-  const response = await useApiBookings().index(queryString);
-  // console.log(response.data);
-  data.value = response.data;
+
+  let startDate;
+  let endDate;
+  if (period.value == "D") {
+    startDate = dayjs().startOf("day").format("YYYY-MM-DD");
+    endDate = dayjs().endOf("day").format("YYYY-MM-DD 23:59");
+  } else if (period.value == "W") {
+    startDate = dayjs().startOf("week").format("YYYY-MM-DD");
+    endDate = dayjs().endOf("week").format("YYYY-MM-DD 23:59");
+  } else if (period.value == "M") {
+    startDate = dayjs().startOf("month").format("YYYY-MM-DD");
+    endDate = dayjs().endOf("month").format("YYYY-MM-DD 23:59");
+  } else if (period.value == "3M") {
+    startDate = dayjs().startOf("month").subtract(3, "month").format("YYYY-MM-DD");
+    endDate = dayjs().endOf("month").format("YYYY-MM-DD 23:59");
+  } else if (period.value == "6M") {
+    startDate = dayjs().startOf("month").subtract(6, "month").format("YYYY-MM-DD");
+    endDate = dayjs().endOf("month").format("YYYY-MM-DD 23:59");
+  } else if (period.value == "Y") {
+    startDate = dayjs().startOf("year").format("YYYY-MM-DD");
+    endDate = dayjs().endOf("year").format("YYYY-MM-DD 23:59");
+  }
+
+  let query = supabase
+    .from("bookings")
+    .select("*,cars(*,car_models(*)),customers(*)")
+    .gte("booking_date", startDate)
+    .lte("booking_date", endDate)
+    .order("created_at", { ascending: false });
+  if (user.value.branch_id) {
+    query = query.eq("branch_id", user.value.branch_id);
+  }
+  const { data: response, error } = await query;
+
+  error ? $toast.error(error.message) : (data.value = response);
   loading.value = false;
 };
-getData();
 
 const dataFiltered = computed(() => {
   return data.value.filter((item) => {
@@ -128,15 +165,33 @@ watch(
   }
 );
 
-const colorBar = (status) => {
-  if (status == "จอง") return "#9E9E9E";
-  if (status == "มัดจำ") return "#FB8C00";
-  if (status == "รับรถ") return "#2096F3";
-  if (status == "คืนรถ") return "#1966C0";
-  if (status == "คืนมัดจำ") return "#4CAF4F";
-  if (status == "ยกเลิก") return "#FF0000";
-};
+const colorBar = (status) => useStatusColor(status);
 
 const dialog = ref(false);
+const dialogBookingDetails = ref(false);
 const id = ref(0);
+
+const handleDblClick = (item) => {
+  id.value = item.id;
+  clickEvent.value = "dbclick";
+  clickEventDialog(item);
+};
+
+const handleClick = (item) => {
+  id.value = item.id;
+  clickEvent.value = "click";
+  clickEventDialog(item);
+};
+
+// Select Dialog
+const clickEvent = ref(null);
+const clickEventDialog = (item) => {
+  setTimeout(() => {
+    if (clickEvent.value == "click") {
+      dialog.value = true;
+    } else if (clickEvent.value == "dbclick") {
+      dialogBookingDetails.value = true;
+    }
+  }, 200);
+};
 </script>

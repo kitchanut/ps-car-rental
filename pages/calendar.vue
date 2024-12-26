@@ -99,10 +99,13 @@
         ></v-text-field>
       </div>
       <div class="text-right px-3">
-        <v-badge color="grey" inline dot></v-badge>จอง <v-badge color="warning" inline dot></v-badge>มัดจำ
-        <v-badge color="info" inline dot></v-badge>รับรถ <v-badge color="primary" inline dot></v-badge>คืนรถ
-        <v-badge color="success" inline dot></v-badge>คืนมัดจำ
+        <v-badge :color="colorBar('จอง')" inline dot></v-badge>จอง
+        <v-badge :color="colorBar('รับเงินจอง')" inline dot></v-badge>มัดจำ
+        <v-badge :color="colorBar('รับรถ')" inline dot></v-badge>รับรถ
+        <v-badge :color="colorBar('คืนรถ')" inline dot></v-badge>คืนรถ
+        <v-badge :color="colorBar('คืนมัดจำ')" inline dot></v-badge>คืนมัดจำ
       </div>
+
       <div>
         <v-card variant="outlined" color="#eee" class="rounded-0">
           <div style="overflow-x: scroll; overflow-y: visible" :style="`width: ${innerWidth}px;`">
@@ -123,10 +126,10 @@
               <g-gantt-row v-for="item in filterData" :label="item.license_plate" :bars="item.bookings">
                 <template #label>
                   <div
-                    class="d-flex px-2"
+                    class="d-flex pr-2"
                     style="position: fixed; margin-left: 6px; background-color: white; border: 1px solid #eee"
                   >
-                    <div
+                    <!-- <div
                       style="border-right: 1px solid #ccc; padding: 5px 5px; min-width: 85px; text-align: center"
                       @click="
                         dialogCar = true;
@@ -142,21 +145,59 @@
                           {{ item.branch.branch_name }}
                         </v-chip>
                       </div>
-                    </div>
-                    <div class="vertical-text px-1">{{ item.year }}</div>
-                    <div class="text-center" style="border-left: 1px solid #ccc; padding: 5px 16px">
+                    </div> -->
+                    <div class="d-flex justify-center align-center" style="width: 20px">
                       <div>
-                        <b>{{ item.car_model.car_model_name }}</b>
+                        <v-chip
+                          :color="item.color_code"
+                          class="d-flex justify-center align-center"
+                          label
+                          variant="flat"
+                          density="compact"
+                          size="x-small"
+                          style="transform: rotate(90deg); width: 60px; height: 100%"
+                        >
+                          {{ item.color }}
+                        </v-chip>
                       </div>
-                      <div style="color: green; font-size: 0.7rem">
+                    </div>
+                    <div class="vertical-text" style="border-left: 1px solid #ccc; width: 20px">
+                      <div>
+                        {{ item.year }}
+                      </div>
+                    </div>
+                    <div class="text-center" style="border-left: 1px solid #ccc; padding: 5px 16px">
+                      <div
+                        @click="
+                          dialogCar = true;
+                          id = item.id;
+                        "
+                      >
+                        <b>{{ item.car_models.car_model_name }}</b>
+                      </div>
+                      <div
+                        style="color: green; font-size: 0.7rem"
+                        @click="
+                          dialogCar = true;
+                          id = item.id;
+                        "
+                      >
                         <b>{{ item.rental_per_day.toLocaleString() }}</b>
                       </div>
-                      <v-chip :color="item.color_code" label variant="flat" density="compact" size="x-small">
+                      <b
+                        style="color: #1966c0"
+                        @click="
+                          dialogCar = true;
+                          id = item.id;
+                        "
+                        >{{ item.license_plate }}</b
+                      >
+
+                      <!-- <v-chip :color="item.color_code" label variant="flat" density="compact" size="x-small">
                         {{ item.color }}
-                      </v-chip>
+                      </v-chip> -->
                       <v-btn
-                        style="position: absolute; top: 10px; right: -10px"
-                        size="small"
+                        style="position: absolute; top: 2px; right: -10px"
                         density="compact"
                         dark
                         :icon="drawer ? 'mdi-chevron-left' : 'mdi-chevron-right'"
@@ -168,7 +209,7 @@
                       </v-btn>
                       <DialogBooking
                         :car_id="item.id"
-                        :branch_id="item.branch.id"
+                        :branch_id="item.branches.id"
                         appearance="float"
                         actionType="add"
                         @success="getData()"
@@ -196,6 +237,8 @@
   </div>
 </template>
 <script setup>
+const supabase = useNuxtApp().$supabase;
+const { $toast } = useNuxtApp();
 const dayjs = useDayjs();
 
 // Display Size
@@ -209,19 +252,33 @@ if (displaySize.value == "xs" || displaySize.value == "sm") {
 } else {
   innerWidth.value = 850 - 223.5;
 }
-const user = ref(useCookie("user").value);
+const user = ref(localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : null);
+onMounted(() => {
+  if (user.value.branch_id) {
+    branch_id.value = user.value.branch_id;
+  }
+});
 
 // Get Car
 const loading = ref(true);
 const data = ref([]);
 const getData = async () => {
   loading.value = true;
-  let queryString = "?include=bookings";
-  const response = await useApiCars().index(queryString);
-  // console.log(response.data);
-  data.value = response.data;
+  let startDate = dayjs().add(-7, "day").format("YYYY-MM-DD");
+  let endDate = dayjs().add(60, "day").format("YYYY-MM-DD");
+  const { data: response, error } = await supabase
+    .from("cars")
+    .select("*,car_models(*),bookings(*),branches(*)")
+    .gte("bookings.pickup_date", startDate)
+    .lte("bookings.pickup_date", endDate)
+    .neq("bookings.booking_status", "ยกเลิก")
+    .order("created_at", { ascending: false });
+  error ? $toast.error(error.message) : (data.value = response);
+
+  data.value = response;
   data.value.map((item, index) => {
-    item.car_model_name = item.car_model.car_model_name;
+    item.car_model_name = item.car_models.car_model_name;
+    item.branch_name = item.branches.branch_name;
     item.bookings.map((booking) => {
       booking.begin = dayjs(booking.pickup_date).format("YYYY-MM-DD HH:mm");
       if (booking.booking_returns) {
@@ -241,17 +298,12 @@ const getData = async () => {
       };
     });
   });
+
   loading.value = false;
 };
 getData();
 
-const colorBar = (status) => {
-  if (status == "จอง") return "#9E9E9E";
-  if (status == "มัดจำ") return "#FB8C00";
-  if (status == "รับรถ") return "#2096F3";
-  if (status == "คืนรถ") return "#1966C0";
-  if (status == "คืนมัดจำ") return "#4CAF4F";
-};
+const colorBar = (status) => useStatusColor(status);
 
 const filterData = computed(() => {
   return data.value.filter((item) => {
@@ -316,25 +368,41 @@ onMounted(() => {
 });
 const branches = ref([]);
 const getBranches = async () => {
-  const response = await useApiBranches().index();
-  branches.value = response.data.filter((item) => item.branch_status == "เปิดใช้งาน");
+  const { data: response, error } = await supabase.from("branches").select("*").eq("branch_status", "เปิดใช้งาน");
+  if (error) {
+    $toast.error(error.message);
+  } else {
+    branches.value = response;
+  }
 };
 
 const car_types = ref([]);
 const getCarTypes = async () => {
-  const response = await useApiCarTypes().index();
-  car_types.value = response.data.filter((item) => item.car_type_status == "เปิดใช้งาน");
+  const { data: response, error } = await supabase.from("car_types").select("*").eq("car_type_status", "เปิดใช้งาน");
+  if (error) {
+    $toast.error(error.message);
+  } else {
+    car_types.value = response;
+  }
 };
 
 const car_brands = ref([]);
 const getCarBrands = async () => {
-  const response = await useApiCarBrands().index();
-  car_brands.value = response.data.filter((item) => item.car_brand_status == "เปิดใช้งาน");
+  const { data: response, error } = await supabase.from("car_brands").select("*").eq("car_brand_status", "เปิดใช้งาน");
+  if (error) {
+    $toast.error(error.message);
+  } else {
+    car_brands.value = response;
+  }
 };
 
 const getCarModels = async () => {
-  const response = await useApiCarModels().index();
-  car_models.value = response.data.filter((item) => item.car_model_status == "เปิดใช้งาน");
+  const { data: response, error } = await supabase.from("car_models").select("*").eq("car_model_status", "เปิดใช้งาน");
+  if (error) {
+    $toast.error(error.message);
+  } else {
+    car_models.value = response;
+  }
 };
 
 const car_models = ref([]);

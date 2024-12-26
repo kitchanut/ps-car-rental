@@ -36,6 +36,7 @@
   </div>
 </template>
 <script setup>
+const supabase = useNuxtApp().$supabase;
 const { $toast } = useNuxtApp();
 const search = ref("");
 const loading = ref(true);
@@ -46,9 +47,8 @@ const data = ref([]);
 const getData = async () => {
   loading.value = true;
 
-  const response = await useApiCarTypes().index();
-  // console.log(response.data);
-  data.value = response.data;
+  const { data: car_types, error } = await supabase.from("car_types").select("*");
+  error ? $toast.error(error.message) : (data.value = car_types);
   data.value.map((item, index) => {
     item.no = index + 1;
   });

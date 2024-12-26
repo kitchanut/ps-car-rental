@@ -49,26 +49,23 @@
   </div>
 </template>
 <script setup>
+const supabase = useNuxtApp().$supabase;
 const { $toast } = useNuxtApp();
 const search = ref("");
 const loading = ref(true);
-const headers = ref([
-  { title: "ชื่อสาขา", key: "branch_name" },
-  // { title: "สถานะ", key: "branch_status", width: "10%" },
-  // { title: "", key: "actions", width: "10%" },
-]);
+const headers = ref([{ title: "ชื่อสาขา", key: "branch_name" }]);
 
 const data = ref([]);
 
 const getData = async () => {
   loading.value = true;
 
-  const response = await useApiBranches().index();
-  // console.log(response.data);
-  data.value = response.data;
-  data.value.map((item, index) => {
-    item.no = index + 1;
-  });
+  const { data: branches, error } = await supabase.from("branches").select("*").order("id");
+  if (error) {
+    $toast.error(error.message);
+  } else {
+    data.value = branches;
+  }
   loading.value = false;
 };
 getData();

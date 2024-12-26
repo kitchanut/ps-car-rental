@@ -301,6 +301,7 @@ const props = defineProps({
   appearance: String,
   id: Number,
 });
+const supabase = useNuxtApp().$supabase;
 const { $toast } = useNuxtApp();
 const emit = defineEmits(["success", "close"]);
 
@@ -313,8 +314,14 @@ const formTitle = ref("");
 // Get Data
 const getData = async () => {
   loading.value = true;
-  const response = await useApiCars().show(props.id);
-  formData.value = response.data;
+  // const response = await useApiCars().show(props.id);
+  // formData.value = response.data;
+  const { data: car, error } = await supabase.from("cars").select("*").eq("id", props.id).single();
+  if (error) {
+    $toast.error(error.message);
+  } else {
+    formData.value = car;
+  }
   loading.value = false;
 };
 
@@ -328,20 +335,38 @@ onMounted(() => {
 
 const branches = ref([]);
 const getBranches = async () => {
-  const response = await useApiBranches().index();
-  branches.value = response.data.filter((item) => item.branch_status == "เปิดใช้งาน");
+  // const response = await useApiBranches().index();
+  // branches.value = response.data.filter((item) => item.branch_status == "เปิดใช้งาน");
+  const { data, error } = await supabase.from("branches").select("*").eq("branch_status", "เปิดใช้งาน");
+  if (error) {
+    $toast.error(error.message);
+  } else {
+    branches.value = data;
+  }
 };
 
 const car_types = ref([]);
 const getCarTypes = async () => {
-  const response = await useApiCarTypes().index();
-  car_types.value = response.data.filter((item) => item.car_type_status == "เปิดใช้งาน");
+  // const response = await useApiCarTypes().index();
+  // car_types.value = response.data.filter((item) => item.car_type_status == "เปิดใช้งาน");
+  const { data, error } = await supabase.from("car_types").select("*").eq("car_type_status", "เปิดใช้งาน");
+  if (error) {
+    $toast.error(error.message);
+  } else {
+    car_types.value = data;
+  }
 };
 
 const car_brands = ref([]);
 const getCarBrands = async () => {
-  const response = await useApiCarBrands().index();
-  car_brands.value = response.data.filter((item) => item.car_brand_status == "เปิดใช้งาน");
+  // const response = await useApiCarBrands().index();
+  // car_brands.value = response.data.filter((item) => item.car_brand_status == "เปิดใช้งาน");
+  const { data, error } = await supabase.from("car_brands").select("*").eq("car_brand_status", "เปิดใช้งาน");
+  if (error) {
+    $toast.error(error.message);
+  } else {
+    car_brands.value = data;
+  }
 };
 
 const car_models = ref([]);
@@ -349,8 +374,14 @@ const car_model_filters = computed(() => {
   return car_models.value.filter((item) => item.car_brand_id == formData.value.car_brand_id);
 });
 const getCarModels = async () => {
-  const response = await useApiCarModels().index();
-  car_models.value = response.data.filter((item) => item.car_model_status == "เปิดใช้งาน");
+  // const response = await useApiCarModels().index();
+  // car_models.value = response.data.filter((item) => item.car_model_status == "เปิดใช้งาน");
+  const { data, error } = await supabase.from("car_models").select("*").eq("car_model_status", "เปิดใช้งาน");
+  if (error) {
+    $toast.error(error.message);
+  } else {
+    car_models.value = data;
+  }
 };
 
 const car_sub_models = ref([]);
@@ -358,8 +389,14 @@ const car_sub_model_filters = computed(() => {
   return car_sub_models.value.filter((item) => item.car_model_id == formData.value.car_model_id);
 });
 const getCarSubModels = async () => {
-  const response = await useApiCarSubModels().index();
-  car_sub_models.value = response.data.filter((item) => item.car_sub_model_status == "เปิดใช้งาน");
+  // const response = await useApiCarSubModels().index();
+  // car_sub_models.value = response.data.filter((item) => item.car_sub_model_status == "เปิดใช้งาน");
+  const { data, error } = await supabase.from("car_sub_models").select("*").eq("car_sub_model_status", "เปิดใช้งาน");
+  if (error) {
+    $toast.error(error.message);
+  } else {
+    car_sub_models.value = data;
+  }
 };
 
 // Set years from current year to 20 years ago
@@ -376,15 +413,21 @@ const onSubmit = async () => {
   if (validate.valid) {
     loading.value = true;
     if (props.actionType == "add") {
-      const response = await useApiCars().store(formData.value);
-      response.status == 201
-        ? ($toast.success("ทำรายการสำเร็จ"), (dialog.value = false), emit("success"))
-        : $toast.error("เกิดข้อผิดพลาด! กรุณาติดต่อผู้แลระบบ");
+      // const response = await useApiCars().store(formData.value);
+      // response.status == 201
+      //   ? ($toast.success("ทำรายการสำเร็จ"), (dialog.value = false), emit("success"))
+      //   : $toast.error("เกิดข้อผิดพลาด! กรุณาติดต่อผู้แลระบบ");
+      const { data, error } = await supabase.from("cars").insert(formData.value);
+      error ? $toast.error(error.message) : ($toast.success("ทำรายการสำเร็จ"), (dialog.value = false), emit("success"));
     } else {
-      const response = await useApiCars().update(formData.value.id, formData.value);
-      response.status == 200
-        ? ($toast.success("แก้ไขข้อมูลสำเร็จ"), (dialog.value = false), emit("success"))
-        : $toast.error("เกิดข้อผิดพลาด! กรุณาติดต่อผู้แลระบบ");
+      // const response = await useApiCars().update(formData.value.id, formData.value);
+      // response.status == 200
+      //   ? ($toast.success("แก้ไขข้อมูลสำเร็จ"), (dialog.value = false), emit("success"))
+      //   : $toast.error("เกิดข้อผิดพลาด! กรุณาติดต่อผู้แลระบบ");
+      const { data, error } = await supabase.from("cars").update(formData.value).eq("id", formData.value.id);
+      error
+        ? $toast.error(error.message)
+        : ($toast.success("แก้ไขข้อมูลสำเร็จ"), (dialog.value = false), emit("success"));
     }
     loading.value = false;
   }
@@ -395,10 +438,12 @@ const dialogDelete = ref(false);
 const deleteItem = async () => {
   loading.value = true;
   dialogDelete.value = false;
-  const response = await useApiCars().destroy(id.value);
-  response.status == 200
-    ? ($toast.success("ลบสำเร็จ"), (dialog.value = false), emit("success"))
-    : $toast.error("เกิดข้อผิดพลาด! กรุณาติดต่อผู้แลระบบ");
+  // const response = await useApiCars().destroy(id.value);
+  // response.status == 200
+  //   ? ($toast.success("ลบสำเร็จ"), (dialog.value = false), emit("success"))
+  //   : $toast.error("เกิดข้อผิดพลาด! กรุณาติดต่อผู้แลระบบ");
+  const { data, error } = await supabase.from("cars").delete().eq("id", id.value);
+  error ? $toast.error(error.message) : ($toast.success("ลบสำเร็จ"), (dialog.value = false), emit("success"));
   loading.value = false;
 };
 

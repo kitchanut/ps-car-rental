@@ -40,6 +40,7 @@
 
 <script setup>
 definePageMeta({ layout: "home" });
+const supabase = useNuxtApp().$supabase;
 const { $toast } = useNuxtApp();
 const router = useRouter();
 
@@ -48,21 +49,47 @@ const password = ref("");
 const loading = ref(false);
 const handleSubmit = async () => {
   loading.value = true;
-  const data = {
-    email: email.value,
-    password: password.value,
-  };
-  const response = await useApiUsers().login(data);
-  if (response.status) {
-    useCookie("user").value = response.data.user;
-    useCookie("token").value = response.data.token;
-    useCookie("isLogin").value = true;
-    router.push({ path: "/dashboard" });
+
+  // const data = {
+  //   email: email.value,
+  //   password: password.value,
+  // };
+  // const response = await useApiUsers().login(data);
+  // if (response.status) {
+  //   useCookie("user").value = response.data.user;
+  //   useCookie("token").value = response.data.token;
+  //   useCookie("isLogin").value = true;
+  //   router.push({ path: "/dashboard" });
+  // } else {
+  //   alert.value = true;
+  //   $toast.error("ชื่อผู้ใช้ หรือ รหัสผ่าน ผิด !!");
+  // }
+  // loading.value = false;
+
+  const { data: dataSignIn, error: errorUser } = await supabase.auth.signInWithPassword({
+    email: email.value.trim(),
+    password: password.value.trim(),
+  });
+  if (errorUser) {
+    $toast.warning("ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง");
+    console.error("Login error:", errorUser.message);
+    loading.value = false;
+    return;
   } else {
-    alert.value = true;
-    $toast.error("ชื่อผู้ใช้ หรือ รหัสผ่าน ผิด !!");
+    const { data, error } = await supabase.from("users").select("*,branches(*)").eq("id", dataSignIn.user.id).single();
+    loading.value = false;
+    if (error) {
+      $toast.warning(error.message);
+      console.error("Login error:", error.message);
+    } else {
+      if (data.status !== "เปิดใช้งาน") {
+        $toast.error("บัญชีของคุณถูกระงับการใช้งาน");
+        return;
+      }
+      localStorage.setItem("user", JSON.stringify(data));
+      router.push("/dashboard");
+    }
   }
-  loading.value = false;
 };
 </script>
 

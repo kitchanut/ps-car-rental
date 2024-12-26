@@ -90,6 +90,7 @@ const props = defineProps({
   appearance: String,
   id: Number,
 });
+const supabase = useNuxtApp().$supabase;
 const { $toast } = useNuxtApp();
 const emit = defineEmits(["success", "close"]);
 
@@ -102,8 +103,8 @@ const formTitle = ref("");
 // Get Data
 const getData = async () => {
   loading.value = true;
-  const response = await useApiCarTypes().show(props.id);
-  formData.value = response.data;
+  const { data: car_type, error } = await supabase.from("car_types").select("*").eq("id", props.id).single();
+  error ? $toast.error(error.message) : (formData.value = car_type);
   loading.value = false;
 };
 
@@ -115,15 +116,17 @@ const onSubmit = async () => {
   if (validate.valid) {
     loading.value = true;
     if (props.actionType == "add") {
-      const response = await useApiCarTypes().store(formData.value);
-      response.status == 201
-        ? ($toast.success("ทำรายการสำเร็จ"), (dialog.value = false), emit("success"))
-        : $toast.error("เกิดข้อผิดพลาด! กรุณาติดต่อผู้แลระบบ");
+      const { data, error } = await supabase.from("car_types").insert(formData.value).select();
+      error ? $toast.error(error.message) : ($toast.success("ทำรายการสำเร็จ"), (dialog.value = false), emit("success"));
     } else {
-      const response = await useApiCarTypes().update(formData.value.id, formData.value);
-      response.status == 200
-        ? ($toast.success("แก้ไขข้อมูลสำเร็จ"), (dialog.value = false), emit("success"))
-        : $toast.error("เกิดข้อผิดพลาด! กรุณาติดต่อผู้แลระบบ");
+      const { data, error } = await supabase
+        .from("car_types")
+        .update(formData.value)
+        .eq("id", formData.value.id)
+        .select();
+      error
+        ? $toast.error(error.message)
+        : ($toast.success("แก้ไขข้อมูลสำเร็จ"), (dialog.value = false), emit("success"));
     }
     loading.value = false;
   }
@@ -134,10 +137,8 @@ const dialogDelete = ref(false);
 const deleteItem = async () => {
   loading.value = true;
   dialogDelete.value = false;
-  const response = await useApiCarTypes().destroy(id.value);
-  response.status == 200
-    ? ($toast.success("ลบสำเร็จ"), (dialog.value = false), emit("success"))
-    : $toast.error("เกิดข้อผิดพลาด! กรุณาติดต่อผู้แลระบบ");
+  const { data, error } = await supabase.from("car_types").delete().eq("id", id.value);
+  error ? $toast.error(error.message) : ($toast.success("ลบสำเร็จ"), (dialog.value = false), emit("success"));
   loading.value = false;
 };
 

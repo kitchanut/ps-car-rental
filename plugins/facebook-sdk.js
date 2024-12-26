@@ -1,7 +1,8 @@
 export default defineNuxtPlugin((nuxtApp) => {
+  const config = useRuntimeConfig();
   window.fbAsyncInit = function () {
     FB.init({
-      appId: "3400769300229075", // แทนที่ด้วย Facebook App ID ของคุณ
+      appId: config.public.FACEBOOK_APP_ID,
       cookie: true,
       xfbml: true,
       version: "v20.0",

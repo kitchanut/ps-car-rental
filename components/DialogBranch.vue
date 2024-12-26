@@ -49,6 +49,19 @@
           >
           </v-text-field>
 
+          <v-text-field
+            class="mt-3"
+            label="เบอร์โทร"
+            append-icon=""
+            v-model="formData.branch_tel"
+            density="comfortable"
+            outlined
+            dense
+            hide-details
+            :rules="[(value) => !!value || 'Required.']"
+          >
+          </v-text-field>
+
           <v-select
             class="mt-3"
             :items="['เปิดใช้งาน', 'ระงับการใช้งาน']"
@@ -141,6 +154,7 @@ const props = defineProps({
   appearance: String,
   id: Number,
 });
+const supabase = useNuxtApp().$supabase;
 const { $toast } = useNuxtApp();
 const emit = defineEmits(["success", "close"]);
 
@@ -153,8 +167,14 @@ const formTitle = ref("");
 // Get Data
 const getData = async () => {
   loading.value = true;
-  const response = await useApiBranches().show(props.id);
-  formData.value = response.data;
+  // const response = await useApiBranches().show(props.id);
+  // formData.value = response.data;
+  const { data: branch, error } = await supabase.from("branches").select("*").eq("id", props.id).single();
+  if (error) {
+    $toast.error(error.message);
+  } else {
+    formData.value = branch;
+  }
   loading.value = false;
 };
 
@@ -166,15 +186,17 @@ const onSubmit = async () => {
   if (validate.valid) {
     loading.value = true;
     if (props.actionType == "add") {
-      const response = await useApiBranches().store(formData.value);
-      response.status == 201
-        ? ($toast.success("ทำรายการสำเร็จ"), (dialog.value = false), emit("success"))
-        : $toast.error("เกิดข้อผิดพลาด! กรุณาติดต่อผู้แลระบบ");
+      const { data, error } = await supabase.from("branches").insert(formData.value).select();
+      error ? $toast.error(error.message) : ($toast.success("ทำรายการสำเร็จ"), (dialog.value = false), emit("success"));
     } else {
-      const response = await useApiBranches().update(formData.value.id, formData.value);
-      response.status == 200
-        ? ($toast.success("แก้ไขข้อมูลสำเร็จ"), (dialog.value = false), emit("success"))
-        : $toast.error("เกิดข้อผิดพลาด! กรุณาติดต่อผู้แลระบบ");
+      const { data, error } = await supabase
+        .from("branches")
+        .update(formData.value)
+        .eq("id", formData.value.id)
+        .select();
+      error
+        ? $toast.error(error.message)
+        : ($toast.success("แก้ไขข้อมูลสำเร็จ"), (dialog.value = false), emit("success"));
     }
     loading.value = false;
   }
@@ -185,10 +207,12 @@ const dialogDelete = ref(false);
 const deleteItem = async () => {
   loading.value = true;
   dialogDelete.value = false;
-  const response = await useApiBranches().destroy(id.value);
-  response.status == 200
-    ? ($toast.success("ลบสำเร็จ"), (dialog.value = false), emit("success"))
-    : $toast.error("เกิดข้อผิดพลาด! กรุณาติดต่อผู้แลระบบ");
+  // const response = await useApiBranches().destroy(id.value);
+  // response.status == 200
+  //   ? ($toast.success("ลบสำเร็จ"), (dialog.value = false), emit("success"))
+  //   : $toast.error("เกิดข้อผิดพลาด! กรุณาติดต่อผู้แลระบบ");
+  const { data, error } = await supabase.from("branches").delete().eq("id", id.value);
+  error ? $toast.error(error.message) : ($toast.success("ลบสำเร็จ"), (dialog.value = false), emit("success"));
   loading.value = false;
 };
 

@@ -4,13 +4,13 @@
       <template v-slot:default="{ items }">
         <v-card v-for="item in items" class="mb-2" border flat>
           <v-row no-gutters>
-            <v-col cols="2" v-viewer>
+            <!-- <v-col cols="2" v-viewer>
               <v-img
                 :src="item.raw.uploads.length ? $getImage(item.raw.uploads[0].file_path) : $imageBaseApp()"
                 :lazy-src="item.raw.uploads.length ? $getImage(item.raw.uploads[0].file_path) : $imageBaseApp()"
                 cover
               />
-            </v-col>
+            </v-col> -->
             <v-col
               class="pa-3"
               @click="
@@ -37,9 +37,9 @@
       </template>
     </v-data-iterator>
 
-    <v-card class="mb-5" border flat height="70px">
+    <v-card v-if="data.length" class="mb-5" border flat height="70px">
       <v-row style="height: 100%" no-gutters="">
-        <v-col cols="4" class="d-flex justify-center align-center">รวมมัดจำ</v-col>
+        <v-col cols="4" class="d-flex justify-center align-center">รวมเงินจอง</v-col>
         <v-col class="d-flex justify-center align-center" style="border-left: 1px solid #eee">
           <span style="font-size: 1.2rem; font-weight: 700; color: green">{{ totalValue.toLocaleString() }}</span>
         </v-col>
@@ -50,7 +50,9 @@
     <DialogAccountTransaction
       :booking_id="props.booking_id"
       :car_id="props.car_id"
-      transaction_type="รับเงินมัดจำ"
+      :account_id="1"
+      transaction_type="deposit"
+      transaction_details="รับเงินจอง"
       appearance="addFullWidthDeposit"
       actionType="add"
       @success="success()"
@@ -60,7 +62,8 @@
     <DialogAccountTransaction
       :dialog="dialog"
       :id="id"
-      transaction_type="รับเงินมัดจำ"
+      transaction_type="deposit"
+      transaction_details="รับเงินจอง"
       actionType="edit"
       @success="getData()"
       @close="dialog = false"
@@ -68,6 +71,7 @@
   </div>
 </template>
 <script setup>
+const supabase = useNuxtApp().$supabase;
 const { $toast } = useNuxtApp();
 const emit = defineEmits(["success", "close"]);
 const props = defineProps({
@@ -86,13 +90,19 @@ onMounted(() => {
 });
 const getData = async () => {
   loading.value = true;
-  let query = `?booking_id=${props.booking_id}&&transaction_type=รับเงินมัดจำ`;
-  const response = await useApiAccountTransactions().index(query);
-  data.value = response.data;
-  console.log(response.data);
+  // let query = `?booking_id=${props.booking_id}&&transaction_type=รับเงินจอง`;
+  // const response = await useApiAccountTransactions().index(query);
+  // data.value = response.data;
+
+  const { data: response, error } = await supabase
+    .from("account_transactions")
+    .select("*,accounts(*)")
+    .eq("booking_id", props.booking_id)
+    .eq("transaction_type", "deposit");
+  error ? $toast.error(error.message) : (data.value = response);
 
   data.value.map((item) => {
-    item.account_number = item.account.account_number;
+    item.account_number = item.accounts.account_number;
   });
 
   loading.value = false;
@@ -103,11 +113,16 @@ const totalValue = computed(() => data.value.reduce((sum, item) => sum + item.tr
 const success = async () => {
   loading.value = true;
   if (props.booking_status == "จอง") {
-    let formData = {
-      booking_status: "มัดจำ",
+    // let formData = {
+    //   booking_status: "รับเงินจอง",
+    // };
+    // const response = await useApiBookings().update(props.booking_id, formData);
+    // response.status == 200 ? emit("success") : $toast.error("เกิดข้อผิดพลาด! กรุณาติดต่อผู้แลระบบ");
+    let updateBooking = {
+      booking_status: "รับเงินจอง",
     };
-    const response = await useApiBookings().update(props.booking_id, formData);
-    response.status == 200 ? emit("success") : $toast.error("เกิดข้อผิดพลาด! กรุณาติดต่อผู้แลระบบ");
+    let { data, error } = await supabase.from("bookings").update(updateBooking).eq("id", props.booking_id);
+    error ? $toast.error(error.message) : (emit("success"), emit("close"));
   }
   loading.value = false;
   getData();

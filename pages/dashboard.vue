@@ -41,17 +41,31 @@
   </div>
 </template>
 <script setup>
+const supabase = useNuxtApp().$supabase;
+const { $toast } = useNuxtApp();
+
 const loading = ref(false);
 const items = ref([]);
 const getData = async () => {
   loading.value = true;
   try {
     loading.value = true;
-    const response = await useApiDashboards().card();
-    // console.log(response.data);
-    items.value = response.data;
+    let { data: cars, error } = await supabase.from("cars").select("*");
+    items.value[0] = {
+      title: "จํานวนรถ",
+      value: cars.length,
+      color: "primary",
+      icon: "mdi-car",
+    };
+    let { data: customers, error: error2 } = await supabase.from("customers").select("*");
+    items.value[1] = {
+      title: "จํานวนลูกค้า",
+      value: customers.length,
+      color: "success",
+      icon: "mdi-account",
+    };
   } catch (error) {
-    console.log(error);
+    $toast.error(error.message);
   }
   loading.value = false;
 };
@@ -71,11 +85,18 @@ const getBookingByMonth = async () => {
     let params = {
       year: year.value,
     };
-    const response = await useApiDashboards().bookingByMonth(params);
-    console.log(response.data);
+    let { data, error } = await supabase.rpc("booking_by_month", {
+      year: year.value,
+    });
+
+    if (error) {
+      $toast.error(error.message);
+      return;
+    }
+
     let chartData = [];
     for (let i = 1; i <= 12; i++) {
-      let find = response.data.find((item) => item.month === i);
+      let find = data.find((item) => item.month === i);
       if (find) {
         chartData.push(find.count);
       } else {
@@ -86,16 +107,11 @@ const getBookingByMonth = async () => {
       {
         name: "จำนวนการจอง",
         type: "bar",
-        // label: {
-        //   show: true,
-        //   position: "top",
-        // },
         data: chartData,
       },
     ];
-    // console.log(series.value);
   } catch (error) {
-    console.log(error);
+    $toast.error(error.message);
   }
   loading.value = false;
 };

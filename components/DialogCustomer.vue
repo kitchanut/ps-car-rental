@@ -92,7 +92,7 @@
             <v-col>
               <v-text-field
                 class="pl-2"
-                label="ชื่อลูกค้า"
+                label="ชื่อลูกค้า*"
                 v-model="formData.customer_name"
                 density="comfortable"
                 outlined
@@ -140,6 +140,33 @@
                 dense
                 hide-details
                 readonly
+              >
+              </v-text-field>
+            </v-col>
+          </v-row>
+
+          <v-row class="mt-3" no-gutters>
+            <v-col>
+              <v-text-field
+                class="pr-1"
+                label="Line ID"
+                v-model="formData.line_id"
+                density="comfortable"
+                outlined
+                dense
+                hide-details
+              >
+              </v-text-field>
+            </v-col>
+            <v-col>
+              <v-text-field
+                class="pl-1"
+                label="Line Name"
+                v-model="formData.line_name"
+                density="comfortable"
+                outlined
+                dense
+                hide-details
               >
               </v-text-field>
             </v-col>
@@ -254,7 +281,7 @@
             ลบข้อมูล
           </v-btn>
 
-          <v-row class="mt-3" no-gutters v-viewer>
+          <!-- <v-row class="mt-3" no-gutters v-viewer>
             <v-col lg="2" md="3" sm="3" cols="4" class="px-1 mb-2" v-for="image in images" :key="image.id">
               <v-card style="height: 90px" variant="text">
                 <v-img
@@ -290,13 +317,13 @@
                 />
               </v-card>
             </v-col>
-          </v-row>
+          </v-row> -->
         </v-container>
       </v-form>
     </v-card>
 
     <DialogDelete :dialogDelete="dialogDelete" @cancleItem="dialogDelete = false" @deleteItem="deleteItem" />
-    <DialogDelete :dialogDelete="dialogDeleteImage" @cancleItem="dialogDeleteImage = false" @deleteItem="deleteImage" />
+    <!-- <DialogDelete :dialogDelete="dialogDeleteImage" @cancleItem="dialogDeleteImage = false" @deleteItem="deleteImage" /> -->
   </v-dialog>
 </template>
 
@@ -309,6 +336,7 @@ const props = defineProps({
   facebook_id: String,
   facebook_name: String,
 });
+const supabase = useNuxtApp().$supabase;
 const { $toast } = useNuxtApp();
 const emit = defineEmits(["success", "close"]);
 
@@ -321,31 +349,33 @@ const formTitle = ref("");
 // Get Data
 const getData = async () => {
   loading.value = true;
-  const response = await useApiCustomers().show(props.id);
-  formData.value = response.data;
+  // const response = await useApiCustomers().show(props.id);
+  // formData.value = response.data;
+  const { data: customer, error } = await supabase.from("customers").select("*").eq("id", props.id).single();
+  error ? $toast.error(error.message) : (formData.value = customer);
   loading.value = false;
 };
 
 const images = ref([]);
 const loadingImage = ref(false);
-const getImages = async () => {
-  loadingImage.value = true;
-  const response = await useApiUploads().index(props.id, "customers");
-  images.value = response.data;
-  loadingImage.value = false;
-};
+// const getImages = async () => {
+//   loadingImage.value = true;
+//   const response = await useApiUploads().index(props.id, "customers");
+//   images.value = response.data;
+//   loadingImage.value = false;
+// };
 
 const dialogDeleteImage = ref(false);
 const imageId = ref(0);
-const deleteImage = async () => {
-  loading.value = true;
-  dialogDeleteImage.value = false;
-  const response = await useApiUploads().destroy(imageId.value);
-  response.status == 200
-    ? ($toast.success("ลบสำเร็จ"), getImages())
-    : $toast.error("เกิดข้อผิดพลาด! กรุณาติดต่อผู้แลระบบ");
-  loading.value = false;
-};
+// const deleteImage = async () => {
+//   loading.value = true;
+//   dialogDeleteImage.value = false;
+//   const response = await useApiUploads().destroy(imageId.value);
+//   response.status == 200
+//     ? ($toast.success("ลบสำเร็จ"), getImages())
+//     : $toast.error("เกิดข้อผิดพลาด! กรุณาติดต่อผู้แลระบบ");
+//   loading.value = false;
+// };
 // Submit Data
 const form = ref(null);
 const onSubmit = async () => {
@@ -354,15 +384,17 @@ const onSubmit = async () => {
   if (validate.valid) {
     loading.value = true;
     if (props.actionType == "add") {
-      const response = await useApiCustomers().store(formData.value);
-      response.status == 201
-        ? ($toast.success("ทำรายการสำเร็จ"), (dialog.value = false), emit("success"))
-        : $toast.error("เกิดข้อผิดพลาด! กรุณาติดต่อผู้แลระบบ");
+      // const response = await useApiCustomers().store(formData.value);
+      // response.status == 201
+      //   ? ($toast.success("ทำรายการสำเร็จ"), (dialog.value = false), emit("success"))
+      //   : $toast.error("เกิดข้อผิดพลาด! กรุณาติดต่อผู้แลระบบ");
+      const { data, error } = await supabase.from("customers").insert(formData.value);
+      error ? $toast.error(error.message) : ($toast.success("ทำรายการสำเร็จ"), (dialog.value = false), emit("success"));
     } else {
-      const response = await useApiCustomers().update(formData.value.id, formData.value);
-      response.status == 200
-        ? ($toast.success("แก้ไขข้อมูลสำเร็จ"), (dialog.value = false), emit("success"))
-        : $toast.error("เกิดข้อผิดพลาด! กรุณาติดต่อผู้แลระบบ");
+      const { data, error } = await supabase.from("customers").update(formData.value).eq("id", formData.value.id);
+      error
+        ? $toast.error(error.message)
+        : ($toast.success("แก้ไขข้อมูลสำเร็จ"), (dialog.value = false), emit("success"));
     }
     loading.value = false;
   }
@@ -373,10 +405,8 @@ const dialogDelete = ref(false);
 const deleteItem = async () => {
   loading.value = true;
   dialogDelete.value = false;
-  const response = await useApiCustomers().destroy(id.value);
-  response.status == 200
-    ? ($toast.success("ลบสำเร็จ"), (dialog.value = false), emit("success"))
-    : $toast.error("เกิดข้อผิดพลาด! กรุณาติดต่อผู้แลระบบ");
+  const { data, error } = await supabase.from("customers").delete().eq("id", id.value);
+  error ? $toast.error(error.message) : ($toast.success("ลบสำเร็จ"), (dialog.value = false), emit("success"));
   loading.value = false;
 };
 
@@ -402,7 +432,7 @@ watch(dialog, (value) => {
         } else {
           formTitle.value = "แก้ไขข้อมูล";
           getData();
-          getImages();
+          // getImages();
         }
       });
     });

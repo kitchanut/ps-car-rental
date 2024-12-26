@@ -123,6 +123,7 @@ const props = defineProps({
   car_id: Number,
   number: String,
 });
+const supabase = useNuxtApp().$supabase;
 const { $toast } = useNuxtApp();
 const dayjs = useDayjs();
 const emit = defineEmits(["success", "close"]);
@@ -136,7 +137,7 @@ const formTitle = ref("");
 const search = ref("");
 const headers = ref([
   { title: "วันที่", key: "transaction_date", value: (item) => dayjs(item.transaction_date).format("YYYY-MM-DD") },
-  { title: "รายการ", key: "transaction_type" },
+  { title: "รายการ", key: "transaction_details" },
   {
     title: "จำนวน",
     key: "transaction_amount",
@@ -152,20 +153,61 @@ const sumIncome = ref(0);
 const sumExpense = ref(0);
 const getData = async () => {
   loading.value = true;
-  let queryString = `?period=${period.value}`;
-  if (props.account_id) {
-    queryString += `&account_id=${props.account_id}`;
-  }
-  if (props.car_id) {
-    queryString += `&car_id=${props.car_id}`;
+  // let queryString = `?period=${period.value}`;
+  // if (props.account_id) {
+  //   queryString += `&account_id=${props.account_id}`;
+  // }
+  // if (props.car_id) {
+  //   queryString += `&car_id=${props.car_id}`;
+  // }
+
+  // const response = await useApiAccountTransactions().index(queryString);
+  // data.value = response.data;
+  let startDate;
+  let endDate;
+  if (period.value == "D") {
+    startDate = dayjs().startOf("day").format("YYYY-MM-DD");
+    endDate = dayjs().endOf("day").format("YYYY-MM-DD 23:59");
+  } else if (period.value == "W") {
+    startDate = dayjs().startOf("week").format("YYYY-MM-DD");
+    endDate = dayjs().endOf("week").format("YYYY-MM-DD 23:59");
+  } else if (period.value == "M") {
+    startDate = dayjs().startOf("month").format("YYYY-MM-DD");
+    endDate = dayjs().endOf("month").format("YYYY-MM-DD 23:59");
+  } else if (period.value == "3M") {
+    startDate = dayjs().startOf("month").subtract(3, "month").format("YYYY-MM-DD");
+    endDate = dayjs().endOf("month").format("YYYY-MM-DD 23:59");
+  } else if (period.value == "6M") {
+    startDate = dayjs().startOf("month").subtract(6, "month").format("YYYY-MM-DD");
+    endDate = dayjs().endOf("month").format("YYYY-MM-DD 23:59");
+  } else if (period.value == "Y") {
+    startDate = dayjs().startOf("year").format("YYYY-MM-DD");
+    endDate = dayjs().endOf("year").format("YYYY-MM-DD 23:59");
   }
 
-  const response = await useApiAccountTransactions().index(queryString);
-  data.value = response.data;
-  sumIncome.value = response.data
+  const query = supabase
+    .from("account_transactions")
+    .select("*")
+    .gte("transaction_date", startDate)
+    .lte("transaction_date", endDate)
+    .order("transaction_date", { ascending: false });
+  if (props.account_id) {
+    query.eq("account_id", props.account_id);
+  }
+  if (props.car_id) {
+    query.eq("car_id", props.car_id);
+  }
+  const { data: response, error } = await query;
+
+  if (error) {
+    $toast.error(error.message);
+  } else {
+    data.value = response;
+  }
+  sumIncome.value = response
     .filter((item) => item.transaction_amount > 0)
     .reduce((acc, item) => acc + Number(item.transaction_amount), 0);
-  sumExpense.value = response.data
+  sumExpense.value = response
     .filter((item) => item.transaction_amount < 0)
     .reduce((acc, item) => acc + Number(item.transaction_amount), 0);
 
