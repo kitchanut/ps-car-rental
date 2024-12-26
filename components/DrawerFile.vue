@@ -30,7 +30,7 @@
             </v-btn>
           </v-card>
         </v-col>
-        <v-col cols="4 px-1">
+        <!-- <v-col cols="4 px-1">
           <v-card variant="outlined" height="70" style="border: 1px solid #ddd">
             <ImageUpload
               :car_id="myProps.id"
@@ -40,7 +40,7 @@
               @success="getData()"
             />
           </v-card>
-        </v-col>
+        </v-col> -->
       </v-row>
       <br />
       <h1>ไฟล์ ({{ files.length }})</h1>
