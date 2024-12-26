@@ -145,7 +145,7 @@
       </v-table>
     </v-card>
 
-    <v-card v-if="data.length == 0" class="border" variant="outlined">
+    <v-card v-if="data.length == 0 && (displaySize == 'xs' || displaySize == 'sm')" class="border" variant="outlined">
       <v-card-text>
         <div class="text-center">- ไม่มีข้อมูล -</div>
       </v-card-text>

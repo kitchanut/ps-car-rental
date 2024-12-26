@@ -1,6 +1,6 @@
 <template>
   <div class="pa-3">
-    <v-card variant="outlined" style="border: 1px solid #ddd">
+    <v-card variant="outlined" style="border: 1px solid #ddd" :loading="loading">
       <div class="pa-3 d-flex">
         <DialogBooking appearance="add" actionType="add" @success="getData()" />
         <v-menu width="340" :close-on-content-click="false">
