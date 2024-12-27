@@ -56,10 +56,8 @@ const loading = ref(true);
 const headers = ref([{ title: "ชื่อสาขา", key: "branch_name" }]);
 
 const data = ref([]);
-
 const getData = async () => {
   loading.value = true;
-
   const { data: branches, error } = await supabase.from("branches").select("*").order("id");
   if (error) {
     $toast.error(error.message);

@@ -326,16 +326,13 @@ const sendMessage = async () => {
 
 const customers = ref([]);
 const getCustomer = async () => {
-  const { data: customers, error } = await supabase
-    .from("customers")
-    .select("*")
-    .order("created_at", { ascending: false });
-  error ? $toast.error(error.message) : (customers.value = customers);
+  const { data, error } = await supabase.from("customers").select("*").order("created_at", { ascending: false });
+  error ? $toast.error(error.message) : (customers.value = data);
 };
 getCustomer();
 
 const isCustomer = (facebook_id) => {
-  return customers.value.find((customer) => customer.facebook_id == facebook_id);
+  return customers.value.find((customer) => String(customer.facebook_id) == String(facebook_id));
 };
 
 const dayjs = useDayjs();

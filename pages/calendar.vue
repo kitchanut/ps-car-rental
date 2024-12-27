@@ -65,6 +65,26 @@
                 clearable
               ></v-select>
 
+              <v-text-field
+                class="mt-2"
+                v-model="startDateFilter"
+                type="datetime-local"
+                density="comfortable"
+                label="วันที่เริ่ม"
+                hide-details
+                clearable
+              ></v-text-field>
+
+              <v-text-field
+                class="mt-2"
+                v-model="endDateFilter"
+                type="datetime-local"
+                density="comfortable"
+                label="วันที่สิ้นสุด"
+                hide-details
+                clearable
+              ></v-text-field>
+
               <v-slider
                 class="mt-3"
                 v-model="price"
@@ -266,13 +286,14 @@ const getData = async () => {
   loading.value = true;
   let startDate = dayjs().add(-7, "day").format("YYYY-MM-DD");
   let endDate = dayjs().add(60, "day").format("YYYY-MM-DD");
-  const { data: response, error } = await supabase
+  let query = supabase
     .from("cars")
     .select("*,car_models(*),bookings(*),branches(*)")
     .gte("bookings.pickup_date", startDate)
     .lte("bookings.pickup_date", endDate)
     .neq("bookings.booking_status", "ยกเลิก")
     .order("created_at", { ascending: false });
+  const { data: response, error } = await query;
   error ? $toast.error(error.message) : (data.value = response);
 
   data.value = response;
@@ -314,10 +335,39 @@ const filterData = computed(() => {
       (car_type_id.value ? item.car_type_id == car_type_id.value : true) &&
       (car_brand_id.value ? item.car_brand_id == car_brand_id.value : true) &&
       (car_model_id.value ? item.car_model_id == car_model_id.value : true) &&
-      item.rental_per_day <= price.value
+      item.rental_per_day <= price.value &&
+      CheckAvailableDays(item)
     );
   });
 });
+
+const startDateFilter = ref(null);
+const endDateFilter = ref(null);
+const CheckAvailableDays = (item) => {
+  if (startDateFilter.value && endDateFilter.value) {
+    if (item.bookings.length) {
+      let find;
+      item.bookings.map((booking) => {
+        const pickupDate = dayjs(booking.pickup_date);
+        const returnDate = dayjs(booking.return_date);
+        const filterStartDate = dayjs(startDateFilter.value);
+        const filterEndDate = dayjs(endDateFilter.value);
+        if (pickupDate.isBetween(filterStartDate, filterEndDate)) {
+          find = false;
+        } else if (returnDate.isBetween(filterStartDate, filterEndDate)) {
+          find = false;
+        } else {
+          find = true;
+        }
+      });
+      return find;
+    } else {
+      return true;
+    }
+  } else {
+    return true;
+  }
+};
 
 // Additional Information
 const id = ref(0);

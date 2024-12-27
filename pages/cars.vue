@@ -141,6 +141,7 @@ const getData = async () => {
     .select("*, uploads(*), branches(*), car_types(*), car_brands(*), car_models(*), car_sub_models(*)")
     .order("created_at", { ascending: false });
   error ? $toast.error(error.message) : (data.value = cars);
+  console.log(data.value);
 
   loading.value = false;
 };

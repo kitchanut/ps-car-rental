@@ -611,9 +611,12 @@
                       </v-col>
                     </v-row>
 
+                    <v-btn class="mt-5" type="submit" color="primary" block size="large" variant="tonal">
+                      บันทึก
+                    </v-btn>
                     <v-btn
-                      v-if="props.actionType == 'edit' && formData.booking_status == 'ระงับการใช้งาน'"
-                      class="mt-5"
+                      v-if="props.actionType == 'edit' && formData.booking_status == 'ยกเลิก'"
+                      class="mt-2"
                       color="error"
                       variant="tonal"
                       size="large"
@@ -624,10 +627,6 @@
                       "
                     >
                       ลบข้อมูล
-                    </v-btn>
-
-                    <v-btn class="mt-5" type="submit" color="primary" block size="large" variant="tonal">
-                      บันทึก
                     </v-btn>
                   </v-form>
                 </v-tabs-window-item>
