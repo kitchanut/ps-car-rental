@@ -122,7 +122,6 @@
             </td>
             <td class="px-2">
               <div>{{ item.customers.customer_name }}</div>
-              <div style="color: grey">{{ item.customers.facebook_name || "N/A" }}</div>
               <div style="color: grey">{{ item.customers.customer_tel }}</div>
             </td>
             <td class="px-2">
@@ -145,6 +144,10 @@
         </tbody>
       </v-table>
     </v-card>
+
+    <div v-if="data.length" class="text-right mt-3">
+      รวมคืนเงินมัดจำ <b class="text-green">{{ sumDeposit.toLocaleString() }}</b> บาท
+    </div>
 
     <v-card v-if="data.length == 0 && (displaySize == 'xs' || displaySize == 'sm')" class="border" variant="outlined">
       <v-card-text>
@@ -178,6 +181,13 @@ const view = ref("card");
 const loading = ref(true);
 const return_date = ref(new Date().toISOString().substr(0, 10));
 const data = ref([]);
+const sumDeposit = computed(() => {
+  let sum = 0;
+  data.value.forEach((item) => {
+    sum += item.deposit;
+  });
+  return sum;
+});
 const getData = async () => {
   loading.value = true;
   let startDate = dayjs(return_date.value).startOf("day").format("YYYY-MM-DD");
