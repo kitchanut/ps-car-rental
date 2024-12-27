@@ -51,14 +51,14 @@
                   :lazy-src="$getImage(item.raw.uploads[0].file_path)"
                   cover
                 />
-                <ImageUpload
+                <!-- <ImageUpload
                   v-else
                   :car_id="item.raw.id"
                   type="car"
                   accept="image/*"
                   location="cars"
                   @success="getData()"
-                />
+                /> -->
               </v-card>
             </v-col>
             <v-col

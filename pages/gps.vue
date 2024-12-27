@@ -7,7 +7,6 @@
           class="text-center"
           variant="tonal"
           :color="item.branches.branch_color"
-          @click="handleClick(item)"
           @dblclick="handleDblClick(item)"
         >
           <v-chip class="rounded-0" density="compact" size="small" style="position: absolute; top: 0px; right: 0px">
@@ -58,7 +57,7 @@ const initMap = () => {
     // ui: longdo.UiComponent.Mobile,
   });
   map.location({ lon: lng, lat: lat }, true);
-  map.zoom(12, true);
+  map.zoom(13, true);
   map.Layers.setBase(longdo.Layers.NORMAL);
 };
 
