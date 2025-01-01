@@ -200,17 +200,6 @@ const onSubmit = async () => {
 
     let response;
     if (actionType.value == "add") {
-      // let formDataNew = new FormData();
-      // formDataNew.append("return_date", formData.value.return_date);
-      // formDataNew.append("return_penalty", formData.value.return_penalty);
-      // formData.value.return_note ? formDataNew.append("return_note", formData.value.return_note) : "";
-      // props.booking_id ? formDataNew.append("booking_id", Number(props.booking_id)) : "";
-      // formDataNew.append("location", "return");
-      // for (let i = 0; i < files.value.files.length; i++) {
-      //   formDataNew.append("files", files.value.files[i]);
-      // }
-      // response = await useApiBookingReturns().store(formDataNew);
-
       let { data: response, error } = await supabase.from("booking_returns").insert({
         return_date: formData.value.return_date,
         return_penalty: formData.value.return_penalty,
@@ -274,6 +263,19 @@ const onSubmit = async () => {
         emit("success");
       }
     }
+    const { data: dataBooking, error: errorBooking } = await supabase
+      .from("bookings")
+      .select("*")
+      .eq("id", props.booking_id)
+      .single();
+
+    let { error } = await supabase
+      .from("cars")
+      .update({
+        branch_id: dataBooking.return_branch_id,
+      })
+      .eq("id", dataBooking.car_id);
+
     loading.value = false;
   }
 };

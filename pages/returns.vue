@@ -1,7 +1,7 @@
 <template>
   <div class="pa-3">
     <v-row no-gutters>
-      <v-col :cols="user.branch_id ? 12 : 4">
+      <v-col :cols="user.branch_id ? 12 : 5">
         <v-text-field
           v-model="return_date"
           label="วันที่"
@@ -46,12 +46,12 @@
       </v-card-title>
       <v-card-text>
         <v-row no-gutters>
-          <v-col cols="4">สถานที่:</v-col>
-          <v-col class="text-right"> {{ item.return_location }} | {{ item.return_branch.branch_name }} </v-col>
-        </v-row>
-        <v-row no-gutters>
           <v-col cols="4">ลูกค้า:</v-col>
-          <v-col class="text-right"> {{ item.customers.customer_name }} ({{ item.customers.customer_tel }}) </v-col>
+          <v-col class="text-right"> {{ item.customers.customer_name }} </v-col>
+        </v-row>
+        <v-row no-gutters v-if="item.customers.customer_tel">
+          <v-col cols="4">โทร:</v-col>
+          <v-col class="text-right"> {{ item.customers.customer_tel }} </v-col>
         </v-row>
         <v-row no-gutters v-if="item.customers.facebook_name">
           <v-col cols="4">Facebook:</v-col>

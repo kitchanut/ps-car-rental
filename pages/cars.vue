@@ -95,7 +95,6 @@
                   </div>
                   <div style="color: green; font-size: 0.8rem">
                     <b>{{ item.raw.rental_per_day.toLocaleString() }}</b>
-                    | {{ item.raw.driver_per_day.toLocaleString() }} | {{ item.raw.deposit.toLocaleString() }}
                   </div>
                   <v-chip
                     v-if="item.raw.car_sub_models"
