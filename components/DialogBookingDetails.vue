@@ -59,6 +59,27 @@
                 <div>{{ item.cars.car_brands.car_brand_name }} ( {{ item.cars.car_models.car_model_name }} )</div>
               </v-col>
             </v-row>
+            <v-row no-gutters class="mt-2">
+              <v-col>
+                <v-card variant="tonal" :color="item.pickup_branch.branch_color">
+                  <v-card-text class="text-center pa-1">
+                    {{ item.pickup_branch.branch_name }}
+                    <div>{{ item.pickup_location }}</div>
+                  </v-card-text>
+                </v-card>
+              </v-col>
+              <v-col cols="2" class="d-flex align-center justify-center">
+                <v-icon color="grey">mdi-arrow-right</v-icon>
+              </v-col>
+              <v-col>
+                <v-card variant="tonal" :color="item.return_branch.branch_color">
+                  <v-card-text class="text-center pa-1">
+                    {{ item.return_branch.branch_name }}
+                    <div>{{ item.return_location }}</div>
+                  </v-card-text>
+                </v-card>
+              </v-col>
+            </v-row>
           </v-card-text>
           <v-divider></v-divider>
           <v-card-text>
@@ -278,10 +299,12 @@ const getData = async () => {
   const { data: response, error } = await supabase
     .from("bookings")
     .select(
-      "*,account_transactions(*),customers(*),cars(*,car_brands(*),car_models(*)),booking_returns(*),booking_pickups(*),branches:bookings_branch_id_fkey(*)"
+      "*,account_transactions(*),customers(*),cars(*,car_brands(*),car_models(*)),booking_returns(*),booking_pickups(*),branches:bookings_branch_id_fkey(*),pickup_branch:bookings_pickup_branch_id_fkey(*),return_branch:bookings_return_branch_id_fkey(*)"
     )
     .eq("id", props.id)
     .single();
+
+  console.log(response);
 
   error ? $toast.error(error.message) : (item.value = response);
   sumBookingFee.value = response.account_transactions

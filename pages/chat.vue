@@ -252,6 +252,7 @@ const getConversations = async () => {
     });
     if (response.data.conversations) {
       conversations.value = response.data.conversations.data;
+      console.log(conversations.value);
     } else {
       conversations.value = [];
     }
@@ -270,16 +271,14 @@ const messages_face = useState("messages_face", () => []);
 const getMessages = async () => {
   try {
     loading.value = true;
-    // let pageSelect = pages.value.find((page) => page.page_id == page_id.value);
     const response = await axios({
       method: "GET",
       url: `https://graph.facebook.com/v20.0/${conversation_id.value}?fields=messages{from,message,attachments,created_time}&access_token=${page_access_token.value}`,
     });
-
     messages_face.value = response.data.messages.data;
     messages_face.value.sort((a, b) => new Date(a.created_time) - new Date(b.created_time));
-
     loading.value = false;
+    console.log(messages_face.value);
   } catch (error) {
     if (error.response.data.error.code == 2 || error.response.data.error.code == 190) {
       $toast.error("เกิดข้อผิดพลาด! กรุณาเพิ่มเพจใหม่อีกครั้งในหน้าตั้งค่าเพจ");

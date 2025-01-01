@@ -25,6 +25,12 @@
       </v-col>
     </v-row>
     <div class="d-flex py-1"></div>
+
+    <div v-if="data.length" class="text-right">
+      เบิก <b class="text-warning">{{ sumDeposit.toLocaleString() }}</b> บาท > คืน
+      <b class="text-green">{{ sumDepositReturn.toLocaleString() }}</b> บาท
+    </div>
+
     <v-card
       v-if="displaySize == 'xs' || displaySize == 'sm'"
       v-for="item in data"
@@ -36,7 +42,7 @@
     >
       <v-card-title class="d-flex justify-space-between align-center">
         <div>{{ $dayjs(item.return_date).format("YYYY-MM-DD HH:mm") }}</div>
-        <span style="font-size: 1rem" :style="{ color: colorBar(item.booking_status) }">{{ item.booking_number }}</span>
+        <span style="font-size: 1rem">{{ item.booking_number }}</span>
       </v-card-title>
       <v-card-text>
         <v-row no-gutters>
@@ -47,13 +53,38 @@
           <v-col cols="4">ลูกค้า:</v-col>
           <v-col class="text-right"> {{ item.customers.customer_name }} ({{ item.customers.customer_tel }}) </v-col>
         </v-row>
-        <v-row no-gutters>
+        <v-row no-gutters v-if="item.customers.facebook_name">
           <v-col cols="4">Facebook:</v-col>
           <v-col class="text-right"> {{ item.customers.facebook_name }} </v-col>
         </v-row>
         <v-row no-gutters>
           <v-col cols="4">ทะเบียน:</v-col>
           <v-col class="text-right"> {{ item.cars.license_plate }} | {{ item.cars.car_models.car_model_name }} </v-col>
+        </v-row>
+        <v-row no-gutters>
+          <v-col cols="4">เงินมัดจำ:</v-col>
+          <v-col class="text-right text-green"> {{ item.deposit.toLocaleString() }} </v-col>
+        </v-row>
+        <v-row no-gutters class="mt-2">
+          <v-col>
+            <v-card variant="tonal" :color="item.pickup_branch.branch_color">
+              <v-card-text class="text-center pa-1">
+                {{ item.pickup_branch.branch_name }}
+                <div>{{ item.pickup_location }}</div>
+              </v-card-text>
+            </v-card>
+          </v-col>
+          <v-col cols="2" class="d-flex align-center justify-center">
+            <v-icon color="grey">mdi-arrow-right</v-icon>
+          </v-col>
+          <v-col>
+            <v-card variant="tonal" :color="item.return_branch.branch_color">
+              <v-card-text class="text-center pa-1">
+                {{ item.return_branch.branch_name }}
+                <div>{{ item.return_location }}</div>
+              </v-card-text>
+            </v-card>
+          </v-col>
         </v-row>
         <!-- <v-row no-gutters>
             <v-col cols="4">ค่าเช่า:</v-col>
@@ -82,7 +113,8 @@
           <tr>
             <th class="text-left px-0" width="20px"></th>
             <th class="text-left pl-2">วันที่</th>
-            <th class="text-left px-2">สถานที่</th>
+            <th class="text-left px-2">รับรถ</th>
+            <th class="text-left px-2">คืนรถ</th>
             <th class="text-left px-2">ลูกค้า</th>
             <th class="text-left pl-2">ทะเบียน</th>
             <th class="text-right px-2">ค่าเช่า|มัดจำ|ทั้งหมด</th>
@@ -116,6 +148,12 @@
 
             <td class="px-2">
               <div>
+                <div>{{ item.pickup_location }}</div>
+                <div style="color: grey">{{ item.pickup_branch.branch_name }}</div>
+              </div>
+            </td>
+            <td class="px-2">
+              <div>
                 <div>{{ item.return_location }}</div>
                 <div style="color: grey">{{ item.return_branch.branch_name }}</div>
               </div>
@@ -144,10 +182,6 @@
         </tbody>
       </v-table>
     </v-card>
-
-    <div v-if="data.length" class="text-right mt-3">
-      รวมคืนเงินมัดจำ <b class="text-green">{{ sumDeposit.toLocaleString() }}</b> บาท
-    </div>
 
     <v-card v-if="data.length == 0 && (displaySize == 'xs' || displaySize == 'sm')" class="border" variant="outlined">
       <v-card-text>
@@ -184,7 +218,26 @@ const data = ref([]);
 const sumDeposit = computed(() => {
   let sum = 0;
   data.value.forEach((item) => {
-    sum += item.deposit;
+    if (branch_id.value) {
+      if (branch_id.value == item.branch_id) {
+        sum += item.deposit;
+      }
+    } else {
+      sum += item.deposit;
+    }
+  });
+  return sum;
+});
+const sumDepositReturn = computed(() => {
+  let sum = 0;
+  data.value.forEach((item) => {
+    if (branch_id.value) {
+      if (branch_id.value == item.return_branch_id) {
+        sum += item.deposit;
+      }
+    } else {
+      sum += item.deposit;
+    }
   });
   return sum;
 });
@@ -194,13 +247,15 @@ const getData = async () => {
   let endDate = dayjs(return_date.value).endOf("day").format("YYYY-MM-DD 23:59");
   let query = supabase
     .from("bookings")
-    .select("*,cars(*,car_models(*)),customers(*),return_branch:bookings_return_branch_id_fkey(*)")
+    .select(
+      "*,cars(*,car_models(*)),customers(*),pickup_branch:bookings_pickup_branch_id_fkey(*),return_branch:bookings_return_branch_id_fkey(*)"
+    )
     .eq("booking_status", "รับรถ")
     .gte("return_date", startDate)
     .lte("return_date", endDate)
     .order("return_date");
   if (branch_id.value != null) {
-    query = query.eq("return_branch_id", branch_id.value);
+    query = query.or(`return_branch_id.eq.${branch_id.value},pickup_branch_id.eq.${branch_id.value}`);
   }
   const { data: response, error } = await query;
   error ? $toast.error(error.message) : (data.value = response);

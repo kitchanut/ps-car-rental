@@ -55,6 +55,7 @@
           <v-col cols="4">ทะเบียน:</v-col>
           <v-col class="text-right"> {{ item.cars.license_plate }} | {{ item.cars.car_models.car_model_name }} </v-col>
         </v-row>
+
         <!-- <v-row no-gutters>
           <v-col cols="4">ค่าเช่า:</v-col>
           <v-col class="text-right">
